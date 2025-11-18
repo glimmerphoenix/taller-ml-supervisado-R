@@ -26,11 +26,10 @@ book:
     - part: "Tidymodels"
       chapters:
         - 07-tidymodels.qmd
-        - 08-evaluacion.qmd
     - part: "Otros entornos"
       chapters:
-        - 09-mlr3.qmd
-    - 10-add-resources.qmd
+        - 08-mlr3.qmd
+    - 09-add-resources.qmd
     - references.qmd
   appendices: 
     - A-command-ref.qmd
