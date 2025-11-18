@@ -1,0 +1,91 @@
+# Introducción
+
+Existen muchas definiciones complementarias sobre la Inteligencia Artificial (IA), cada una
+reflejo de un modo diferente de aproximarse al complejo problema de crear máquinas que puedan
+imitar la inteligencia humana [@russell2010]. Por ejemplo, en el artículo de Wikipedia
+sobre IA se define de la siguiente forma [enlace](https://es.wikipedia.org/wiki/Inteligencia_artificial):
+
+> La inteligencia artificial, abreviado como IA, en el contexto de las ciencias de la 
+> computación, es una disciplina y un conjunto de capacidades cognoscitivas e intelectuales 
+> expresadas por sistemas informáticos o combinaciones de algoritmos cuyo propósito es la 
+> creación de máquinas que imiten la inteligencia humana. 
+
+En 1950, Alan Turing propuso el llamado **Test de Turing** para proporcionar una definción
+operativa satisfactoria sobre "inteligencia". En teoría, un computador supera el test si un
+interrogador humano, después de plantear varias preguntas, no es capaz de discernir si las
+respuestas escritas provienen de una persona o de un computador. Para poder superar el test,
+un computador necesitaría incluir muchas habilidades. Aunque el test original no lo contemplaba,
+el llamado **Test de Turing total** incorpora una señal de vídeo para que el interrogador pueda
+evaluar las habilidades de percepción y reacción físicas del sujeto. Entre otros aspectos, esto
+implica contar con habilidades como:
+
+- *Procesamiento de lenguaje natural* (NLP), que permite a una máquina entender y comunicarse
+correctamente, de forma verbal y/o por escrito en uno o varios idiomas.
+- *Representación del conocimiento*, para almacenar lo aprendido de forma organizada.
+- *Razonamiento automático* para emplear la información almacenada en responder a prenguntas y
+extraer nuevas conclusiones.
+- *Aprendizaje máquina*, para adaptarse a nuevas circunstancias y detectar y extrapolar 
+patrones, a partir de datos previos que describan un problema o describiendo datos nuevos.
+- *Visión computacional*, para percibir e interpretar imágenes y su contenido.
+- *Robótica*, para maninpular objetos y poder moverse.
+
+Por tanto, vemos que el **aprendizaje automático** (*machine learning* o ML en inglés) es una
+rama de la IA que tiene por objetivo el desarrollo de técnicas y métodos para que las 
+computadoras aprendan. Un **agente** inteligente aprende cuando es capaz de mejorar su
+rendimiento a partir de la experiencia y de la información extraída de datos.
+
+## Tipos de aprendizaje automático
+
+Existe una taxonomía ampliamente aceptada para clasificar las diferentes aproximaciones para
+resolver el problema del aprendizaje automático [@russell2010]:
+
+- **Aprendizaje supervisado**: el agente observa algunos ejemplos de parejas de valores 
+entrada-salida y aprende una función que mapea nuevas entradas a nuevos valores de salida.
+- **Aprendizaje no supervisado**: el agente debe descubrir patrones o similitudes entre los
+valores de entrada aunque no se le haya facilitado ningún tipo de información adicional.
+- **Aprendizaje semisupervisado**: combina los dos anteriores, puesto que el agente recibe sólo 
+unos pocos ejemplos y, a partir de ellos, tiene que hacer lo posible por descubrir patrones en
+una colección de ejemplos no etiquetados o explicados.
+- **Aprendizaje por refuerzo**: el método de aprendizaje implica que el agente reciba premios o
+castigos. Por ejemplo, si un agente aprende a jugar al ajedrez y recibe dos puntos por haber
+ganado una partida, deduce que lo ha hecho bien. Por contra, si un agente de conducción registra
+un aviso de choque recibe una penalización para indicarle que lo ha hecho mal.
+
+## Tareas de aprendizaje automático supervisado
+
+En este taller práctico nos vamos a centrar en el aprendizaje supervisado, cuyo fin principal
+es el de **predecir** el valor de **salida** que corresponde a una combinación concreta de 
+valores descriptivos de entrada. Los dos tipos de tareas que se suelen abordar en aprendizaje
+ automático supervisado son [@boehmke2019]:
+
+- **Regresión**: el objetivo es predecir una **salida numérica**, cuyos valores se 
+distribuyen a lo largo de un contínuo. Por ejemplo, un modelo que prediga el valor de venta de
+una viviendia en función de varios datos descriptivos sobre la misma (superficie construida,
+año de construcción, número de habitaciones, ubicación, etc.) es un modelo de regresión. 
+No se debe confundir con el término "regresión lineal", que es un tipo específico de modelo 
+de aprendizaje.
+
+- **Clasificación**: el objetivo es predecir una **salida categórica** (etiqueta), que puede
+tener dos posibles valores (*clasificación binaria*) o varios valores (*clasificación multinomial*).
+
+![Ejemplo de salida de un modelo de predicción de valor de venta de viviendas en función de su año de construcción y superficie útil. Figura tomada de [@boehmke2019], sección 1.1.1.](img/intro-regression-problem.png){#fig-intro-regression-prob}
+
+![Ejemplo un modelo de clasificación binaria, en función de tres parámetros descriptivos de entrada. Figura tomada de [@boehmke2019], sección 1.1.2.](img/classification_problem.png){#fig-intro-regression-prob}
+
+## Ajuste de modelos
+
+El **ajuste** de un modelo de aprendizaje automático comprende una *secuencia de pasos* o tareas
+que permite que el algoritmo o modelo seleccionado aprenda a resolver un problema concreto. Es
+decir, que aprenda a predecir un valor de salida en función de una combinación de valores de
+entrada.
+
+::: {.callout-note}
+Dependiendo de si estamos hablando con personas que provienen del aprendizaje estadístico, las
+ciencias de la computación o el reconocimiento de patrones, encontraremos términos diferentes
+para designar a un mismo procedimiento. Por ejemplo, alguien de aprendizaje estadístico dirá que
+va a *ajustar un modelo*, en el sentido de calcular, a partir de datos, el valor de los 
+parámetros que lo determinan. Sin embargo, alguien de computación (aprendizaje automático) 
+hablará más bien de *entrenar un algoritmo* con datos, lo que trae consigo elegir valores para sus parámetros.
+
+La única diferencia, por tanto, es en qué parte del mismo proceso se pone el foco en cada caso. En muchas ocasiones, en este taller usaremos indistintamente los términos *ajuste* o *entremaiento* aplicados a un modelo o algoritmo.
+:::

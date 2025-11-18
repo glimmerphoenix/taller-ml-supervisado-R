@@ -1,0 +1,49 @@
+project:
+  type: book
+  output-dir: docs
+  preview: 
+    port: 9001
+    browser: true
+
+book:
+  title: "Aprendizaje máquina supervisado con R"
+  author:
+    - "María Jesús Algar"
+    - "Felipe Ortega"
+  date: "2025/11/25"
+  chapters:
+    - index.qmd
+    - part: "Fundamentos"
+      chapters:
+        - 01-introduccion.qmd
+        - 02-ml-supervisado.qmd
+        - 03-algoritmos-modelos.qmd
+        - 04-seleccion-validacion.qmd
+    - part: "Métodos convencionales"
+      chapters:
+        - 05-modelos-clasicos.qmd
+        - 06-modelos-avanzados.qmd
+    - part: "Tidymodels"
+      chapters:
+        - 07-tidymodels.qmd
+        - 08-evaluacion.qmd
+    - part: "Otros entornos"
+      chapters:
+        - 09-mlr3.qmd
+    - 10-add-resources.qmd
+    - references.qmd
+  appendices: 
+    - A-command-ref.qmd
+    - B-packages.qmd
+    - app-refs.qmd
+
+lang: es
+bibliography: references.bib
+csl: apa.csl
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
