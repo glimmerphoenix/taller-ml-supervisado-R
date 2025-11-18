@@ -1,5 +1,130 @@
 # Aprendizaje máquina supervisado
 
-This is a book created from markdown and executable code.
+Como hemos introducido en el tema anterior, el aprendizaje máquina supervisado es un proceso que implica
+entrenar a un algoritmo computacional para que resuelva un problema de predicción (regresión o clasificación),
+utilizando para ello un conjunto de datos. La Figura \@fig-model-selec muestra un esquema del proceso completo.
 
-See @knuth84 for additional discussion of literate programming.
+![Representación esquemática del proceso completo de ajuste y selección de modelos supervisados de aprendizaje máquina. Figura adaptada del cap. 1 de [@grigorev2021].](img/model-selection.png){#fig-model-selec width=95%}
+
+1. Dividimos nuestro dataset en dos o más subconjuntos (como mínimo, *training* y *testing*).
+2. Seleccionamos uno o varios modelos/algoritmos y los parámetros de entrada (variables, *inputs*,
+*features*) que van a recibir.
+3. Entrenamos los modelos, teniendo cuidado de utilizar los datos de entrenamiento de forma óptima (veremos
+más sobre esto después).
+4. Evaluamos los modelos y comparamos su rendimiento. Repetimos los pasos 3 y 4 cuantas veces sea preciso para
+refinar el ajuste de los modelos y continuar las comparaciones, descartando las opciones que claramente no pueden
+ofrecer un buen rendimiento.
+5. Seleccionamos de entre los candidatos finales el modelo/algoritmo que muestra mejor rendimiento o que combina
+las mejores propiedades buscadas.
+6. Probamos el modelo sobre datos que nunca haya visto anteriormente, para evaluar de forma objetiva su capacidad
+de generalización.
+
+## Parámetros e hiperparámetros
+
+Antes de profundizar un poco en todo este proceso, conviene puntualizar el significado de un par de términos
+que suelen provocar bastante confusión. 
+
+Durante el proceso de aprendizaje, el algoritmo o modelo escogido puede
+ajustar el valor de ciertos **parámetros** a partir de la información extraída de los datos. Pensemos, por ejemplo,
+en un modelo de regresión lineal. Dicho modelo, constará de una serie de parámetros (coeficientes),
+$\{\beta_0, \beta_1, \beta_2, \dots, \beta_p\}$, cuyo valor
+podemos ajustar a partir de $p$ variables de entrada proporcionadas al sistema, $\{x_1, x_2, \dots, x_p\}$
+para predecir el valor esperado de la variable de salida (respuesta), $y$. En su caso más sencillo, la
+regresión lineal plantea la ecuación:
+
+$$y = \beta_0 + \beta_1x_1+\beta_2x_2+\dots+\beta_px_p$$
+
+Los valores de los parámetros (coeficientes) $\beta_i$ se pueden calcular a partir de los datos de entrenamiento.
+En este caso tan sencillo, todos los parámetros del modelo son calculados a partir de los datos. Sin embargo,
+en otros casos, además de estos parámetros ajustables a partir de los datos hay que fijar los valores de uno o
+varios parámetros adicionales, que no pueden deducirse directamente de los datos. Estos son los denominados
+**hiperparámetros**, cuyo valor hay que fijar estimándolo de algún modo. Un ejemplo serían los modelos de
+regresión con *regularización*, un tipo de penalización que permite minimizar o directamente anular 
+la intervención de las variables de entrada en el resultado de la predicción. Dos variantes comunes en este
+apartado son la regresión Ridge y Lasso, cuyo parámetro $\alpha$ controla la "intensidad" del procedimiento
+de regularización aplicado.
+
+## El problema del sobreajuste
+
+Observa la @fig-overfitting, en la que se muestra un pequeño conjunto de datos representado en un diagrama
+de dispersión en 2-D. Sobre el diagrama de dispersión, tenemos dos posibles modelos candidatos, ajustados a
+estos datos:
+
+- Un modelo lineal simple que, por ejemplo, podríamos haber obtenido mediante un ajuste por mínimos cuadrados.
+- Un polinomio de grado $n-1$ (donde $n$ es el número de datos disponibles), que se ajusta perfectamente a todos
+los datos observados.
+
+![Ejemplo de *sobreajuste* de un modelo. La función polinómica (en azul) se ajusta perfectamente a los datos (puntos en negro), pero no generaliza para otros datos nuevos. Fuente: [Overfitting, Wikipedia](https://en.wikipedia.org/wiki/Overfitting).](img/overfitted-data.png){#fig-overfitting width=70%}
+
+Como podemos apreciar, el modelo lineal simple comete cierto error en su ajuste, ya que algunos puntos quedan
+ligeramente por encima o por debajo de la recta de regresión propuesta. Sin embargo, el polinomio de grado
+$n-1$ tiene error nulo, su ajuste es perfecto.
+
+¿Qué modelo elegiríamos? Podríamos estar tentados de elegir el polinomio, al tener un error menor. Sin embargo,
+esta sería una elección poco acertada. No es muy creíble que, cualquiera que fuese el proceso que dio origen a
+estos datos, siga una evolución tan complicada como la marcada por las repetidas (y retorcidas) curvas de ese
+polinomio. La pregunta clave es no es cuánto error cometemos *con los datos de entrenamiento* sino cuánto error
+comete el modelo al tratar de *predecir los datos de prueba*, que no debe haber visto nunca antes.
+
+Este problema, clave en el proceso de ajuste/entrenamiento de modelos supervisados, es lo que conocemos como 
+**sobreajuste** (*overfitting*). Como norma general, que nunca debemos olvidar, al ajustar un modelo/algoritmo
+mediante datos tenemos que cuidar que no pierda su capacidad para generalizar, es decir, para predecir con
+poco margen de error nuevos datos a los que no se haya enfrentando antes.
+
+En palabras de George E. P. Box, uno de los más geniales contribuyentes a la práctica estadística del siglo XX y 
+comienzos del XXI, :
+
+> "Remember that all models are wrong; the practical question 
+> is how wrong do they have to be to not be useful."
+
+![George E. P. Box (1919-2013)](img/GeorgeEPBox.jpg){#fig-gepbox width=40%}
+
+Este **principio de generalización** debe de completarse con otra prerrogativa, el llamado 
+**principio de parsimonia** (también conocido como "navaja de Occam"). Este segundo principio nos dicta que
+debemos favorecer los modelos más sencillos frente a los más complicados, puesto que serán más fáciles
+de interpretar.
+
+No obstante, conviene recordar las palabras de A. Einstein:
+
+> "Everything should be made as simple as possible, but not simpler."
+
+La traducción de esta advertencia, en términos de nuestro procedimiento para ajustar modelos de aprendizaje
+automático, es que también debemos evitar el **subajuste** (*underfitting*), provocado por un modelo que no
+ha sido entrenado convenientemente y todavía podría ofrecer menor **error de entrenamiento** sin incrementar
+el **error de generalización**.
+
+![Ilustración del efecto del subajuste y el sobreajuste ajustando un modelo de regresión lineal a un conjunto de datos. El modelo parabólico del centro ofrece una buena solución de compromiso. Fuente: <https://medium.com/@kiprono_ek/regularization-a-technique-used-to-prevent-over-fitting-886d5b361700>.](img/underfitting-overfitting.png){#fig-underfit-overfit width=95%}
+
+
+## El balance sesgo-varianza
+
+El "punto de equilibrio" al que hacemos referencia en el apartado anterior está directamente relacionado con
+dos conceptos esenciales que midel el error cometido por los modelos entrenados en aprendizaje automático [@boehmke2019]:
+
+- **Sesgo** (*bias*): es la diferencia entre el valor esperado (o promedio) que predice nuestro
+algoritmo y el valor correcto que estamos intentando predecir. Dicho de otro modo, mide cómo de lejos
+se quedan los valores predichos por nuestro modelo respecto de los valores reales.
+
+- **Varianza** (*variance*): es la "imprecisión" (error) que tienen las predicciones generadas por nuestro
+modelo para un valor de salida específico. Normalmente, un excesivo error en las predicciones para valores
+concretos de salida está relacionado con el sobreajuste, al haberse fijado el modelo demasiado en las
+fluctuaciones de los datos de entrenamiento, evitando así que generalice de forma más precisa para otros casos.
+
+![Ilustración esquemática del sesgo y la varianza en el proceso de entrenamiento de un modelo de aprendizaje máquina supervisado. La zona a la izquierda del punto de compromiso deseado corresponde al subajuste, mientras que la zona a la derecha del punto de compromiso implica caer en sobreajuste. Fuente: <https://sebastianraschka.com/pdf/lecture-notes/stat451fs20/08-model-eval-1-intro__slides.pdf>.](img/bias-variance.png){#fig-bias-variance width=85%}
+
+
+La @fig-bias-variance-bull trata de ilustrar el tipo de error cometido en cada caso, comparando nuestras
+predicciones con lanzamientos sobre una diana (en rojo), asumiendo que la predicción correcta consiste en acertar
+en el centro de la diana.
+
+![Representación conceptual del sesgo y la varianza en predicción de modelos de aprendizaje automático, suponiendo que se tratasen de lanzamientos sobre una diana. Fuente: [@raschka2020modeleval].](img/bias-variance-bull.png){#fig-bias-variance-bull width=75%}
+
+## Procedimiento de validación cruzada
+
+Particionado de datos para evitar el sobreajuste
+
+LOOCV
+
+k-fold cross validation
+
+stratified cross-validation
