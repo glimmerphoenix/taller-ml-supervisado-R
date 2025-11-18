@@ -68,9 +68,9 @@ de aprendizaje.
 - **Clasificación**: el objetivo es predecir una **salida categórica** (etiqueta), que puede
 tener dos posibles valores (*clasificación binaria*) o varios valores (*clasificación multinomial*).
 
-![Ejemplo de salida de un modelo de predicción de valor de venta de viviendas en función de su año de construcción y superficie útil. Figura tomada de [@boehmke2019], sección 1.1.1.](img/intro-regression-problem.png){#fig-intro-regression-prob}
+![Ejemplo de salida de un modelo de predicción de valor de venta de viviendas en función de su año de construcción y superficie útil. Figura tomada de [@boehmke2019], sección 1.1.1.](img/intro-regression-problem.png){#fig-intro-regression-prob width=70%}
 
-![Ejemplo un modelo de clasificación binaria, en función de tres parámetros descriptivos de entrada. Figura tomada de [@boehmke2019], sección 1.1.2.](img/classification_problem.png){#fig-intro-regression-prob}
+![Ejemplo un modelo de clasificación binaria, en función de tres parámetros descriptivos de entrada. Figura tomada de [@boehmke2019], sección 1.1.2.](img/classification_problem.png){#fig-intro-classif-prob width=90%}
 
 ## Ajuste de modelos
 
@@ -89,3 +89,87 @@ hablará más bien de *entrenar un algoritmo* con datos, lo que trae consigo ele
 
 La única diferencia, por tanto, es en qué parte del mismo proceso se pone el foco en cada caso. En muchas ocasiones, en este taller usaremos indistintamente los términos *ajuste* o *entremaiento* aplicados a un modelo o algoritmo.
 :::
+
+El primer paso en esta secuencia de ajuste de modelos siempre es la **división del conjunto de datos** en
+dos grupos [@boehmke2019]:
+
+- Datos de **entrenamiento** (*training*): son los datos que vamos a emplear para que el algoritmo/modelo
+aprenda a resolver el problema. Entre otros aspectos, permiten elegir las variables o entradas que vamos
+a utilizar, calcular valores óptimos para los *hiperparámetros* del modelo, comparar el rendimiento de
+varios modelos y el resto de acciones que conducen a elegir un modelo final.
+
+- Datos de **prueba**: una vez que hemos seleccionado un modelo final, estos datos sirven para obtener
+una *estimación no sesgada* del rendimiento de nuestro modelo cuando se enfrenta a datos que no ha visto
+previamente, lo que denominamos **error de generalización**.
+
+![División básica de datos en grupos de entrenamiento y prueba (training/testing)](img/training-testing.png){#fig-train-test width=75%}
+
+::: {.callout-important}
+Es de vital importancia garantizar que los datos de prueba (testing) nunca se usan durante el entrenamiento
+del modelo/algoritmo. De otro modo, la selección del modelo final podría verse comprometida (introducción de
+sesgo).
+:::
+
+Los porcentajes del total del datos que se recomendia usar para cada grupo suelen oscilar entre
+60% (training) - 40% (testing), 70%-30% u 80%-20%. Usar más del 80% de los datos para entrenamiento sería
+contraproducente, puesto que no tendríamos suficientes datos como para hacer una valoración adecuada del
+modelo y, además, el ajuste encajaría demasiado en los datos observados y perdería capacidad de generalización
+(**sobreajuste**, *overfitting* en inglés). Por contra, emplear demasiados datos en probar el modelo (>40%)
+implicaría no tener suficientes datos como para ajustar sus parámetros de manera robusta.
+
+No obstante, existen casos particulares. Si tenemos un dataset de gran tamaño, entonces no tiene demasiado
+sentido crear un conjunto de entrenamiento muy grande, ya que la mayoría de los algoritmos de aprendizaje
+automático (exceptuando, por ejemplo, los modelos basados en aprendizaje profundo más recientes) no obtienen
+ningún beneficio por utilizar muchos datos para entrenarlos. Por otro lado, si $n$ es el tamaño de nuestro
+dataset y $p$ el número de variables o *features* de entrada del modelo, cuando $p>>n$ sí se necesitan
+grandes conjuntos de datos para estimar de manera fiable posibles patrones en los datos.
+
+### Técnicas de muestreo
+
+Normalmente, la división de los datos en estos dos grupos se realiza por medio de técnicas de muestreo. Las
+dos técnicas más comúnmente aplicadas son:
+
+- **Muestreo aleatorio simple**: es la forma más sencilla, consiste en tomar aleatoriamente muestras de
+los datos hasta llenar cada uno de los grupos. La gran desventaja de este método es que no tiene en cuenta
+distribuciones específicas de los datos en el conjunto original (por ejemplo, para preservar la proporción
+de datos presentes en cada categoría). Un ejemplo lo podemos ver en la Figura \@fig-random-sampling-train-test.
+
+- **Muestreo estratificado**: se utiliza cuando necesitamos controlar explícitamente que nuestros conjuntos
+de entrenamiento y de prueba tengan distribuciones de valores similares a las del conjunto de datos original.
+Podemos ver un ejemplo en la [Sec. 2.2.2](https://bradleyboehmke.github.io/HOML/process.html#stratified) de
+[@boehmke2019].
+
+![El muestreo aleatorio simple no tiene en cuenta la proporción de datos existente en el conjunto original. En este caso, después del muestreo el conjunto de entrenamiento mantiene aproximadamente estas proporciones, pero el de prueba no. Figura tomada de [@raschka2020modeleval].](img/random-sampling-train-test.png){#fig-random-sampling-train-test width=95%}
+
+### Desequilibrios en los datos
+
+Otro aspecto que también tenemos que considerar es si existe algún tipo de **desequilibrio** entre las categorias
+o la distribución de valores de nuestro conjunto de datos. Esto ocurre, por ejemplo, en datos etiquetados en los
+que una categoría tiene muchas menos instancias que otras, como en los problemas de fraude o impagos. En un
+dataset con dos categorías, `"fraudulento"` o `"legítimo"`, si la primera categoría tiene sólo un 1% del total 
+de muestras y la segunda el 99% restante será difícil que los conjuntos de entrenamiento y prueba mantengan
+esa proporción. Por otro lado, también será complicado que el modelo pueda aprender a identificar instancias de
+la categoría minoritaria si tiene pocos ejemplos de los que poder aprender a reconocerla. Por ello, existen
+varias técnicas para mitigar esta limitación:
+
+- Submuestreo (*down-sampling*): reduce el tamaño de la clase más frecuente para que corresponda con la proporción
+de instancias en la clase minoritaria. Se puede usar si el conjunto de datos original es grande.
+- Sobremuestreo (*up-sampling*): si no hay muchos datos en el conjunto original, otra solución es utilizar
+técnicas de remuestreo (como *bootstraping*) para generar nuevas muestras "artificiales" de la clase minoritaria.
+- SMOTE: combina los dos métodos anteriores de forma innovadora.
+
+Se pueden utilizar estos métodos en R mediante el argumento `sampling` en `caret::trainControl()` , así como
+en otros paquetes (como `h2o`).
+
+## Preparación de los datos
+
+Antes de presentar algunos ejemplos de modelos supervisados de aprendizaje máquina y cómo podemos emplearlos
+en R, conviene recordar que un paso previo imprescindible es preparar adecuadamente nuestros datos. Con demasiada
+frecuencia, errores de codificación, ausencia de valores, escalas de representación demasiado amplias y muchos
+otros problemas aparecen en nuestros datos y pueden malograr todos nuestros esfuerzos por conseguir ajustar
+nuestros modelos y elegir la opción más adecuada.
+
+Se invita al lector a consultar el [capítulo 3](https://bradleyboehmke.github.io/HOML/engineering.html) de
+[@boehmke2019], así como las referencias [@kuhn2019featureeng] y [@zheng2018feature] para un tratamiento 
+más detallado de muchas de las tareas de limpieza y preparación de datos necesarias antes de 
+implementar y evaluar nuestros modelos de aprendizaje automático.
