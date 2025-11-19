@@ -110,6 +110,11 @@ modelo para un valor de salida específico. Normalmente, un excesivo error en la
 concretos de salida está relacionado con el sobreajuste, al haberse fijado el modelo demasiado en las
 fluctuaciones de los datos de entrenamiento, evitando así que generalice de forma más precisa para otros casos.
 
+La @fig-bias-variance muestra un esquema de los diferentes errores cometidos durante el proceso de aprendizaje,
+y dónde se encontraría un posible punto de compromiso, en la zona intermedia del gráfico, en el que se localiza
+un mínimo error de entrenamiento (para evitar subajuste), impidiendo que crezca de nuevo el error de
+generalización (lo que evita el sobreajuste).
+
 ![Ilustración esquemática del sesgo y la varianza en el proceso de entrenamiento de un modelo de aprendizaje máquina supervisado. La zona a la izquierda del punto de compromiso deseado corresponde al subajuste, mientras que la zona a la derecha del punto de compromiso implica caer en sobreajuste. Fuente: <https://sebastianraschka.com/pdf/lecture-notes/stat451fs20/08-model-eval-1-intro__slides.pdf>.](img/bias-variance.png){#fig-bias-variance width=85%}
 
 
@@ -119,12 +124,98 @@ en el centro de la diana.
 
 ![Representación conceptual del sesgo y la varianza en predicción de modelos de aprendizaje automático, suponiendo que se tratasen de lanzamientos sobre una diana. Fuente: [@raschka2020modeleval].](img/bias-variance-bull.png){#fig-bias-variance-bull width=75%}
 
+Como resulta evidente en esta representación, la situación ideal sería la de un modelo que, simultáneamente,
+consiguiese predicciones con pocas fluctuaciones (varianza pequeña) y cercanas al valor real (mínimo sesgo).
+Sin embargo, en muchos casos reales no es posible conseguir ambos objetivos al mismo tiempo, y debemos optar
+por elegir la solución de compromiso que mejor refleje nuestros intereses.
+
 ## Procedimiento de validación cruzada
 
-Particionado de datos para evitar el sobreajuste
+En el contexto que hemos descrito, se sabe que sin un conocimiento previo sobre un problema concreto o el
+conjunto de datos que vamos a utilizar, es difícil asegurar *a priori* cuál será el mejor modelo o algoritmo
+de aprendizaje automático que lo resuelva. Esta limitación se conoce como el teorema *no free lunch*
+[@wolpert1996].
 
-LOOCV
+Puesto que debemos comparar los posibles modelos candidatos *antes* de utilizar los datos del conjunto de
+*testing*, una posible opción es utilizar los propios datos de entrenamiento para medir el rendimiento de
+cada modelo y compararlos entre sí. Sin embargo, este procedimiento no es adecuado porque, como ya sabemos,
+algunos modelos se pueden comportar muy bien con los datos de entrenamiento, pero generalizan mal con otros
+datos nuevos.
 
-k-fold cross validation
+Otra opción es la de utilizar un **método de validación**, en el que parte del conjunto de datos de 
+entrenamiento se utilicen para entrenar el modelo y otra parte, el *conjunto de validación* (*holdout set*)
+se guarde para validar el modelo, sin usar aún el conjunto de prueba final, que queda al margen de este proceso.
 
-stratified cross-validation
+Sin embargo, usar un solo conjunto de validación puede dar como resultado malas estimaciones (se pueden
+consultar las referencias ofrecidas en apartado 2.4 de [@boehmke2019]). La mejor opción es usar un
+**método de remuestreo** (*resampling*). La idea es repetir el ajuste del modelo sobre distintas fracciones
+de los datos de entrenamiento y evaluar su rendimiento sobre otras partes. Los dos métodos más habituales
+que se aplican en estos casos son:
+
+- Validación cruzada con $k$ conjuntos (*k-fold cross validation*).
+
+- *Bootstrapping*, basada en la conocida técnica *bootstrap* de remuestreo: una muestra aleatoria 
+*con reemplazo* de los datos originales [@efron1986].
+
+::: {.callout-warning}
+Es importante saber que en algunos textos y referencias sobre métodos de validación, se denomina indistintamente
+a los sucesivos conjuntos de datos de validación dentro de grupo de datos de entrenamiento como "prueba",
+"test", "validación", "evaluación", etc. Esto genera gran confusión, puesto que es difícil distinguir cuándo
+se referieren a estos conjuntos y cuándo están hablando de los datos de evaluación *finales*, que permanecen
+al margen durante todo el proceso hasta que tenemos que evaluar el modelo final seleccionado.
+
+En consecuencia, lo importante es tener claro el esquema mental del proceso que estamos siguiendo, para interpretar
+adecuadamente la denominación que utilicemos en cada referencia.
+:::
+
+### Validación cruzada con `k` conjuntos
+
+La @fig-cv-process muestra en un esquema cómo se implementa este método de validación.
+
+![Esquema que explica el procedimiento de validación cruzada con `k` conjuntos. Fuente: Sec. 2.4.1 de [@boehmke2019].](img/cv-boehmke.png){#fig-cv-process width=75%}
+
+1. El conjunto global de datos de entrenamiento se divide en $k$ trozos o subconjuntos.
+
+2. En cada iteración, uno de los trozos se reserva para validar los modelos y los otros $k-1$ trozos se
+usan para entrenar los modelos.
+
+3. Por último, para cada modelo se combinan (calculando el promedio o de otras formas) las evaluaciones individuales en cada iteración para ofrecer un resultado de evaluación global, que se compara con el resto
+de modelos para seleccionar el más adecuado.
+
+Lo más habitual es usar valores $k=5$ o $k=10$ [@boehmke2019]. Cuanto mayor sea $k$ menor será la diferencia
+entre el rendimiento real y nuestra estimación, pero también será mayor el coste computacional para completar
+el procedimiento.
+
+### Boostrapping
+
+La @fig-boostraping muestra un esquema de cómo se realiza el proceso de muestreo con reemplazo o
+*bootstrapping*.
+
+![Esquema que explica el procedimiento de *bootstrapping*. Fuente: Sec. 2.4.2 de [@boehmke2019].](img/bootstrap-scheme.png){#fig-boostraping width=75%}
+
+En promedio, un 63,21% de las muestras originales son seleccionadas en cada muestra *boostrap*, mientras
+que las restantes que no han sido seleccionadas se marcan como *out-of-bag* (OOB). En este procedimiento,
+podemos entrenar un modelo con la muestra *boostrap* y validarlo con las muestras OOB. Por ejemplo este
+es el método empleado por *Random Forests*.
+
+Este procedimiento tiende a reducir la varianza de la estimación, pero en conjuntos de datos no muy
+grandes (< 1.000 muestras) puede incrementar el sesgo de la estimación de rendimiento. En la mayoría de
+conjuntos de datos actuales, con tamaños relativamente grandes, esto no suele constituir un problema.
+
+### Otros métodos de validación cruzada
+
+Existen muchos otros métodos de validación cruzada que contemplan casos especiales o se aplican sobre 
+datos con características particulares.
+
+- Validación cruzada anidada: Método alternativo de validación que permite estimar los hiperparámetros
+y comparar al mismo tiempo modelos introduciendo menor sesgo (cf. Sec. 4.14 [@raschka2020modeleval]).
+
+- LOOCV: es un caso extremo de validación cruzada con $k$ conjuntos, en el que $k=n$ [@kuhn2013applied].
+
+- Validación cruzada para series temporales: se aplica cuando tenemos datos con depencias temporales
+estrictas. Puedes consultar la [sec. 5.10](https://otexts.com/fpp3/tscv.html) de [@hyndman2021] para
+aprender más sobre esta técnica.
+
+En el extenso artículo sobre evaluación de modelos de aprendizaje automático de S. 
+Raschka [@raschka2020modeleval] se pueden consultar más propiedades y consejos prácticos sobre métodos
+de validación.
