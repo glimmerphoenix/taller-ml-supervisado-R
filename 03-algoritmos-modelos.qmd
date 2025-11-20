@@ -3,24 +3,261 @@
 En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente,
 mostraremos cómo se pueden entrenar y evaluar con R.
 
-## K vecinos más cercanos (k-NN)
+Antes de comenzar, es importante hacer una distinción entre dos tipos de modelos o algoritmos [@james2021]:
+
+- **Modelos paramétricos**: son aquellos en los que se utiliza una función $f(X)$ para predecir la salida,
+cuya forma viene determinada por una serie de parámetros que podemos ajustar a partir de los datos. Un
+ejemplo sería un modelo de regresión lineal.
+
+- **Modelos no paramétricos**: estos no asumen una forma paramétrica para la función de predicción $f(X)$,
+ofreciendo una alternativa más flexible para resolver el problema de regresión.
+
+## K vecinos más cercanos (K-NN)
+
+Se trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la regresión,
+fijado un valor para $K$ y un punto de predicción $x_0$, se identifican las $K$ observaciones del conjunto de
+entrenamiento más cercanas a $x_0$, denotadas por $\mathcal{N}_0$. Entonces, se estima $f(x_0)$ como el valor
+promedio de todas las respuestas contenidas en $\mathcal{N}_0$, es decir:
+
+$$
+\hat{f}(x_0) = \frac{1}{K}\sum_{x_i \in \mathcal{N}_0} \,y_i.
+$$ {#eq-KNN}
 
 
+![Valores estimados para una regresión KNN en un conjunto de datos en dos dimensiones con 64 observaciones. Izq.: K=1. Dcha.: K=9. Fuente: Fig. 3.16 [@james2021].](img/KNN-fit-ISLRv2.png){#fig-KNN-fit width="95%"}
+
+Este modelo se basa en la premisa de que las observaciones similares se encontrarán próximas entre sí dentro
+del espacio de representación de los datos. Sin embargo, no siempre es fácil encontrar espacios de
+representación que describan nuestro problema de forma adecuada para que se cumpla esta premisa. En todo
+caso, este modelo ha demostrado ser muy útil en gran variedad de problemas.
+
+En la [Sec. 8.2](https://bradleyboehmke.github.io/HOML/knn.html#measuring-similarity) de [@boehmke2019], se
+discuten algunas medidas de disimilaridad que se pueden computar entre pares de observaciones. Algunas
+funciones de distancia son la familia de distancias Minkowski, incluyendo Manhattan (L1), Euclídea (L2) o 
+Chebyshev (Linf); la distancia de Haversine (para datos geolocalizados sobre la superficie terrestre); la
+similaridad del coseno (para documentos o datos textuales) o la distancia de Jaccard.
 
 ## Modelos lineales
+
+Los modelos lineales asumen que existe una relación lineal entre las variables de entrada (*inputs*,
+*features*) y la salida que se desea predecir. Cuidado, porque esto no implica necesariamente que la forma
+de la función ajustada sea una línea recta, una confusión bastante común que suele asaltar a muchas
+personas.
+
+El dos ejemplos muy básicos de este tipo de modelos son la regresión lineal simple y la regresión lineal
+múltiple, presentados en detalle en el [Capítulo 4](https://bradleyboehmke.github.io/HOML/linear-regression.html) de [@boehmke2019], así como en el Capítulo 3 de [@james2021]. Sin embargo, un polinomio de grado (parábola) sigue siendo un modelo lineal ya que, aunque su forma son sea una línea recta, la ecuación se
+sigue expresando como una combinación lineal de varias componentes. 
+
+Los Modelos Lineales Generalizados (GLM por sus siglas en inglés) extienden el modelo lineal
+original para responder a muchos tipos de problemas: variables respuesta que no siguen una distribución
+normal, relaciones no lineales (no recta) entre las entradas y la variable de salida, o salidas de tipo
+categórico (binarias, multinomiales, ordenadas, etc.).
+
+Este tipo de modelos consta de tres elementos [@agresti2015]:
+
+ - **Función de enlace**: define una conexión entre el valor esperado (media) de la variable respuesta con la
+ combinación lineal de las variables de entrada, lo que permite definir modelos que no sigan la forma de una
+ recta (más flexibles), capturando relaciones más complejas.
+
+- **Distribución de probabilidad** (componente aleatoria): describe el "ruido" o variabilidad de los datos
+alrededor del valor promedio que se predice. Distribuciones habituales son la Normal, Binomial o Poisson.
+
+ - **Estructura lineal**: todas las variables de entrada se relacionan entre sí mediante una combinación 
+ lineal, ponderadas por coeficientes que se ajustan a partir de los datos de entrenamiento. Sin embargo, la
+ estructura generalizada del modelo permite asumir formas no lineales, así como incorporar variables de
+ entrada categóricas, mediante la codificación adecuada. 
+ 
+ La @tbl-my presenta algunos modelos GLM frecuentemente empleados.
+
+| Modelo              | Comp. aleatoria  | Col3                             |
+|:--------------------|:-----------------|:---------------------------------|
+| Regresión lineal    | Normal           | Cuantitativas o cualitativas     |
+| Regresión logística | Binomial         | Cuantitativas o cualitativas     |
+| LogLinear           | Poisson          | Cualitativas                     |
+| Reg. de Poisson     | Poisson          | Cuantitativas o cualitativas     |
+
+: Algunos modelos GLM y sus elementos constitutivos asociados. {#tbl-my .striped .hover}
+
+### Regularización en modelos lineales
+
+En los conjuntos de datos actuales, normalmente de gran tamaño, existe el riesgo de que los modelos 
+lineales tiendan al sobreajuste de los datos de entrenamiento, incrementando nuestro error de 
+generalización.  Una estrategia muy útil para restringir este efecto pernicioso es la **regularización** del
+modelo, que consiste en aplicar una serie de "penalizaciones" a los coeficientes estimados para reducir la
+varianza (dentro del compromiso varianza-sesgo) y así mantener a raya el problema del sobreajuste.
+
+Tres opciones muy comunes de regularización son:
+ 
+- Penalización Ridge: modifica la función objetivo de ajuste del modelo con un término controlado por un
+hiperparámetro $\lambda$. Cuanto más crece el valor asignado a $\lambda$ más se fuerza a que los coeficientes
+del modelo se vayan haciendo cada vez más pequeños, aunque sin llegar a anularse. Véase el [Apartado 6.2.1](https://bradleyboehmke.github.io/HOML/regularized-regression.html#why) de [@boehmke2019].
+
+- Penalización Lasso: altera la función objetivo para ajustar el modelo con un térmio también controlado por
+un hiperparámetro $\lambda$. Sin embargo, al contrario que en el caso anterior, cuando $\lambda$ crece se
+van anulando progresivamente más coeficientes de la función de predicción, lo que constituye un método más
+drástico de selección de variables y simplificación de nuestro modelo. Véase el [Apartado 6.2.2](https://bradleyboehmke.github.io/HOML/regularized-regression.html#why) de [@boehmke2019].
+
+- *Elastic net*: es una solución intermedia entre los dos casos anteriores, introduciendo simultáneamente
+ambos tipos de penalización (Ridge y Lasso), cada uno de ellos controlado por un hiperparámetro de penalización, $\lambda_1$ y $\lambda_2$, respectivamente. Véase el [Apartado 6.2.3](https://bradleyboehmke.github.io/HOML/regularized-regression.html#why) de [@boehmke2019].
+
+En la @fig-ridge-lasso-contours se representan los errores (todos los puntos sobre una elipse tienen el 
+mismo valor de RSS) y las funciones de restricción impuestas en el caso de la penalización Lasso y Ridge.
+Podemos observar como en el caso del Lasso las restricciones tienen aristas, lo que hace que la intersección
+entre el contorno y la región de restricción se produzca sobre el eje. Cuando esto ocurre, los coeficientes
+de la función de regresión se anulan. Sin embargo, en Ridge el punto de intersección no llega a tocar el eje,
+por lo que los coeficientes no llegan a anularse.
+
+![Gráficos de contorno para los errores en las estimaciones y funciones de restricción para Lasso (izq.) y Ridge (dcha.). Fuente: Fig. 6.7 [@james2021].](img/ridge-lasso-contours.png){#fig-ridge-lasso-contours width="95%"}
+
+## Extensiones del modelo lineal
+
+Además de los modelos polinómicos o los GLM descritos anteriormente, existen más extensiones de los modelos
+lineales. La aproximación común a muchos de ellos es utilizar funciones polinómicas con formas suaves para
+ir ajustando tramos de la función de predicción. En consecuencia, la superposición (combinación lineal) de
+estas funciones suaves dará como resultado un modelo tremendamente flexible que se puede adaptar a problemas
+muy complicados.
+
+Un primer ejemplo son los modelos MARS (*Multivariate Adaptive Regression Splines*), presentados en el 
+[Capítulo 7](https://bradleyboehmke.github.io/HOML/mars.html#the-basic-idea) de [@boehmke2019]. Otro ejemplo
+son los modelos GAM (*Generalized Additive Models*) que se explican en la Sección 7.7 de [@james2021]. En el
+caso de estos últimos se extiende el modelo lineal manteniendo la combinación aditiva (suma) de los
+componentes de predicción. Sin embargo, en cada componente se emplea una función lineal $f_j(x_{ij})$, cuya
+forma debemos estimar a partir de los datos, según la @eq-GAM:
+
+$$
+y_i = \beta_0 + \sum_{j=1}^{p}f_j(x_{ij})+\epsilon_i
+$$ {#eq-GAM}
+
+
+La @fig-example-GAM-fit muestra un ejemplo del resultado de ajustar un modelo GAM utilizando dos variables de entrada cuantitativas y una cualitativa.
+
+![Ejemplo de ajuste de un modelo GAM, con dos predictores cuantitativos (izq. y centro) y otro cualitativo (dcha.). Se puede apreciar que las funciones para los predictores cuantiativos son flexibles y suaves. Fuente: Fig. 7.12 [@james2021].](img/example-GAM-fit.png){#fig-example-GAM-fit width="95%"}
 
 
 ## Máquinas de vector soporte (SVM)
 
+Las SVM son ejemplos de modelos de clasificación (salida cualitativa), en los que el objetivo es encontrar
+un hiperplano que separe de la mejor forma posible los elementos pertenecientes a dos grupos (asumiendo que
+la salida es una variable binaria).
+
+La @fig-svm-hmc1 muestra cómo se identifican los llamados "vectores soporte" para definir la frontera de
+separación entre los puntos pertenecientes a los dos grupos de la variable de salida, para el caso de un
+clasficador de margen rígido (es decir, que no admite que puntos de uno de los grupos desborden la frontera
+con el otro grupo).
+
+![Ilustración del método para encontrar los vectores soporte, que definen la frontera de separación entre los dos grupos de la variable de salida en un modelo SVM. Se asume un clasficador de margen rígido (HMC). Fuente: Fig. 14.3 [@boehmke2019].](img/svm-hmc-1.png){#fig-svm-hmc1 width="95%"}
+
+Lo normal es utilizar una versión más flexible de este algoritmo, que tolera que existan puntos mal 
+clasificados (i.e. en el lado incorrecto de la frontera), dentro de un cierto margen de error. No obstante,
+la verdadera clave de estos modelos es que aplican el llamado ***kernel trick***, una argucia matemática
+que nos permite representar los datos en un espacio alternativo en el que la separación entre las fronteras
+sea calculable. Matemáticamente, entender esta herramienta implica el manejo de *funciones núcleo* (*kernel 
+functions*) y comprender los Espacios de Hilbert de Núcleo Reproductor (RKHS). Puedes consultar estos
+[apuntes de un profesor de UCL](https://www.gatsby.ucl.ac.uk/~gretton/coursefiles/lecture4_introToRKHS.pdf)
+para una introducción a estos temas.
+
+En la práctica, el hecho de que no podamos apreciar directamente los detalles del espacio alternativo en el
+que se están representando los datos hace que a estos modelos se les considere en cierta medida como de
+"caja negra" (*black-box models*). En consecuencia, otras de las limitaciones es que no resulta nada
+evidente explicar el papel que juega cada una de las variables en la identificación de la frontera de
+separación entre clases.
+
+![Fronteras de separación entre dos grupos de datos que se organizan en forma de espiral. Izq.: frontera de clasificación determinada mediante un algoritmo RF. Dcha.: frontera de clasificación identificada mediante un algoritmo SVM que usa una función núcleo de base radial (*radial basis kernel*). Fuente: Fig. 14.7 [@boehmke2019].](img/two-spirals-SVM.png){#fig-two-spirals-SVM width="95%"}
+
 
 ## Modelos probabilísticos: Naïve Bayes
 
+Un ejemplo de modelos de clasificación probabilísticos es el llamado Naïve Bayes (Bayes ingenuo), cuyo
+funcionamiento se basa en una aplicación directa del Teorema de Bayes. Se emplean con frecuencia en problemas
+de clasificación con datos textuales, cuando tenemos muchas variables de entrada o bien cuando el rango de 
+valores de las variables de entrada es muy amplio.
+
+Recordemos que el Teorema de Bayes viene dado por:
+
+$$
+ P(B \mid A) = \frac{P(B)P(A \mid B)}{P(A)}
+$$ {#eq-Bayes-theorem}
+
+Si consideramos que las variables predictoras son independientes entre sí, entonces tenemos que la fórmula
+de predicción es:
+
+$$
+ P(Y_k \mid X_1, \dots, X_p) = \frac{P(Y_k)\prod_{j=1}^p P(X_j \mid Y_k)}{P(X_1, X_2, \dots, X_p)}
+$$ {#eq-Naive-Bayes}
+
+Puesto que el denominador es una constante, nos centramos en calcular el valor del numerador para poder
+comparar las probabilidades condicionadas a los valores de las variables de entrada. La clase predicha
+maximiza la expresión:
+
+$$
+\underset{x}{\arg\max} \left\{ P(Y_k) \prod_{j=1}^p P(X_j \mid Y_k)\right\}.
+$$
 
 ## Redes neuronales y aprendizaje profundo
 
+Muchos modelos de aprendizaje automático solamente incorporan una o dos capas de transformación de datos para
+aprender la representación de los datos de salida. Estos modelos se denominan superficiales (*shallow models*). En contraste, los **modelos profundos** (*deep models*) siguen una aproximación multicapa para
+aprender las representaciones de los datos. El caso más habitual es el de usar múltiples capas de **redes
+neuronales**. El [Capítulo 13](https://bradleyboehmke.github.io/HOML/deep-learning.html) de [@boehmke2019] y
+el Capítulo 10 de [@james2021] proporcionan dos buenas introducciones a este tipo de modelos.
 
+La @fig-multi-layer-NN muestra el diseño de una red neuronal con dos capas ocultas que podría utilizarse para
+predecir los 10 posibles valores de salida del dataset MNIST, con imágenes de cifras manuscritas.
+
+![Esquema de un modelo de clasificación basado en una red neuronal con dos capas ocultas y varias posibles salidas, que se puede aplicar al conjunto de datos MNIST de cifras manuscritas. Fuente: Fig. 10.4 [@james2021].](img/multi-layer-NN.png){#fig-multi-layer-NN width="95%"}
+
+La clave para que una red neuronal de aprendizaje profundo se autoajuste en base a los datos de entrenamiento
+es un proceso denominado **retropropagación** (*backpropagation*). Este proceso se explica, por ejemplo,
+en la [Sec. 13.5](https://bradleyboehmke.github.io/HOML/deep-learning.html#dl-back) de [@boehmke2019], así
+como en la Sec. 10.7.1 de [@james2021], entre otras muchas fuentes.
+
+::: {.callout-tip}
+## Videotutorial sobre aprendizaje profundo
+
+El sitio web <https://www.3blue1brown.com/> contiene un extenso catálogo de videotutoriales y sesiones
+formativas sobrfe muchos temas de interés, como redes neuronales, álgebra o cálculo.
+
+El vídeo [What is backpropagation really doing?](https://www.3blue1brown.com/?v=backpropagation) es una de
+las mejores explicaciones intuitivas para entender mejor el papel de la retropropagación en el entrenamiento
+de redes neuronales para aprendizaje profundo.
+:::
 
 ## Ensamblado de modelos
 
+El ensamblado de modelos es una aproximación para resolver el problema del aprendizaje máquina que consiste
+en combinar la salida de múltiples modelos individuales para dar una predicción final que mejora el 
+rendimiento que podríamos alcanzar con un solo modelo. La referencia más completa para entender bien esta
+estrategia de aprendizaje máquina es [@kuncheva2014].
+
+Algunos de los modelos más conocidos son:
+
+- *Bagging* (*Bootstrap AGGregatING): consiste en el ensamblado de modelos de clasificación entrenados sobre
+réplicas *bootstrap* de los datos de entrenamiento originales. La salida de los clasificadores individuales
+se combina mediante el voto de pluralidad. Utilizar el voto mayoritario para tomar la decisión garantiza que
+vamos a obtener un resultado que mejora el de cada modelo individual. El [Capítulo 10](https://bradleyboehmke.github.io/HOML/bagging.html) de [@boehmke2019] muestra en detalle ejemplos de esta técnica.
+
+- *Random Forests* (bosques aleatorios): fueron propuestos por el insigne Leo Breiman en 2001 [@breiman2001random]. Es una modificación de la estrategia de *bagging* aplicada a modelos de árboles de
+decisión, que emplea una amplia colección de árboles *decorrelados entre sí* para mejorar la eficiencia
+de predicción de la variable de salida. Además de tomar muestras *bootstrap* de los datos de entrenamiento,
+este método realiza selecciones aleatorias de las variables de entrada *en cada nodo del árbol*, tras lo
+cual se selecciona de entre las características tomadas la azar la mejor para dividir los caminos desde 
+ese nodo. Es uno de los métodos más populares hoy en día, puesto que ofrece un buen rendimiento con un
+coste computacional contenido y con relativamente poco esfuerzo de ajuste de hiperparámetros. El 
+[Capítulo 11](https://bradleyboehmke.github.io/HOML/random-forest.html) de [@boehmke2019] muestra el
+trabajo con este tipo de algoritmos.
+
+- *Boosting*: propone la construcción de un ensamblado de árboles poco profundos, secuencialmente, en el que
+cada árbol que se añade mejora al anterior. Aunque cada árbol poco profundo es una herramienta de aprendizaje
+débil, pueden ser "potenciados" (*boosted*) de este modo para crear un comité de modelos que ofrece un
+rendimiento muy bueno. Uno de los primeros métodos propuestos con esta estrategia fue AdaBoost. Una de las 
+variantes más populares actualmente es XGBoost (*Extreme Gradient Boosting*) (véase [Sec. 12.5](https://bradleyboehmke.github.io/HOML/gbm.html#xgboost) de [@boehmke2019]), que incluye hiperparámetros para
+controlar términos de penalización del modelo que reduzcan su complejidad y prevengan el sobreajuste.
 
 ## Apilado de modelos
+
+Por último, otra posible estrategia de combinación de modelos de aprendizaje individuales es el **apilado
+de modelos** (*model stacking*), que implica el entrenamiento de un nuevo modelo que combina las predicciones
+de varios modelos de aprendizaje de base. El meta-algoritmo que combina las salidas previas, llamado
+*super learner* permite mejorar aún más el rendimiento de los modelos de aprendizaje de base (como RF o 
+XGBoost).  En el [Capítulo 15](https://bradleyboehmke.github.io/HOML/stacking.html) de [@boehmke2019] se 
+puede encontrar más información y ejemplos de este tipo de modelos.
