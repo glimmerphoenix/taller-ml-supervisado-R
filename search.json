@@ -1,0 +1,427 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Aprendizaje máquina supervisado con R",
+    "section": "",
+    "text": "Prefacio\nEn este taller exploramos aspectos prácticos del diseño, implementación y evaluación de modelos de aprendizaje automático supervisado. Estos modelos pueden aplicarse en múltiples problemas donde el objetivo es generar predicciones sobre nuevos datos, gracias a que el algoritmo ha sido previamente entrenado con un conjunto de datos que describe el problema a resolver.\nEste es un taller práctico que presenta ejemplos reales y comandos para entrenar, evaluar y aplicar modelos de aprendizaje automático supervisado con R. Además, junto a la explicación de los conceptos clave para entender este proceso también se ofrecen recomendaciones sobre buenas prácticas metodológicas para el ajuste (entrenamiento) de estos modelos, para comparar y elegir el algoritmo o modelo más adecuado para una aplicación específica, así como herramientas para interpretar mejor los resultados obtenidos.\nLos apuntes para este taller práctico se han realizado con Quarto, una herramienta para creación de documentación científica y programación literaria compatible con R y otros lenguajes de programación científica.",
+    "crumbs": [
+      "Prefacio"
+    ]
+  },
+  {
+    "objectID": "index.html#requisitos-previos",
+    "href": "index.html#requisitos-previos",
+    "title": "Aprendizaje máquina supervisado con R",
+    "section": "Requisitos previos",
+    "text": "Requisitos previos\nPara poder realizar los ejemplos inlcuidos en este taller necesitas tener instalado R y una IDE de desarrollo para este lenguaje. Se recomienda instalar RStudio o MS Visual Code como entorno de programación.\n\nInstalación de R.\nInstalación de RStudio.\n\nAdicionalmente, es necesario instalar una serie de paquetes R antes de ejecutar los ejemplos, para que todas las dependencias estén disponibles en nuestro sistema. Consulta el Apéndice ?sec-pkg-requirements para comprobar el listado de paquetes R necesarios.",
+    "crumbs": [
+      "Prefacio"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html",
+    "href": "01-introduccion.html",
+    "title": "1  Introducción",
+    "section": "",
+    "text": "1.1 Tipos de aprendizaje automático\nExisten muchas definiciones complementarias sobre la Inteligencia Artificial (IA), cada una reflejo de un modo diferente de aproximarse al complejo problema de crear máquinas que puedan imitar la inteligencia humana (Russell & Norvig, 2009). Por ejemplo, en el artículo de Wikipedia sobre IA se define de la siguiente forma enlace:\nEn 1950, Alan Turing propuso el llamado Test de Turing para proporcionar una definción operativa satisfactoria sobre “inteligencia”. En teoría, un computador supera el test si un interrogador humano, después de plantear varias preguntas, no es capaz de discernir si las respuestas escritas provienen de una persona o de un computador. Para poder superar el test, un computador necesitaría incluir muchas habilidades. Aunque el test original no lo contemplaba, el llamado Test de Turing total incorpora una señal de vídeo para que el interrogador pueda evaluar las habilidades de percepción y reacción físicas del sujeto. Entre otros aspectos, esto implica contar con habilidades como:\nPor tanto, vemos que el aprendizaje automático (machine learning o ML en inglés) es una rama de la IA que tiene por objetivo el desarrollo de técnicas y métodos para que las computadoras aprendan. Un agente inteligente aprende cuando es capaz de mejorar su rendimiento a partir de la experiencia y de la información extraída de datos.\nExiste una taxonomía ampliamente aceptada para clasificar las diferentes aproximaciones para resolver el problema del aprendizaje automático (Russell & Norvig, 2009):",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html#tipos-de-aprendizaje-automático",
+    "href": "01-introduccion.html#tipos-de-aprendizaje-automático",
+    "title": "1  Introducción",
+    "section": "",
+    "text": "Aprendizaje supervisado: el agente observa algunos ejemplos de parejas de valores entrada-salida y aprende una función que mapea nuevas entradas a nuevos valores de salida.\nAprendizaje no supervisado: el agente debe descubrir patrones o similitudes entre los valores de entrada aunque no se le haya facilitado ningún tipo de información adicional.\nAprendizaje semisupervisado: combina los dos anteriores, puesto que el agente recibe sólo unos pocos ejemplos y, a partir de ellos, tiene que hacer lo posible por descubrir patrones en una colección de ejemplos no etiquetados o explicados.\nAprendizaje por refuerzo: el método de aprendizaje implica que el agente reciba premios o castigos. Por ejemplo, si un agente aprende a jugar al ajedrez y recibe dos puntos por haber ganado una partida, deduce que lo ha hecho bien. Por contra, si un agente de conducción registra un aviso de choque recibe una penalización para indicarle que lo ha hecho mal.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html#tareas-de-aprendizaje-automático-supervisado",
+    "href": "01-introduccion.html#tareas-de-aprendizaje-automático-supervisado",
+    "title": "1  Introducción",
+    "section": "1.2 Tareas de aprendizaje automático supervisado",
+    "text": "1.2 Tareas de aprendizaje automático supervisado\nEn este taller práctico nos vamos a centrar en el aprendizaje supervisado, cuyo fin principal es el de predecir el valor de salida que corresponde a una combinación concreta de valores descriptivos de entrada. Los dos tipos de tareas que se suelen abordar en aprendizaje automático supervisado son (Boehmke & Greenwell, 2019):\n\nRegresión: el objetivo es predecir una salida numérica, cuyos valores se distribuyen a lo largo de un contínuo. Por ejemplo, un modelo que prediga el valor de venta de una viviendia en función de varios datos descriptivos sobre la misma (superficie construida, año de construcción, número de habitaciones, ubicación, etc.) es un modelo de regresión. No se debe confundir con el término “regresión lineal”, que es un tipo específico de modelo de aprendizaje.\nClasificación: el objetivo es predecir una salida categórica (etiqueta), que puede tener dos posibles valores (clasificación binaria) o varios valores (clasificación multinomial).\n\n\n\n\n\n\n\nFigura 1.1: Ejemplo de salida de un modelo de predicción de valor de venta de viviendas en función de su año de construcción y superficie útil. Figura tomada de (Boehmke & Greenwell, 2019), sección 1.1.1.\n\n\n\n\n\n\n\n\n\nFigura 1.2: Ejemplo un modelo de clasificación binaria, en función de tres parámetros descriptivos de entrada. Figura tomada de (Boehmke & Greenwell, 2019), sección 1.1.2.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html#ajuste-de-modelos",
+    "href": "01-introduccion.html#ajuste-de-modelos",
+    "title": "1  Introducción",
+    "section": "1.3 Ajuste de modelos",
+    "text": "1.3 Ajuste de modelos\nEl ajuste de un modelo de aprendizaje automático comprende una secuencia de pasos o tareas que permite que el algoritmo o modelo seleccionado aprenda a resolver un problema concreto. Es decir, que aprenda a predecir un valor de salida en función de una combinación de valores de entrada.\n\n\n\n\n\n\nNota\n\n\n\nDependiendo de si estamos hablando con personas que provienen del aprendizaje estadístico, las ciencias de la computación o el reconocimiento de patrones, encontraremos términos diferentes para designar a un mismo procedimiento. Por ejemplo, alguien de aprendizaje estadístico dirá que va a ajustar un modelo, en el sentido de calcular, a partir de datos, el valor de los parámetros que lo determinan. Sin embargo, alguien de computación (aprendizaje automático) hablará más bien de entrenar un algoritmo con datos, lo que trae consigo elegir valores para sus parámetros.\nLa única diferencia, por tanto, es en qué parte del mismo proceso se pone el foco en cada caso. En muchas ocasiones, en este taller usaremos indistintamente los términos ajuste o entremaiento aplicados a un modelo o algoritmo.\n\n\nEl primer paso en esta secuencia de ajuste de modelos siempre es la división del conjunto de datos en dos grupos (Boehmke & Greenwell, 2019):\n\nDatos de entrenamiento (training): son los datos que vamos a emplear para que el algoritmo/modelo aprenda a resolver el problema. Entre otros aspectos, permiten elegir las variables o entradas que vamos a utilizar, calcular valores óptimos para los hiperparámetros del modelo, comparar el rendimiento de varios modelos y el resto de acciones que conducen a elegir un modelo final.\nDatos de prueba: una vez que hemos seleccionado un modelo final, estos datos sirven para obtener una estimación no sesgada del rendimiento de nuestro modelo cuando se enfrenta a datos que no ha visto previamente, lo que denominamos error de generalización.\n\n\n\n\n\n\n\nFigura 1.3: División básica de datos en grupos de entrenamiento y prueba (training/testing)\n\n\n\n\n\n\n\n\n\nImportante\n\n\n\nEs de vital importancia garantizar que los datos de prueba (testing) nunca se usan durante el entrenamiento del modelo/algoritmo. De otro modo, la selección del modelo final podría verse comprometida (introducción de sesgo).\n\n\nLos porcentajes del total del datos que se recomendia usar para cada grupo suelen oscilar entre 60% (training) - 40% (testing), 70%-30% u 80%-20%. Usar más del 80% de los datos para entrenamiento sería contraproducente, puesto que no tendríamos suficientes datos como para hacer una valoración adecuada del modelo y, además, el ajuste encajaría demasiado en los datos observados y perdería capacidad de generalización (sobreajuste, overfitting en inglés). Por contra, emplear demasiados datos en probar el modelo (&gt;40%) implicaría no tener suficientes datos como para ajustar sus parámetros de manera robusta.\nNo obstante, existen casos particulares. Si tenemos un dataset de gran tamaño, entonces no tiene demasiado sentido crear un conjunto de entrenamiento muy grande, ya que la mayoría de los algoritmos de aprendizaje automático (exceptuando, por ejemplo, los modelos basados en aprendizaje profundo más recientes) no obtienen ningún beneficio por utilizar muchos datos para entrenarlos. Por otro lado, si \\(n\\) es el tamaño de nuestro dataset y \\(p\\) el número de variables o features de entrada del modelo, cuando \\(p&gt;&gt;n\\) sí se necesitan grandes conjuntos de datos para estimar de manera fiable posibles patrones en los datos.\n\n1.3.1 Técnicas de muestreo\nNormalmente, la división de los datos en estos dos grupos se realiza por medio de técnicas de muestreo. Las dos técnicas más comúnmente aplicadas son:\n\nMuestreo aleatorio simple: es la forma más sencilla, consiste en tomar aleatoriamente muestras de los datos hasta llenar cada uno de los grupos. La gran desventaja de este método es que no tiene en cuenta distribuciones específicas de los datos en el conjunto original (por ejemplo, para preservar la proporción de datos presentes en cada categoría). Un ejemplo lo podemos ver en la Figura 1.4.\nMuestreo estratificado: se utiliza cuando necesitamos controlar explícitamente que nuestros conjuntos de entrenamiento y de prueba tengan distribuciones de valores similares a las del conjunto de datos original. Podemos ver un ejemplo en la Sec. 2.2.2 de (Boehmke & Greenwell, 2019).\n\n\n\n\n\n\n\nFigura 1.4: El muestreo aleatorio simple no tiene en cuenta la proporción de datos existente en el conjunto original. En este caso, después del muestreo el conjunto de entrenamiento mantiene aproximadamente estas proporciones, pero el de prueba no. Figura tomada de (Raschka, 2020).\n\n\n\n\n\n1.3.2 Desequilibrios en los datos\nOtro aspecto que también tenemos que considerar es si existe algún tipo de desequilibrio entre las categorias o la distribución de valores de nuestro conjunto de datos. Esto ocurre, por ejemplo, en datos etiquetados en los que una categoría tiene muchas menos instancias que otras, como en los problemas de fraude o impagos. En un dataset con dos categorías, \"fraudulento\" o \"legítimo\", si la primera categoría tiene sólo un 1% del total de muestras y la segunda el 99% restante será difícil que los conjuntos de entrenamiento y prueba mantengan esa proporción. Por otro lado, también será complicado que el modelo pueda aprender a identificar instancias de la categoría minoritaria si tiene pocos ejemplos de los que poder aprender a reconocerla. Por ello, existen varias técnicas para mitigar esta limitación:\n\nSubmuestreo (down-sampling): reduce el tamaño de la clase más frecuente para que corresponda con la proporción de instancias en la clase minoritaria. Se puede usar si el conjunto de datos original es grande.\nSobremuestreo (up-sampling): si no hay muchos datos en el conjunto original, otra solución es utilizar técnicas de remuestreo (como bootstraping) para generar nuevas muestras “artificiales” de la clase minoritaria.\nSMOTE: combina los dos métodos anteriores de forma innovadora.\n\nSe pueden utilizar estos métodos en R mediante el argumento sampling en caret::trainControl() , así como en otros paquetes (como h2o).",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html#preparación-de-los-datos",
+    "href": "01-introduccion.html#preparación-de-los-datos",
+    "title": "1  Introducción",
+    "section": "1.4 Preparación de los datos",
+    "text": "1.4 Preparación de los datos\nAntes de presentar algunos ejemplos de modelos supervisados de aprendizaje máquina y cómo podemos emplearlos en R, conviene recordar que un paso previo imprescindible es preparar adecuadamente nuestros datos. Con demasiada frecuencia, errores de codificación, ausencia de valores, escalas de representación demasiado amplias y muchos otros problemas aparecen en nuestros datos y pueden malograr todos nuestros esfuerzos por conseguir ajustar nuestros modelos y elegir la opción más adecuada.\nSe invita al lector a consultar el capítulo 3 de (Boehmke & Greenwell, 2019), así como las referencias (Kuhn & Johnson, 2019) y (Zheng & Casari, 2018) para un tratamiento más detallado de muchas de las tareas de limpieza y preparación de datos necesarias antes de implementar y evaluar nuestros modelos de aprendizaje automático.\n\n\n\n\nBoehmke, B., & Greenwell, B. (2019). Hands-On Machine Learning with R (1.ª ed.). Chapman; Hall/CRC. https://doi.org/10.1201/9780367816377\n\n\nKuhn, M., & Johnson, K. (2019). Feature Engineering and Selection: A Practical Approach for Predictive Models. Chapman & Hall/CRC. http://www.feat.engineering/\n\n\nRaschka, S. (2020). Model Evaluation, Model Selection, and Algorithm Selection in Machine Learning. https://arxiv.org/abs/1811.12808\n\n\nRussell, S., & Norvig, P. (2009). Artificial Intelligence: A Modern Approach (3.ª ed.). Prentice Hall Press.\n\n\nZheng, A., & Casari, A. (2018). FFeature Engineering for Machine Learning: Principles and Techniques for Data Scientists. O’Reilly Media, Inc. https://www.oreilly.com/library/view/feature-engineering-for/9781491953235/",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "02-ml-supervisado.html",
+    "href": "02-ml-supervisado.html",
+    "title": "2  Aprendizaje máquina supervisado",
+    "section": "",
+    "text": "2.1 Parámetros e hiperparámetros\nComo hemos introducido en el tema anterior, el aprendizaje máquina supervisado es un proceso que implica entrenar a un algoritmo computacional para que resuelva un problema de predicción (regresión o clasificación), utilizando para ello un conjunto de datos. La Figura @fig-model-selec muestra un esquema del proceso completo.\nAntes de profundizar un poco en todo este proceso, conviene puntualizar el significado de un par de términos que suelen provocar bastante confusión.\nDurante el proceso de aprendizaje, el algoritmo o modelo escogido puede ajustar el valor de ciertos parámetros a partir de la información extraída de los datos. Pensemos, por ejemplo, en un modelo de regresión lineal. Dicho modelo, constará de una serie de parámetros (coeficientes), \\(\\{\\beta_0, \\beta_1, \\beta_2, \\dots, \\beta_p\\}\\), cuyo valor podemos ajustar a partir de \\(p\\) variables de entrada proporcionadas al sistema, \\(\\{x_1, x_2, \\dots, x_p\\}\\) para predecir el valor esperado de la variable de salida (respuesta), \\(y\\). En su caso más sencillo, la regresión lineal plantea la ecuación:\n\\[y = \\beta_0 + \\beta_1x_1+\\beta_2x_2+\\dots+\\beta_px_p\\]\nLos valores de los parámetros (coeficientes) \\(\\beta_i\\) se pueden calcular a partir de los datos de entrenamiento. En este caso tan sencillo, todos los parámetros del modelo son calculados a partir de los datos. Sin embargo, en otros casos, además de estos parámetros ajustables a partir de los datos hay que fijar los valores de uno o varios parámetros adicionales, que no pueden deducirse directamente de los datos. Estos son los denominados hiperparámetros, cuyo valor hay que fijar estimándolo de algún modo. Un ejemplo serían los modelos de regresión con regularización, un tipo de penalización que permite minimizar o directamente anular la intervención de las variables de entrada en el resultado de la predicción. Dos variantes comunes en este apartado son la regresión Ridge y Lasso, cuyo parámetro \\(\\alpha\\) controla la “intensidad” del procedimiento de regularización aplicado.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Aprendizaje máquina supervisado</span>"
+    ]
+  },
+  {
+    "objectID": "02-ml-supervisado.html#el-problema-del-sobreajuste",
+    "href": "02-ml-supervisado.html#el-problema-del-sobreajuste",
+    "title": "2  Aprendizaje máquina supervisado",
+    "section": "2.2 El problema del sobreajuste",
+    "text": "2.2 El problema del sobreajuste\nObserva la Figura 2.2, en la que se muestra un pequeño conjunto de datos representado en un diagrama de dispersión en 2-D. Sobre el diagrama de dispersión, tenemos dos posibles modelos candidatos, ajustados a estos datos:\n\nUn modelo lineal simple que, por ejemplo, podríamos haber obtenido mediante un ajuste por mínimos cuadrados.\nUn polinomio de grado \\(n-1\\) (donde \\(n\\) es el número de datos disponibles), que se ajusta perfectamente a todos los datos observados.\n\n\n\n\n\n\n\nFigura 2.2: Ejemplo de sobreajuste de un modelo. La función polinómica (en azul) se ajusta perfectamente a los datos (puntos en negro), pero no generaliza para otros datos nuevos. Fuente: Overfitting, Wikipedia.\n\n\n\nComo podemos apreciar, el modelo lineal simple comete cierto error en su ajuste, ya que algunos puntos quedan ligeramente por encima o por debajo de la recta de regresión propuesta. Sin embargo, el polinomio de grado \\(n-1\\) tiene error nulo, su ajuste es perfecto.\n¿Qué modelo elegiríamos? Podríamos estar tentados de elegir el polinomio, al tener un error menor. Sin embargo, esta sería una elección poco acertada. No es muy creíble que, cualquiera que fuese el proceso que dio origen a estos datos, siga una evolución tan complicada como la marcada por las repetidas (y retorcidas) curvas de ese polinomio. La pregunta clave es no es cuánto error cometemos con los datos de entrenamiento sino cuánto error comete el modelo al tratar de predecir los datos de prueba, que no debe haber visto nunca antes.\nEste problema, clave en el proceso de ajuste/entrenamiento de modelos supervisados, es lo que conocemos como sobreajuste (overfitting). Como norma general, que nunca debemos olvidar, al ajustar un modelo/algoritmo mediante datos tenemos que cuidar que no pierda su capacidad para generalizar, es decir, para predecir con poco margen de error nuevos datos a los que no se haya enfrentando antes.\nEn palabras de George E. P. Box, uno de los más geniales contribuyentes a la práctica estadística del siglo XX y comienzos del XXI, :\n\n“Remember that all models are wrong; the practical question is how wrong do they have to be to not be useful.”\n\n\n\n\n\n\n\nFigura 2.3: George E. P. Box (1919-2013)\n\n\n\nEste principio de generalización debe de completarse con otra prerrogativa, el llamado principio de parsimonia (también conocido como “navaja de Occam”). Este segundo principio nos dicta que debemos favorecer los modelos más sencillos frente a los más complicados, puesto que serán más fáciles de interpretar.\nNo obstante, conviene recordar las palabras de A. Einstein:\n\n“Everything should be made as simple as possible, but not simpler.”\n\nLa traducción de esta advertencia, en términos de nuestro procedimiento para ajustar modelos de aprendizaje automático, es que también debemos evitar el subajuste (underfitting), provocado por un modelo que no ha sido entrenado convenientemente y todavía podría ofrecer menor error de entrenamiento sin incrementar el error de generalización.\n\n\n\n\n\n\nFigura 2.4: Ilustración del efecto del subajuste y el sobreajuste ajustando un modelo de regresión lineal a un conjunto de datos. El modelo parabólico del centro ofrece una buena solución de compromiso. Fuente: https://medium.com/@kiprono_ek/regularization-a-technique-used-to-prevent-over-fitting-886d5b361700.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Aprendizaje máquina supervisado</span>"
+    ]
+  },
+  {
+    "objectID": "02-ml-supervisado.html#el-balance-sesgo-varianza",
+    "href": "02-ml-supervisado.html#el-balance-sesgo-varianza",
+    "title": "2  Aprendizaje máquina supervisado",
+    "section": "2.3 El balance sesgo-varianza",
+    "text": "2.3 El balance sesgo-varianza\nEl “punto de equilibrio” al que hacemos referencia en el apartado anterior está directamente relacionado con dos conceptos esenciales que midel el error cometido por los modelos entrenados en aprendizaje automático (Boehmke & Greenwell, 2019):\n\nSesgo (bias): es la diferencia entre el valor esperado (o promedio) que predice nuestro algoritmo y el valor correcto que estamos intentando predecir. Dicho de otro modo, mide cómo de lejos se quedan los valores predichos por nuestro modelo respecto de los valores reales.\nVarianza (variance): es la “imprecisión” (error) que tienen las predicciones generadas por nuestro modelo para un valor de salida específico. Normalmente, un excesivo error en las predicciones para valores concretos de salida está relacionado con el sobreajuste, al haberse fijado el modelo demasiado en las fluctuaciones de los datos de entrenamiento, evitando así que generalice de forma más precisa para otros casos.\n\nLa Figura 2.5 muestra un esquema de los diferentes errores cometidos durante el proceso de aprendizaje, y dónde se encontraría un posible punto de compromiso, en la zona intermedia del gráfico, en el que se localiza un mínimo error de entrenamiento (para evitar subajuste), impidiendo que crezca de nuevo el error de generalización (lo que evita el sobreajuste).\n\n\n\n\n\n\nFigura 2.5: Ilustración esquemática del sesgo y la varianza en el proceso de entrenamiento de un modelo de aprendizaje máquina supervisado. La zona a la izquierda del punto de compromiso deseado corresponde al subajuste, mientras que la zona a la derecha del punto de compromiso implica caer en sobreajuste. Fuente: https://sebastianraschka.com/pdf/lecture-notes/stat451fs20/08-model-eval-1-intro__slides.pdf.\n\n\n\nLa Figura 2.6 trata de ilustrar el tipo de error cometido en cada caso, comparando nuestras predicciones con lanzamientos sobre una diana (en rojo), asumiendo que la predicción correcta consiste en acertar en el centro de la diana.\n\n\n\n\n\n\nFigura 2.6: Representación conceptual del sesgo y la varianza en predicción de modelos de aprendizaje automático, suponiendo que se tratasen de lanzamientos sobre una diana. Fuente: (Raschka, 2020).\n\n\n\nComo resulta evidente en esta representación, la situación ideal sería la de un modelo que, simultáneamente, consiguiese predicciones con pocas fluctuaciones (varianza pequeña) y cercanas al valor real (mínimo sesgo). Sin embargo, en muchos casos reales no es posible conseguir ambos objetivos al mismo tiempo, y debemos optar por elegir la solución de compromiso que mejor refleje nuestros intereses.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Aprendizaje máquina supervisado</span>"
+    ]
+  },
+  {
+    "objectID": "02-ml-supervisado.html#procedimiento-de-validación-cruzada",
+    "href": "02-ml-supervisado.html#procedimiento-de-validación-cruzada",
+    "title": "2  Aprendizaje máquina supervisado",
+    "section": "2.4 Procedimiento de validación cruzada",
+    "text": "2.4 Procedimiento de validación cruzada\nEn el contexto que hemos descrito, se sabe que sin un conocimiento previo sobre un problema concreto o el conjunto de datos que vamos a utilizar, es difícil asegurar a priori cuál será el mejor modelo o algoritmo de aprendizaje automático que lo resuelva. Esta limitación se conoce como el teorema no free lunch (Wolpert, 1996).\nPuesto que debemos comparar los posibles modelos candidatos antes de utilizar los datos del conjunto de testing, una posible opción es utilizar los propios datos de entrenamiento para medir el rendimiento de cada modelo y compararlos entre sí. Sin embargo, este procedimiento no es adecuado porque, como ya sabemos, algunos modelos se pueden comportar muy bien con los datos de entrenamiento, pero generalizan mal con otros datos nuevos.\nOtra opción es la de utilizar un método de validación, en el que parte del conjunto de datos de entrenamiento se utilicen para entrenar el modelo y otra parte, el conjunto de validación (holdout set) se guarde para validar el modelo, sin usar aún el conjunto de prueba final, que queda al margen de este proceso.\nSin embargo, usar un solo conjunto de validación puede dar como resultado malas estimaciones (se pueden consultar las referencias ofrecidas en apartado 2.4 de (Boehmke & Greenwell, 2019)). La mejor opción es usar un método de remuestreo (resampling). La idea es repetir el ajuste del modelo sobre distintas fracciones de los datos de entrenamiento y evaluar su rendimiento sobre otras partes. Los dos métodos más habituales que se aplican en estos casos son:\n\nValidación cruzada con \\(k\\) conjuntos (k-fold cross validation).\nBootstrapping, basada en la conocida técnica bootstrap de remuestreo: una muestra aleatoria con reemplazo de los datos originales (Efron & Tibshirani, 1993).\n\n\n\n\n\n\n\nAdvertencia\n\n\n\nEs importante saber que en algunos textos y referencias sobre métodos de validación, se denomina indistintamente a los sucesivos conjuntos de datos de validación dentro de grupo de datos de entrenamiento como “prueba”, “test”, “validación”, “evaluación”, etc. Esto genera gran confusión, puesto que es difícil distinguir cuándo se referieren a estos conjuntos y cuándo están hablando de los datos de evaluación finales, que permanecen al margen durante todo el proceso hasta que tenemos que evaluar el modelo final seleccionado.\nEn consecuencia, lo importante es tener claro el esquema mental del proceso que estamos siguiendo, para interpretar adecuadamente la denominación que utilicemos en cada referencia.\n\n\n\n2.4.1 Validación cruzada con k conjuntos\nLa Figura 2.7 muestra en un esquema cómo se implementa este método de validación.\n\n\n\n\n\n\nFigura 2.7: Esquema que explica el procedimiento de validación cruzada con k conjuntos. Fuente: Sec. 2.4.1 de (Boehmke & Greenwell, 2019).\n\n\n\n\nEl conjunto global de datos de entrenamiento se divide en \\(k\\) trozos o subconjuntos.\nEn cada iteración, uno de los trozos se reserva para validar los modelos y los otros \\(k-1\\) trozos se usan para entrenar los modelos.\nPor último, para cada modelo se combinan (calculando el promedio o de otras formas) las evaluaciones individuales en cada iteración para ofrecer un resultado de evaluación global, que se compara con el resto de modelos para seleccionar el más adecuado.\n\nLo más habitual es usar valores \\(k=5\\) o \\(k=10\\) (Boehmke & Greenwell, 2019). Cuanto mayor sea \\(k\\) menor será la diferencia entre el rendimiento real y nuestra estimación, pero también será mayor el coste computacional para completar el procedimiento.\n\n\n2.4.2 Boostrapping\nLa Figura 2.8 muestra un esquema de cómo se realiza el proceso de muestreo con reemplazo o bootstrapping.\n\n\n\n\n\n\nFigura 2.8: Esquema que explica el procedimiento de bootstrapping. Fuente: Sec. 2.4.2 de (Boehmke & Greenwell, 2019).\n\n\n\nEn promedio, un 63,21% de las muestras originales son seleccionadas en cada muestra boostrap, mientras que las restantes que no han sido seleccionadas se marcan como out-of-bag (OOB). En este procedimiento, podemos entrenar un modelo con la muestra boostrap y validarlo con las muestras OOB. Por ejemplo este es el método empleado por Random Forests.\nEste procedimiento tiende a reducir la varianza de la estimación, pero en conjuntos de datos no muy grandes (&lt; 1.000 muestras) puede incrementar el sesgo de la estimación de rendimiento. En la mayoría de conjuntos de datos actuales, con tamaños relativamente grandes, esto no suele constituir un problema.\n\n\n2.4.3 Otros métodos de validación cruzada\nExisten muchos otros métodos de validación cruzada que contemplan casos especiales o se aplican sobre datos con características particulares.\n\nValidación cruzada anidada: Método alternativo de validación que permite estimar los hiperparámetros y comparar al mismo tiempo modelos introduciendo menor sesgo (cf. Sec. 4.14 (Raschka, 2020)).\nLOOCV: es un caso extremo de validación cruzada con \\(k\\) conjuntos, en el que \\(k=n\\) (Kuhn & Johnson, 2013).\nValidación cruzada para series temporales: se aplica cuando tenemos datos con depencias temporales estrictas. Puedes consultar la sec. 5.10 de (Hyndman & Athanasopoulos, 2021) para aprender más sobre esta técnica.\n\nEn el extenso artículo sobre evaluación de modelos de aprendizaje automático de S. Raschka (Raschka, 2020) se pueden consultar más propiedades y consejos prácticos sobre métodos de validación.\n\n\n\n\nBoehmke, B., & Greenwell, B. (2019). Hands-On Machine Learning with R (1.ª ed.). Chapman; Hall/CRC. https://doi.org/10.1201/9780367816377\n\n\nEfron, B., & Tibshirani, R. J. (1993). Bootstrap Methods and Their Application. Chapman; Hall/CRC.\n\n\nGrigorev, A. (2021). Machine Learning Bookcamp (1.ª ed.). Manning Publications Co. https://www.manning.com/books/machine-learning-bookcamp\n\n\nHyndman, R. J., & Athanasopoulos, G. (2021). Forecasting: Principles and Practice (3.ª ed.). OTexts. https://otexts.com/fpp3/\n\n\nKuhn, M., & Johnson, K. (2013). Applied Predictive Modeling. Springer New York. https://books.google.es/books?id=xYRDAAAAQBAJ\n\n\nRaschka, S. (2020). Model Evaluation, Model Selection, and Algorithm Selection in Machine Learning. https://arxiv.org/abs/1811.12808\n\n\nWolpert, D. H. (1996). The Lack of A Priori Distinctions Between Learning Algorithms. Neural Computation, 8(7), 1341-1390. https://doi.org/10.1162/neco.1996.8.7.1341",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Aprendizaje máquina supervisado</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html",
+    "href": "03-algoritmos-modelos.html",
+    "title": "3  Algoritmos y modelos",
+    "section": "",
+    "text": "3.1 K vecinos más cercanos (K-NN)\nEn este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente, mostraremos cómo se pueden entrenar y evaluar con R.\nAntes de comenzar, es importante hacer una distinción entre dos tipos de modelos o algoritmos (James, 2021):\nSe trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la regresión, fijado un valor para \\(K\\) y un punto de predicción \\(x_0\\), se identifican las \\(K\\) observaciones del conjunto de entrenamiento más cercanas a \\(x_0\\), denotadas por \\(\\mathcal{N}_0\\). Entonces, se estima \\(f(x_0)\\) como el valor promedio de todas las respuestas contenidas en \\(\\mathcal{N}_0\\), es decir:\n\\[\n\\hat{f}(x_0) = \\frac{1}{K}\\sum_{x_i \\in \\mathcal{N}_0} \\,y_i.\n\\tag{3.1}\\]\nEste modelo se basa en la premisa de que las observaciones similares se encontrarán próximas entre sí dentro del espacio de representación de los datos. Sin embargo, no siempre es fácil encontrar espacios de representación que describan nuestro problema de forma adecuada para que se cumpla esta premisa. En todo caso, este modelo ha demostrado ser muy útil en gran variedad de problemas.\nEn la Sec. 8.2 de (Boehmke & Greenwell, 2019), se discuten algunas medidas de disimilaridad que se pueden computar entre pares de observaciones. Algunas funciones de distancia son la familia de distancias Minkowski, incluyendo Manhattan (L1), Euclídea (L2) o Chebyshev (Linf); la distancia de Haversine (para datos geolocalizados sobre la superficie terrestre); la similaridad del coseno (para documentos o datos textuales) o la distancia de Jaccard.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#k-vecinos-más-cercanos-k-nn",
+    "href": "03-algoritmos-modelos.html#k-vecinos-más-cercanos-k-nn",
+    "title": "3  Algoritmos y modelos",
+    "section": "",
+    "text": "Figura 3.1: Valores estimados para una regresión KNN en un conjunto de datos en dos dimensiones con 64 observaciones. Izq.: K=1. Dcha.: K=9. Fuente: Fig. 3.16 (James, 2021).",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#modelos-lineales",
+    "href": "03-algoritmos-modelos.html#modelos-lineales",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.2 Modelos lineales",
+    "text": "3.2 Modelos lineales\nLos modelos lineales asumen que existe una relación lineal entre las variables de entrada (inputs, features) y la salida que se desea predecir. Cuidado, porque esto no implica necesariamente que la forma de la función ajustada sea una línea recta, una confusión bastante común que suele asaltar a muchas personas.\nEl dos ejemplos muy básicos de este tipo de modelos son la regresión lineal simple y la regresión lineal múltiple, presentados en detalle en el Capítulo 4 de (Boehmke & Greenwell, 2019), así como en el Capítulo 3 de (James, 2021). Sin embargo, un polinomio de grado (parábola) sigue siendo un modelo lineal ya que, aunque su forma son sea una línea recta, la ecuación se sigue expresando como una combinación lineal de varias componentes.\nLos Modelos Lineales Generalizados (GLM por sus siglas en inglés) extienden el modelo lineal original para responder a muchos tipos de problemas: variables respuesta que no siguen una distribución normal, relaciones no lineales (no recta) entre las entradas y la variable de salida, o salidas de tipo categórico (binarias, multinomiales, ordenadas, etc.).\nEste tipo de modelos consta de tres elementos (Agresti, 2015):\n\nFunción de enlace: define una conexión entre el valor esperado (media) de la variable respuesta con la combinación lineal de las variables de entrada, lo que permite definir modelos que no sigan la forma de una recta (más flexibles), capturando relaciones más complejas.\nDistribución de probabilidad (componente aleatoria): describe el “ruido” o variabilidad de los datos alrededor del valor promedio que se predice. Distribuciones habituales son la Normal, Binomial o Poisson.\nEstructura lineal: todas las variables de entrada se relacionan entre sí mediante una combinación lineal, ponderadas por coeficientes que se ajustan a partir de los datos de entrenamiento. Sin embargo, la estructura generalizada del modelo permite asumir formas no lineales, así como incorporar variables de entrada categóricas, mediante la codificación adecuada.\n\nLa Tabla 3.1 presenta algunos modelos GLM frecuentemente empleados.\n\n\n\nTabla 3.1: Algunos modelos GLM y sus elementos constitutivos asociados.\n\n\n\n\n\n\n\n\n\n\nModelo\nComp. aleatoria\nCol3\n\n\n\n\nRegresión lineal\nNormal\nCuantitativas o cualitativas\n\n\nRegresión logística\nBinomial\nCuantitativas o cualitativas\n\n\nLogLinear\nPoisson\nCualitativas\n\n\nReg. de Poisson\nPoisson\nCuantitativas o cualitativas\n\n\n\n\n\n\n\n3.2.1 Regularización en modelos lineales\nEn los conjuntos de datos actuales, normalmente de gran tamaño, existe el riesgo de que los modelos lineales tiendan al sobreajuste de los datos de entrenamiento, incrementando nuestro error de generalización. Una estrategia muy útil para restringir este efecto pernicioso es la regularización del modelo, que consiste en aplicar una serie de “penalizaciones” a los coeficientes estimados para reducir la varianza (dentro del compromiso varianza-sesgo) y así mantener a raya el problema del sobreajuste.\nTres opciones muy comunes de regularización son:\n\nPenalización Ridge: modifica la función objetivo de ajuste del modelo con un término controlado por un hiperparámetro \\(\\lambda\\). Cuanto más crece el valor asignado a \\(\\lambda\\) más se fuerza a que los coeficientes del modelo se vayan haciendo cada vez más pequeños, aunque sin llegar a anularse. Véase el Apartado 6.2.1 de (Boehmke & Greenwell, 2019).\nPenalización Lasso: altera la función objetivo para ajustar el modelo con un térmio también controlado por un hiperparámetro \\(\\lambda\\). Sin embargo, al contrario que en el caso anterior, cuando \\(\\lambda\\) crece se van anulando progresivamente más coeficientes de la función de predicción, lo que constituye un método más drástico de selección de variables y simplificación de nuestro modelo. Véase el Apartado 6.2.2 de (Boehmke & Greenwell, 2019).\nElastic net: es una solución intermedia entre los dos casos anteriores, introduciendo simultáneamente ambos tipos de penalización (Ridge y Lasso), cada uno de ellos controlado por un hiperparámetro de penalización, \\(\\lambda_1\\) y \\(\\lambda_2\\), respectivamente. Véase el Apartado 6.2.3 de (Boehmke & Greenwell, 2019).\n\nEn la Figura 3.2 se representan los errores (todos los puntos sobre una elipse tienen el mismo valor de RSS) y las funciones de restricción impuestas en el caso de la penalización Lasso y Ridge. Podemos observar como en el caso del Lasso las restricciones tienen aristas, lo que hace que la intersección entre el contorno y la región de restricción se produzca sobre el eje. Cuando esto ocurre, los coeficientes de la función de regresión se anulan. Sin embargo, en Ridge el punto de intersección no llega a tocar el eje, por lo que los coeficientes no llegan a anularse.\n\n\n\n\n\n\nFigura 3.2: Gráficos de contorno para los errores en las estimaciones y funciones de restricción para Lasso (izq.) y Ridge (dcha.). Fuente: Fig. 6.7 (James, 2021).",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#extensiones-del-modelo-lineal",
+    "href": "03-algoritmos-modelos.html#extensiones-del-modelo-lineal",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.3 Extensiones del modelo lineal",
+    "text": "3.3 Extensiones del modelo lineal\nAdemás de los modelos polinómicos o los GLM descritos anteriormente, existen más extensiones de los modelos lineales. La aproximación común a muchos de ellos es utilizar funciones polinómicas con formas suaves para ir ajustando tramos de la función de predicción. En consecuencia, la superposición (combinación lineal) de estas funciones suaves dará como resultado un modelo tremendamente flexible que se puede adaptar a problemas muy complicados.\nUn primer ejemplo son los modelos MARS (Multivariate Adaptive Regression Splines), presentados en el Capítulo 7 de (Boehmke & Greenwell, 2019). Otro ejemplo son los modelos GAM (Generalized Additive Models) que se explican en la Sección 7.7 de (James, 2021). En el caso de estos últimos se extiende el modelo lineal manteniendo la combinación aditiva (suma) de los componentes de predicción. Sin embargo, en cada componente se emplea una función lineal \\(f_j(x_{ij})\\), cuya forma debemos estimar a partir de los datos, según la Ecuación 3.2:\n\\[\ny_i = \\beta_0 + \\sum_{j=1}^{p}f_j(x_{ij})+\\epsilon_i\n\\tag{3.2}\\]\nLa Figura 3.3 muestra un ejemplo del resultado de ajustar un modelo GAM utilizando dos variables de entrada cuantitativas y una cualitativa.\n\n\n\n\n\n\nFigura 3.3: Ejemplo de ajuste de un modelo GAM, con dos predictores cuantitativos (izq. y centro) y otro cualitativo (dcha.). Se puede apreciar que las funciones para los predictores cuantiativos son flexibles y suaves. Fuente: Fig. 7.12 (James, 2021).",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#máquinas-de-vector-soporte-svm",
+    "href": "03-algoritmos-modelos.html#máquinas-de-vector-soporte-svm",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.4 Máquinas de vector soporte (SVM)",
+    "text": "3.4 Máquinas de vector soporte (SVM)\nLas SVM son ejemplos de modelos de clasificación (salida cualitativa), en los que el objetivo es encontrar un hiperplano que separe de la mejor forma posible los elementos pertenecientes a dos grupos (asumiendo que la salida es una variable binaria).\nLa Figura 3.4 muestra cómo se identifican los llamados “vectores soporte” para definir la frontera de separación entre los puntos pertenecientes a los dos grupos de la variable de salida, para el caso de un clasficador de margen rígido (es decir, que no admite que puntos de uno de los grupos desborden la frontera con el otro grupo).\n\n\n\n\n\n\nFigura 3.4: Ilustración del método para encontrar los vectores soporte, que definen la frontera de separación entre los dos grupos de la variable de salida en un modelo SVM. Se asume un clasficador de margen rígido (HMC). Fuente: Fig. 14.3 (Boehmke & Greenwell, 2019).\n\n\n\nLo normal es utilizar una versión más flexible de este algoritmo, que tolera que existan puntos mal clasificados (i.e. en el lado incorrecto de la frontera), dentro de un cierto margen de error. No obstante, la verdadera clave de estos modelos es que aplican el llamado kernel trick, una argucia matemática que nos permite representar los datos en un espacio alternativo en el que la separación entre las fronteras sea calculable. Matemáticamente, entender esta herramienta implica el manejo de funciones núcleo (kernel functions) y comprender los Espacios de Hilbert de Núcleo Reproductor (RKHS). Puedes consultar estos apuntes de un profesor de UCL para una introducción a estos temas.\nEn la práctica, el hecho de que no podamos apreciar directamente los detalles del espacio alternativo en el que se están representando los datos hace que a estos modelos se les considere en cierta medida como de “caja negra” (black-box models). En consecuencia, otras de las limitaciones es que no resulta nada evidente explicar el papel que juega cada una de las variables en la identificación de la frontera de separación entre clases.\n\n\n\n\n\n\nFigura 3.5: Fronteras de separación entre dos grupos de datos que se organizan en forma de espiral. Izq.: frontera de clasificación determinada mediante un algoritmo RF. Dcha.: frontera de clasificación identificada mediante un algoritmo SVM que usa una función núcleo de base radial (radial basis kernel). Fuente: Fig. 14.7 (Boehmke & Greenwell, 2019).",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#modelos-probabilísticos-naïve-bayes",
+    "href": "03-algoritmos-modelos.html#modelos-probabilísticos-naïve-bayes",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.5 Modelos probabilísticos: Naïve Bayes",
+    "text": "3.5 Modelos probabilísticos: Naïve Bayes\nUn ejemplo de modelos de clasificación probabilísticos es el llamado Naïve Bayes (Bayes ingenuo), cuyo funcionamiento se basa en una aplicación directa del Teorema de Bayes. Se emplean con frecuencia en problemas de clasificación con datos textuales, cuando tenemos muchas variables de entrada o bien cuando el rango de valores de las variables de entrada es muy amplio.\nRecordemos que el Teorema de Bayes viene dado por:\n\\[\nP(B \\mid A) = \\frac{P(B)P(A \\mid B)}{P(A)}\n\\tag{3.3}\\]\nSi consideramos que las variables predictoras son independientes entre sí, entonces tenemos que la fórmula de predicción es:\n\\[\nP(Y_k \\mid X_1, \\dots, X_p) = \\frac{P(Y_k)\\prod_{j=1}^p P(X_j \\mid Y_k)}{P(X_1, X_2, \\dots, X_p)}\n\\tag{3.4}\\]\nPuesto que el denominador es una constante, nos centramos en calcular el valor del numerador para poder comparar las probabilidades condicionadas a los valores de las variables de entrada. La clase predicha maximiza la expresión:\n\\[\n\\underset{x}{\\arg\\max} \\left\\{ P(Y_k) \\prod_{j=1}^p P(X_j \\mid Y_k)\\right\\}.\n\\]",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#redes-neuronales-y-aprendizaje-profundo",
+    "href": "03-algoritmos-modelos.html#redes-neuronales-y-aprendizaje-profundo",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.6 Redes neuronales y aprendizaje profundo",
+    "text": "3.6 Redes neuronales y aprendizaje profundo\nMuchos modelos de aprendizaje automático solamente incorporan una o dos capas de transformación de datos para aprender la representación de los datos de salida. Estos modelos se denominan superficiales (shallow models). En contraste, los modelos profundos (deep models) siguen una aproximación multicapa para aprender las representaciones de los datos. El caso más habitual es el de usar múltiples capas de redes neuronales. El Capítulo 13 de (Boehmke & Greenwell, 2019) y el Capítulo 10 de (James, 2021) proporcionan dos buenas introducciones a este tipo de modelos.\nLa Figura 3.6 muestra el diseño de una red neuronal con dos capas ocultas que podría utilizarse para predecir los 10 posibles valores de salida del dataset MNIST, con imágenes de cifras manuscritas.\n\n\n\n\n\n\nFigura 3.6: Esquema de un modelo de clasificación basado en una red neuronal con dos capas ocultas y varias posibles salidas, que se puede aplicar al conjunto de datos MNIST de cifras manuscritas. Fuente: Fig. 10.4 (James, 2021).\n\n\n\nLa clave para que una red neuronal de aprendizaje profundo se autoajuste en base a los datos de entrenamiento es un proceso denominado retropropagación (backpropagation). Este proceso se explica, por ejemplo, en la Sec. 13.5 de (Boehmke & Greenwell, 2019), así como en la Sec. 10.7.1 de (James, 2021), entre otras muchas fuentes.\n\n\n\n\n\n\nTipVideotutorial sobre aprendizaje profundo\n\n\n\nEl sitio web https://www.3blue1brown.com/ contiene un extenso catálogo de videotutoriales y sesiones formativas sobrfe muchos temas de interés, como redes neuronales, álgebra o cálculo.\nEl vídeo What is backpropagation really doing? es una de las mejores explicaciones intuitivas para entender mejor el papel de la retropropagación en el entrenamiento de redes neuronales para aprendizaje profundo.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#ensamblado-de-modelos",
+    "href": "03-algoritmos-modelos.html#ensamblado-de-modelos",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.7 Ensamblado de modelos",
+    "text": "3.7 Ensamblado de modelos\nEl ensamblado de modelos es una aproximación para resolver el problema del aprendizaje máquina que consiste en combinar la salida de múltiples modelos individuales para dar una predicción final que mejora el rendimiento que podríamos alcanzar con un solo modelo. La referencia más completa para entender bien esta estrategia de aprendizaje máquina es (Kuncheva, 2014).\nAlgunos de los modelos más conocidos son:\n\nBagging (Bootstrap AGGregatING): consiste en el ensamblado de modelos de clasificación entrenados sobre réplicas bootstrap* de los datos de entrenamiento originales. La salida de los clasificadores individuales se combina mediante el voto de pluralidad. Utilizar el voto mayoritario para tomar la decisión garantiza que vamos a obtener un resultado que mejora el de cada modelo individual. El Capítulo 10 de (Boehmke & Greenwell, 2019) muestra en detalle ejemplos de esta técnica.\nRandom Forests (bosques aleatorios): fueron propuestos por el insigne Leo Breiman en 2001 (Breiman, 2001). Es una modificación de la estrategia de bagging aplicada a modelos de árboles de decisión, que emplea una amplia colección de árboles decorrelados entre sí para mejorar la eficiencia de predicción de la variable de salida. Además de tomar muestras bootstrap de los datos de entrenamiento, este método realiza selecciones aleatorias de las variables de entrada en cada nodo del árbol, tras lo cual se selecciona de entre las características tomadas la azar la mejor para dividir los caminos desde ese nodo. Es uno de los métodos más populares hoy en día, puesto que ofrece un buen rendimiento con un coste computacional contenido y con relativamente poco esfuerzo de ajuste de hiperparámetros. El Capítulo 11 de (Boehmke & Greenwell, 2019) muestra el trabajo con este tipo de algoritmos.\nBoosting: propone la construcción de un ensamblado de árboles poco profundos, secuencialmente, en el que cada árbol que se añade mejora al anterior. Aunque cada árbol poco profundo es una herramienta de aprendizaje débil, pueden ser “potenciados” (boosted) de este modo para crear un comité de modelos que ofrece un rendimiento muy bueno. Uno de los primeros métodos propuestos con esta estrategia fue AdaBoost. Una de las variantes más populares actualmente es XGBoost (Extreme Gradient Boosting) (véase Sec. 12.5 de (Boehmke & Greenwell, 2019)), que incluye hiperparámetros para controlar términos de penalización del modelo que reduzcan su complejidad y prevengan el sobreajuste.",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "03-algoritmos-modelos.html#apilado-de-modelos",
+    "href": "03-algoritmos-modelos.html#apilado-de-modelos",
+    "title": "3  Algoritmos y modelos",
+    "section": "3.8 Apilado de modelos",
+    "text": "3.8 Apilado de modelos\nPor último, otra posible estrategia de combinación de modelos de aprendizaje individuales es el apilado de modelos (model stacking), que implica el entrenamiento de un nuevo modelo que combina las predicciones de varios modelos de aprendizaje de base. El meta-algoritmo que combina las salidas previas, llamado super learner permite mejorar aún más el rendimiento de los modelos de aprendizaje de base (como RF o XGBoost). En el Capítulo 15 de (Boehmke & Greenwell, 2019) se puede encontrar más información y ejemplos de este tipo de modelos.\n\n\n\n\nAgresti, A. (2015). Foundations of Linear and Generalized Linear Models (1.ª ed.). John Wiley & Sons.\n\n\nBoehmke, B., & Greenwell, B. (2019). Hands-On Machine Learning with R (1.ª ed.). Chapman; Hall/CRC. https://doi.org/10.1201/9780367816377\n\n\nBreiman, L. (2001). Random forests. Machine learning, 45(1), 5-32.\n\n\nJames, W., G. (2021). An Introduction to Statistical Learning with Applications in R (2.ª ed.). Springer. https://www.statlearning.com/\n\n\nKuncheva, L. I. (2014). Combining Pattern Classifiers: Methods and Algorithms (2.ª ed.). Wiley-Interscience. https://lucykuncheva.co.uk/Combining_Pattern_Classifiers_Methods_and_Algorithms_2nd_ed_Kuncheva%202014-09-09.pdf",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Algoritmos y modelos</span>"
+    ]
+  },
+  {
+    "objectID": "04-seleccion-validacion.html",
+    "href": "04-seleccion-validacion.html",
+    "title": "4  Selección y validación de modelos",
+    "section": "",
+    "text": "4.1 Consideraciones generales",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Selección y validación de modelos</span>"
+    ]
+  },
+  {
+    "objectID": "04-seleccion-validacion.html#métricas-de-rendimiento",
+    "href": "04-seleccion-validacion.html#métricas-de-rendimiento",
+    "title": "4  Selección y validación de modelos",
+    "section": "4.2 Métricas de rendimiento",
+    "text": "4.2 Métricas de rendimiento\n\n4.2.1 Particionado de datos para evaluación\n\n\n4.2.2 Ajuste de parámetros",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Selección y validación de modelos</span>"
+    ]
+  },
+  {
+    "objectID": "04-seleccion-validacion.html#comparación-de-modelos",
+    "href": "04-seleccion-validacion.html#comparación-de-modelos",
+    "title": "4  Selección y validación de modelos",
+    "section": "4.3 Comparación de modelos",
+    "text": "4.3 Comparación de modelos\n\n4.3.1 Curvas ROC",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Selección y validación de modelos</span>"
+    ]
+  },
+  {
+    "objectID": "05-modelos-clasicos.html",
+    "href": "05-modelos-clasicos.html",
+    "title": "5  Modelos clásicos",
+    "section": "",
+    "text": "5.1 K vecinos más cercanos (k-NN)\nThis is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Modelos clásicos</span>"
+    ]
+  },
+  {
+    "objectID": "05-modelos-clasicos.html#modelos-lineales",
+    "href": "05-modelos-clasicos.html#modelos-lineales",
+    "title": "5  Modelos clásicos",
+    "section": "5.2 Modelos lineales",
+    "text": "5.2 Modelos lineales",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Modelos clásicos</span>"
+    ]
+  },
+  {
+    "objectID": "05-modelos-clasicos.html#máquinas-de-vector-soporte-svm",
+    "href": "05-modelos-clasicos.html#máquinas-de-vector-soporte-svm",
+    "title": "5  Modelos clásicos",
+    "section": "5.3 Máquinas de vector soporte (SVM)",
+    "text": "5.3 Máquinas de vector soporte (SVM)",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Modelos clásicos</span>"
+    ]
+  },
+  {
+    "objectID": "05-modelos-clasicos.html#modelos-probabilísticos-naïve-bayes",
+    "href": "05-modelos-clasicos.html#modelos-probabilísticos-naïve-bayes",
+    "title": "5  Modelos clásicos",
+    "section": "5.4 Modelos probabilísticos: Naïve Bayes",
+    "text": "5.4 Modelos probabilísticos: Naïve Bayes",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Modelos clásicos</span>"
+    ]
+  },
+  {
+    "objectID": "05-modelos-clasicos.html#random-forests",
+    "href": "05-modelos-clasicos.html#random-forests",
+    "title": "5  Modelos clásicos",
+    "section": "5.5 Random Forests",
+    "text": "5.5 Random Forests\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Modelos clásicos</span>"
+    ]
+  },
+  {
+    "objectID": "06-modelos-avanzados.html",
+    "href": "06-modelos-avanzados.html",
+    "title": "6  Modelos avanzados",
+    "section": "",
+    "text": "6.1 Gradient Boosting",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Modelos avanzados</span>"
+    ]
+  },
+  {
+    "objectID": "06-modelos-avanzados.html#aprendizaje-profundo",
+    "href": "06-modelos-avanzados.html#aprendizaje-profundo",
+    "title": "6  Modelos avanzados",
+    "section": "6.2 Aprendizaje profundo",
+    "text": "6.2 Aprendizaje profundo",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Modelos avanzados</span>"
+    ]
+  },
+  {
+    "objectID": "06-modelos-avanzados.html#mixturas-gaussianas",
+    "href": "06-modelos-avanzados.html#mixturas-gaussianas",
+    "title": "6  Modelos avanzados",
+    "section": "6.3 Mixturas Gaussianas",
+    "text": "6.3 Mixturas Gaussianas",
+    "crumbs": [
+      "Métodos convencionales",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Modelos avanzados</span>"
+    ]
+  },
+  {
+    "objectID": "07-tidymodels.html",
+    "href": "07-tidymodels.html",
+    "title": "7  Tidymodels",
+    "section": "",
+    "text": "7.1 Flujo de trabajo con Tidymodels",
+    "crumbs": [
+      "Tidymodels",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Tidymodels</span>"
+    ]
+  },
+  {
+    "objectID": "07-tidymodels.html#otro-paquete",
+    "href": "07-tidymodels.html#otro-paquete",
+    "title": "7  Tidymodels",
+    "section": "7.2 Otro paquete",
+    "text": "7.2 Otro paquete",
+    "crumbs": [
+      "Tidymodels",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Tidymodels</span>"
+    ]
+  },
+  {
+    "objectID": "07-tidymodels.html#preparación-de-datos-con-recipes",
+    "href": "07-tidymodels.html#preparación-de-datos-con-recipes",
+    "title": "7  Tidymodels",
+    "section": "7.3 Preparación de datos con recipes",
+    "text": "7.3 Preparación de datos con recipes",
+    "crumbs": [
+      "Tidymodels",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Tidymodels</span>"
+    ]
+  },
+  {
+    "objectID": "07-tidymodels.html#ajuste-de-modelos-con",
+    "href": "07-tidymodels.html#ajuste-de-modelos-con",
+    "title": "7  Tidymodels",
+    "section": "7.4 Ajuste de modelos con…",
+    "text": "7.4 Ajuste de modelos con…",
+    "crumbs": [
+      "Tidymodels",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Tidymodels</span>"
+    ]
+  },
+  {
+    "objectID": "07-tidymodels.html#evaluación-de-modelos-con-yardstick",
+    "href": "07-tidymodels.html#evaluación-de-modelos-con-yardstick",
+    "title": "7  Tidymodels",
+    "section": "7.5 Evaluación de modelos con yardstick",
+    "text": "7.5 Evaluación de modelos con yardstick",
+    "crumbs": [
+      "Tidymodels",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Tidymodels</span>"
+    ]
+  },
+  {
+    "objectID": "08-mlr3.html",
+    "href": "08-mlr3.html",
+    "title": "8  MLR3",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Otros entornos",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MLR3</span>"
+    ]
+  },
+  {
+    "objectID": "09-add-resources.html",
+    "href": "09-add-resources.html",
+    "title": "9  Recursos adicionales",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Recursos adicionales</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "Referencias",
+    "section": "",
+    "text": "Agresti, A. (2015). Foundations of Linear and\nGeneralized Linear Models (1st ed.). John Wiley & Sons.\n\n\nBoehmke, B., & Greenwell, B. (2019). Hands-on machine learning\nwith r (1st ed.). Chapman; Hall/CRC. https://doi.org/10.1201/9780367816377\n\n\nBreiman, L. (2001). Random forests. Machine Learning,\n45(1), 5–32.\n\n\nEfron, B., & Tibshirani, R. J. (1993). Bootstrap Methods and Their Application.\nChapman; Hall/CRC.\n\n\nGrigorev, A. (2021). Machine learning bookcamp (1st ed.).\nManning Publications Co. https://www.manning.com/books/machine-learning-bookcamp\n\n\nHyndman, R. J., & Athanasopoulos, G. (2021). Forecasting: Principles and Practice (3rd\ned.). OTexts. https://otexts.com/fpp3/\n\n\nJames, W., G. (2021). An Introduction to\nStatistical Learning with Applications in R (2nd ed.).\nSpringer. https://www.statlearning.com/\n\n\nKnuth, D. E. (1984). Literate programming. Comput. J.,\n27(2), 97–111. https://doi.org/10.1093/comjnl/27.2.97\n\n\nKuhn, M., & Johnson, K. (2013). Applied Predictive\nModeling. Springer New York. https://books.google.es/books?id=xYRDAAAAQBAJ\n\n\nKuhn, M., & Johnson, K. (2019). Feature\nEngineering and Selection: A Practical Approach for Predictive\nModels. Chapman & Hall/CRC. http://www.feat.engineering/\n\n\nKuncheva, L. I. (2014). Combining pattern classifiers: Methods and\nalgorithms (2nd ed.). Wiley-Interscience. https://lucykuncheva.co.uk/Combining_Pattern_Classifiers_Methods_and_Algorithms_2nd_ed_Kuncheva%202014-09-09.pdf\n\n\nRaschka, S. (2020). Model evaluation, model selection, and algorithm\nselection in machine learning. https://arxiv.org/abs/1811.12808\n\n\nRussell, S., & Norvig, P. (2009). Artificial intelligence: A\nmodern approach (3rd ed.). Prentice Hall Press.\n\n\nWolpert, D. H. (1996). The lack of a priori distinctions between\nlearning algorithms. Neural Computation, 8(7),\n1341–1390. https://doi.org/10.1162/neco.1996.8.7.1341\n\n\nZheng, A., & Casari, A. (2018). FFeature\nEngineering for Machine Learning: Principles and Techniques for Data\nScientists. O’Reilly Media, Inc. https://www.oreilly.com/library/view/feature-engineering-for/9781491953235/",
+    "crumbs": [
+      "Referencias"
+    ]
+  }
+]
