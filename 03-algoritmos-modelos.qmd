@@ -1,5 +1,26 @@
 # Algoritmos y modelos
 
-This is a book created from markdown and executable code.
+En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente,
+mostraremos cómo se pueden entrenar y evaluar con R.
 
-See @knuth84 for additional discussion of literate programming.
+## K vecinos más cercanos (k-NN)
+
+
+
+## Modelos lineales
+
+
+## Máquinas de vector soporte (SVM)
+
+
+## Modelos probabilísticos: Naïve Bayes
+
+
+## Redes neuronales y aprendizaje profundo
+
+
+
+## Ensamblado de modelos
+
+
+## Apilado de modelos

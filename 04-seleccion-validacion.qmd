@@ -1,5 +1,16 @@
 # Selección y validación de modelos
 
-This is a book created from markdown and executable code.
+## Consideraciones generales
 
-See @knuth84 for additional discussion of literate programming.
+
+## Métricas de rendimiento
+
+
+### Particionado de datos para evaluación
+
+
+### Ajuste de parámetros
+
+## Comparación de modelos
+
+### Curvas ROC

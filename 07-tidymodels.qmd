@@ -1,5 +1,15 @@
 # Tidymodels
 
-This is a book created from markdown and executable code.
+## Flujo de trabajo con Tidymodels
 
-See @knuth84 for additional discussion of literate programming.
+
+## Otro paquete
+
+
+## Preparación de datos con `recipes`
+
+
+## Ajuste de modelos con...
+
+
+## Evaluación de modelos con `yardstick`

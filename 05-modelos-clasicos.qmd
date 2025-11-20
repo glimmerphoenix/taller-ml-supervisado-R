@@ -3,3 +3,19 @@
 This is a book created from markdown and executable code.
 
 See @knuth84 for additional discussion of literate programming.
+
+## K vecinos más cercanos (k-NN)
+
+
+## Modelos lineales
+
+
+## Máquinas de vector soporte (SVM)
+
+
+## Modelos probabilísticos: Naïve Bayes
+
+
+## Random Forests
+
+
