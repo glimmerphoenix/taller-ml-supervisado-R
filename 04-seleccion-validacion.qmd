@@ -2,12 +2,118 @@
 
 ## Consideraciones generales
 
+Hace varias décadas, la evaluación y selección de modelos se efectuaba mediante pruebas estadísticas que medían
+la bondad de los ajustes y a través de la evaluación de los residuos (errores) del modelo propuesto. Hoy en
+días, la evaluación se realiza empleando medios mucho más robustos, las conocidas como funciones de pérdida
+(*loss functions*).
+
+Una **función de pérdida** es una métrica que compara los valores predichos respecto de los valores
+que realmente se han producido. Su salida se denomina habitualmente **error** o bien **pseudo-residuo**. En
+este contexto, tenemos que tener en cuenta una premisa fundamental:
+
+$$
+\text{DATOS} = \text{MODELO} + \text{ERROR}.
+$$
+
+- Los datos describen la realidad que queremos explicar mediante el modelo, a través de una serie de variables
+que describen dicho problema.
+- El modelo es una representación *simplificada* de la realidad, propuesta para intentar describirla de manera
+más fácilmente comprensible. Cuanto más sencillo sea el modelo más fácil será interpretarlo, pero también puede
+que cometa más imprecisiones al describir el fenómeno real que estudiamos.
+- El error representa el fallo que cometemos al simplificar la realidad mediante el modelo simplificado.
+
+Existen muchos tipos de funciones de pérdida para evaluar el rendimiento de modelos predictivos, cada una con
+sus ventajas e inconvenientes. Es importante recordar que cada función de pérdida se calcula teniendo en cuenta
+uno o varios tipos de error cometidos por el modelo, dejando otros de lado, por lo que es complicado afirmar
+mirando una sola de estas funciones que podemos escoger un *modelo óptimo*. Dependiendo del problema en cuestión,
+debemos seleccionar primero la función o funciones de pérdida más adecuadas para evaluar las características del
+modelo que nos interesan. Después, podemos aplicarlas para evaluar los candidatos y seleccionar una opción.
 
 ## Métricas de rendimiento
 
 
-### Particionado de datos para evaluación
+### Modelos de regresión
 
+- **Error Cuadrático Medio** (*Mean Squared Error* o MSE): el objetivo es *minimizar* el promedio de la
+combinación de los errores cuadráticos cometidos en la predicción de cada punto.
+
+$$
+\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2
+$$ {#eq-RMSE}
+
+Hay que tener en cuenta que en modelos de regresión lineal, el divisor de la ecuación @eq-RMSE es $n-p$ para
+proporcionar una mejor estimación (reduciendo el sesgo).
+
+- **Raíz del Error Cuadrático Medio** (*Root Mean Squared Error* o RMSE): es la raíz cuadrada del MSE. Su fin es
+dar una estimación del error cometido en las mismas unidades que la variable de salida que buscamos predecir.
+El objetivo aquí también es *minimizar* la función de pérdida.
+
+- **Desviación**: desviación promedio de los residuos, cuando el modelo se estima mediante un método de
+máxima verosimilitud. Se suele emplear en modelos de clasificación y el objetivo es *minimizar* su valor.
+
+- **Error Medio Absoluto** (*Mean Absolute Error* o MAE): en este caso, en lugar de tomar la raíz cuadrada
+del MSE se calculan las diferencias entre los valores reales y predichos tomando su valor absoluto, lo que
+contiene la influencia de los errores con valores altos. EL objetivo es *minimizar* la función de pérdida.
+
+- **Error Medio Cuadrático Logarítmico** (*Root Mean Squared Logarithmic Error** o RMSLE): Es la raíz cuadrada
+del error medio cuadrático logarítmico. Permite que los errores grandes cometidos sobre valores de salida de
+magnitud pequeña contribuyan de igual forma a la función de pérdida que los errores grandes cometidos sobre
+valores de salida de magnitud grande, ya que de otro modo los segundos prevalecerían sobre los primeros. Aquí
+el objetivo es *minimizar* igualmente la función de pérdida.
+
+$$
+\text{RMSLE} = \sqrt{\frac{1}{n} \sum_{i=1}^n (log(y_i +1) -  log(\hat{y}_i + 1))^2}.
+$$ {#eq-rmsle}
+
+- $R^2$ y $R_{adj}^2$: son métricas que representan el porcentaje de la varianza total de los datos que el
+modelo es capaz de explicar. La versión ajustada intenta tener en cuenta el número de variables predictoras
+empleadas, penalizando modelos más complejos. De otro modo, usar un mayor número de variables normalmente
+aumentaría sin más el valor de $R^2$. El objetivo aquí es *maximizar* su valor. No obstante, es preciso obrar 
+con precaución puesto que, como se indica en [@boehmke2019] (Sec. 2.6.2), dos modelos entrenados con datos
+diferentes que tengan el mismo RMSE, pero en los que el primero tenga menos variabilidad (dispersión) en los
+valores de la salida del modelo que el segundo tendrá también un $R^2$ menor.
+
+### Modelos de clasificación
+
+Las métricas de rendimiento de los modelos de clasificación se suelen construir a partir de los valores de la
+llamada **matriz de confusión**, que refleja el tipo de aciertos y errores cometidos por el modelo al clasificar,
+como muesgtra la @fig-confusion-matrix.
+
+![Representación de los diferentes tipos de aciertos y errores que refleja la matriz de confusión y el nombre que suelen recibir en evaluación de modelos de clasificación. Fuente: Fig. 2.12 [@boehmke2019].](img/confusion-matrix.png){#fig-confusion-matrix }
+
+- **Accuracy**: se define como (objetivo: maximizar)
+
+$$
+\text{ACC} = \frac{\text{TP}+\text{TN}}{\text{total}}.
+$$ {#eq-acc}
+
+- **Precision**: se define como (objetivo: maximizar)
+
+$$
+\text{PREC} = \frac{\text{TP}}{\text{TP}+\text{FP}}.
+$$ {#eq-prec}
+
+- **Recall** (*sensitivity*): se define como (objetivo: maximizar)
+
+$$
+\text{RECALL}= \frac{\text{TP}}{\text{TP}+\text{FN}}.
+$$ {#eq-recall}
+
+- **Specificity**: se define como (objetivo: maximizar)
+
+$$
+\text{SPEC}=\frac{\text{TN}}{\text{TN}+\text{FP}}.
+$$ {#eq-spec}
+
+- **AUC** (Área Bajo la Curva ROC): dependiendo de los valores otorgados a los hiperparámetros del modelo, podremos mejorar la precisión,
+la sensitividad o ambas, minimizando los falsos positivos y falsos negativos. Las curvas ROC (*Receiver
+Operating Characteristic*) se crearon para represntar gráficamente estos valores en función de cada combinación
+de los hiperparámetros del modelo, permitiendo una evaluación gráfica más general de su rendimiento. En este
+caso el *Area Under the [ROC] Curve* (concretamente, entre la curva ROC y la línea recta diagonal que 
+representa a un clasificador aleatorio) debe ser lo más grande posible. Estos conceptos se muestran en la
+@fig-ROC-modelling.
+
+![Representación de varias curvas ROC y su interpretación en evaluación de modelos de clasificación. Fuente: Fig. 2.14 [@boehmke2019].](img/ROC-modelling.png){#fig-ROC-modelling width="95%"}
 
 ### Ajuste de parámetros
 
