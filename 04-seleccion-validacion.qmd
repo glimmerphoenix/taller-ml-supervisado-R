@@ -105,6 +105,21 @@ $$
 \text{SPEC}=\frac{\text{TN}}{\text{TN}+\text{FP}}.
 $$ {#eq-spec}
 
+- **F1-score**: se trata de la media armónica entre precisión y *recall*, dado por
+
+$$
+\text{F1} = 2\;\frac{\text{PREC}\times\text{RECALL}}{\text{PREC} + \text{RECALL}}
+$$ {#eq-f1}
+
+- **F-score generalizado**: como el anterior, pero añadiendo pesos de ponderación, dado por
+
+$$
+\text{F1} = (1+\beta^2)\;\frac{\text{PREC}\times\text{RECALL}}{\beta^2\text{PREC} + \text{RECALL}}
+$$ {#eq-f1-gral}
+
+Si $\beta=1$ tenemos el F1-score. Si $\beta=2$ otorgamos el doble de peso a la recuperación frente a
+la precisión y al contrario si $\beta=0.5$.
+
 - **AUC** (Área Bajo la Curva ROC): dependiendo de los valores otorgados a los hiperparámetros del modelo, podremos mejorar la precisión,
 la sensitividad o ambas, minimizando los falsos positivos y falsos negativos. Las curvas ROC (*Receiver
 Operating Characteristic*) se crearon para represntar gráficamente estos valores en función de cada combinación
@@ -115,8 +130,51 @@ representa a un clasificador aleatorio) debe ser lo más grande posible. Estos c
 
 ![Representación de varias curvas ROC y su interpretación en evaluación de modelos de clasificación. Fuente: Fig. 2.14 [@boehmke2019].](img/ROC-modelling.png){#fig-ROC-modelling width="95%"}
 
+Además de estas métricas, habituales en modelos de clasificación, podemos considerar otras posibles funciones
+de pérdida.
+
+- Error de clasificación: Es el error promedio total, que buscamos *minimizar*. Por ejemplo, asumamos 
+tenemos que clasificar la salida en dos posibles grupos y cada uno consta de 40 observaciones. Si fallamos
+al clasificar 6 elementos del primer grupo y 3 del segundo, en total hemos fallado en 9 de las 40 
+observaciones, lo que implica un ratio de clasificación incorrecta del 11,25%.
+
+- Error promedio por clase: Este es el error promedio cometido dentro de cada clase. Por ejemplo, en el
+problema anterior sería $6/40$ en el primer grupo y $3/40$ en el segundo grupo. El propósito es minimizar
+este error.
+
+- Entropía cruzada (*cross-entropy* o *Log Loss* o *deviance*): esta métrica penaliza en gran medida los 
+casos en los que se asigna una alta probabilidad a una salida incorrecta (es decir, el modelo se dice muy 
+seguro de la respuesta, pero ha fallado). El objetivo también es minimizar su valor.
+
+- Índice de Gini: empleado en modelos basados en árboles de decisión, es una medida de *pureza* (*purity*),
+donde valores pequeños indican que un nodo contiene, de forma predominante, observaciones de una sola clase. Por tanto, permite medir lo bien que es capaz de separar las clases entre sí el árbol en cada nodo. El objetivo es minimizar su valor.
+
 ### Ajuste de parámetros
+
+Como se ha explicado en la @sec-cross-validation, cuando escogemos una o varias métricas de evaluación de
+rendimiento, el procedimiento que solemos seguir es aplicar un método de validación (cruzada con $k$
+conjuntos, *bootstrapping*) para obtener un resultado de evaluación en cada iteración. Finalmente, se 
+combinan estos resultados para obtener una evaluación final de cada modelo, así como unos valores
+adecuados con los que fijar los hiperparámetros necesarios del modelo.
+
+En el caso de los modelos de regresión (salida numérica), este proceso es bastante directo, comparando
+los resultados de la métrica o métricas seleccionadas. Sin embargo, en el caso de modelos de clasificación
+la evaluación es más complicada, porque como hemos visto hay que tener en cuenta el rendimiento del modelo
+para cada uno de los posibles grupos o clases presentes en la variable de salida. Por ese motivo, y debido
+al hecho de que diferentes combinaciones de los hiperparámetros del modelo ofrecen resultados distintos
+para la sensibilidad y la especificidad, se prefiere optar por comparar modelos mediante las curvas
+ROC.
+
+En ciertas ocasiones, valdrá la pena, si tenemos tiempo y suficientes recursos computacionales a nuestra
+disposición, realizar una búsqueda sistemática de los posibles valores de los hiperparámetros de nuestro
+modelo para garantizar nuestra selección. Esta búsqueda sistemática o *grid search* implica definir un
+rango de posibles valores entre los cuales realizaremos un "barrido", comparando los resultados obtenidos
+para intentar conseguir un resultado adecuado.
 
 ## Comparación de modelos
 
 ### Curvas ROC
+
+ROC convex HULL @fig-ROC-convex-hull [@fawcett2006]
+
+![Representación del *convex hull* bajo varias curvas ROC, que determina posibles clasificadores óptimos para un problema dado, en función de las restricciones y prioridades consideradas. Fuente: Fig. 7 [@fawcett2006].](img/ROC-convex-hull.jpg){#fig-ROC-convex-hull width="100%"}

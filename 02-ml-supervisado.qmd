@@ -129,7 +129,7 @@ consiguiese predicciones con pocas fluctuaciones (varianza pequeña) y cercanas 
 Sin embargo, en muchos casos reales no es posible conseguir ambos objetivos al mismo tiempo, y debemos optar
 por elegir la solución de compromiso que mejor refleje nuestros intereses.
 
-## Procedimiento de validación cruzada
+## Procedimiento de validación cruzada {#sec-cross-validation}
 
 En el contexto que hemos descrito, se sabe que sin un conocimiento previo sobre un problema concreto o el
 conjunto de datos que vamos a utilizar, es difícil asegurar *a priori* cuál será el mejor modelo o algoritmo
