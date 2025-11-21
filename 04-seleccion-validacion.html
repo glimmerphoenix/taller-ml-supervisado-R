@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -32,17 +52,15 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="./">
 <link href="./05-modelos-clasicos.html" rel="next">
 <link href="./03-algoritmos-modelos.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-70a47bd5681a7291082a5b9f83d58762.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-04e1f1103201cc0a83f720091ef4aae4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -57,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
   ],
   "show-item-context": false,
   "language": {
-    "search-no-results-text": "No se han encontrado resultados",
+    "search-no-results-text": "Sin resultados",
     "search-matching-documents-text": "documentos encontrados",
     "search-copy-link-title": "Copiar el enlace en la búsqueda",
     "search-hide-matches-text": "Ocultar resultados adicionales",
@@ -71,11 +89,40 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -97,9 +144,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Aprendizaje máquina supervisado con R</a> 
     </div>
@@ -263,8 +308,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#consideraciones-generales" id="toc-consideraciones-generales" class="nav-link active" data-scroll-target="#consideraciones-generales"><span class="header-section-number">4.1</span> Consideraciones generales</a></li>
   <li><a href="#métricas-de-rendimiento" id="toc-métricas-de-rendimiento" class="nav-link" data-scroll-target="#métricas-de-rendimiento"><span class="header-section-number">4.2</span> Métricas de rendimiento</a>
   <ul class="collapse">
-  <li><a href="#particionado-de-datos-para-evaluación" id="toc-particionado-de-datos-para-evaluación" class="nav-link" data-scroll-target="#particionado-de-datos-para-evaluación"><span class="header-section-number">4.2.1</span> Particionado de datos para evaluación</a></li>
-  <li><a href="#ajuste-de-parámetros" id="toc-ajuste-de-parámetros" class="nav-link" data-scroll-target="#ajuste-de-parámetros"><span class="header-section-number">4.2.2</span> Ajuste de parámetros</a></li>
+  <li><a href="#modelos-de-regresión" id="toc-modelos-de-regresión" class="nav-link" data-scroll-target="#modelos-de-regresión"><span class="header-section-number">4.2.1</span> Modelos de regresión</a></li>
+  <li><a href="#modelos-de-clasificación" id="toc-modelos-de-clasificación" class="nav-link" data-scroll-target="#modelos-de-clasificación"><span class="header-section-number">4.2.2</span> Modelos de clasificación</a></li>
+  <li><a href="#ajuste-de-parámetros" id="toc-ajuste-de-parámetros" class="nav-link" data-scroll-target="#ajuste-de-parámetros"><span class="header-section-number">4.2.3</span> Ajuste de parámetros</a></li>
   </ul></li>
   <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">4.3</span> Comparación de modelos</a>
   <ul class="collapse">
@@ -297,264 +343,383 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="consideraciones-generales" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="consideraciones-generales"><span class="header-section-number">4.1</span> Consideraciones generales</h2>
+<p>Hace varias décadas, la evaluación y selección de modelos se efectuaba mediante pruebas estadísticas que medían la bondad de los ajustes y a través de la evaluación de los residuos (errores) del modelo propuesto. Hoy en días, la evaluación se realiza empleando medios mucho más robustos, las conocidas como funciones de pérdida (<em>loss functions</em>).</p>
+<p>Una <strong>función de pérdida</strong> es una métrica que compara los valores predichos respecto de los valores que realmente se han producido. Su salida se denomina habitualmente <strong>error</strong> o bien <strong>pseudo-residuo</strong>. En este contexto, tenemos que tener en cuenta una premisa fundamental:</p>
+<p><span class="math display">\[
+\text{DATOS} = \text{MODELO} + \text{ERROR}.
+\]</span></p>
+<ul>
+<li>Los datos describen la realidad que queremos explicar mediante el modelo, a través de una serie de variables que describen dicho problema.</li>
+<li>El modelo es una representación <em>simplificada</em> de la realidad, propuesta para intentar describirla de manera más fácilmente comprensible. Cuanto más sencillo sea el modelo más fácil será interpretarlo, pero también puede que cometa más imprecisiones al describir el fenómeno real que estudiamos.</li>
+<li>El error representa el fallo que cometemos al simplificar la realidad mediante el modelo simplificado.</li>
+</ul>
+<p>Existen muchos tipos de funciones de pérdida para evaluar el rendimiento de modelos predictivos, cada una con sus ventajas e inconvenientes. Es importante recordar que cada función de pérdida se calcula teniendo en cuenta uno o varios tipos de error cometidos por el modelo, dejando otros de lado, por lo que es complicado afirmar mirando una sola de estas funciones que podemos escoger un <em>modelo óptimo</em>. Dependiendo del problema en cuestión, debemos seleccionar primero la función o funciones de pérdida más adecuadas para evaluar las características del modelo que nos interesan. Después, podemos aplicarlas para evaluar los candidatos y seleccionar una opción.</p>
 </section>
 <section id="métricas-de-rendimiento" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="métricas-de-rendimiento"><span class="header-section-number">4.2</span> Métricas de rendimiento</h2>
-<section id="particionado-de-datos-para-evaluación" class="level3" data-number="4.2.1">
-<h3 data-number="4.2.1" class="anchored" data-anchor-id="particionado-de-datos-para-evaluación"><span class="header-section-number">4.2.1</span> Particionado de datos para evaluación</h3>
+<section id="modelos-de-regresión" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="modelos-de-regresión"><span class="header-section-number">4.2.1</span> Modelos de regresión</h3>
+<ul>
+<li><strong>Error Cuadrático Medio</strong> (<em>Mean Squared Error</em> o MSE): el objetivo es <em>minimizar</em> el promedio de la combinación de los errores cuadráticos cometidos en la predicción de cada punto.</li>
+</ul>
+<p><span id="eq-RMSE"><span class="math display">\[
+\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2
+\tag{4.1}\]</span></span></p>
+<p>Hay que tener en cuenta que en modelos de regresión lineal, el divisor de la ecuación <a href="#eq-RMSE" class="quarto-xref">Ecuación&nbsp;<span>4.1</span></a> es <span class="math inline">\(n-p\)</span> para proporcionar una mejor estimación (reduciendo el sesgo).</p>
+<ul>
+<li><p><strong>Raíz del Error Cuadrático Medio</strong> (<em>Root Mean Squared Error</em> o RMSE): es la raíz cuadrada del MSE. Su fin es dar una estimación del error cometido en las mismas unidades que la variable de salida que buscamos predecir. El objetivo aquí también es <em>minimizar</em> la función de pérdida.</p></li>
+<li><p><strong>Desviación</strong>: desviación promedio de los residuos, cuando el modelo se estima mediante un método de máxima verosimilitud. Se suele emplear en modelos de clasificación y el objetivo es <em>minimizar</em> su valor.</p></li>
+<li><p><strong>Error Medio Absoluto</strong> (<em>Mean Absolute Error</em> o MAE): en este caso, en lugar de tomar la raíz cuadrada del MSE se calculan las diferencias entre los valores reales y predichos tomando su valor absoluto, lo que contiene la influencia de los errores con valores altos. EL objetivo es <em>minimizar</em> la función de pérdida.</p></li>
+<li><p><strong>Error Medio Cuadrático Logarítmico</strong> (*Root Mean Squared Logarithmic Error** o RMSLE): Es la raíz cuadrada del error medio cuadrático logarítmico. Permite que los errores grandes cometidos sobre valores de salida de magnitud pequeña contribuyan de igual forma a la función de pérdida que los errores grandes cometidos sobre valores de salida de magnitud grande, ya que de otro modo los segundos prevalecerían sobre los primeros. Aquí el objetivo es <em>minimizar</em> igualmente la función de pérdida.</p></li>
+</ul>
+<p><span id="eq-rmsle"><span class="math display">\[
+\text{RMSLE} = \sqrt{\frac{1}{n} \sum_{i=1}^n (log(y_i +1) -  log(\hat{y}_i + 1))^2}.
+\tag{4.2}\]</span></span></p>
+<ul>
+<li><span class="math inline">\(R^2\)</span> y <span class="math inline">\(R_{adj}^2\)</span>: son métricas que representan el porcentaje de la varianza total de los datos que el modelo es capaz de explicar. La versión ajustada intenta tener en cuenta el número de variables predictoras empleadas, penalizando modelos más complejos. De otro modo, usar un mayor número de variables normalmente aumentaría sin más el valor de <span class="math inline">\(R^2\)</span>. El objetivo aquí es <em>maximizar</em> su valor. No obstante, es preciso obrar con precaución puesto que, como se indica en <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> (Sec. 2.6.2), dos modelos entrenados con datos diferentes que tengan el mismo RMSE, pero en los que el primero tenga menos variabilidad (dispersión) en los valores de la salida del modelo que el segundo tendrá también un <span class="math inline">\(R^2\)</span> menor.</li>
+</ul>
 </section>
-<section id="ajuste-de-parámetros" class="level3" data-number="4.2.2">
-<h3 data-number="4.2.2" class="anchored" data-anchor-id="ajuste-de-parámetros"><span class="header-section-number">4.2.2</span> Ajuste de parámetros</h3>
+<section id="modelos-de-clasificación" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="modelos-de-clasificación"><span class="header-section-number">4.2.2</span> Modelos de clasificación</h3>
+<p>Las métricas de rendimiento de los modelos de clasificación se suelen construir a partir de los valores de la llamada <strong>matriz de confusión</strong>, que refleja el tipo de aciertos y errores cometidos por el modelo al clasificar, como muesgtra la <a href="#fig-confusion-matrix" class="quarto-xref">Figura&nbsp;<span>4.1</span></a>.</p>
+<div id="fig-confusion-matrix" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-confusion-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/confusion-matrix.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.1: Representación de los diferentes tipos de aciertos y errores que refleja la matriz de confusión y el nombre que suelen recibir en evaluación de modelos de clasificación. Fuente: Fig. 2.12 <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Accuracy</strong>: se define como (objetivo: maximizar)</li>
+</ul>
+<p><span id="eq-acc"><span class="math display">\[
+\text{ACC} = \frac{\text{TP}+\text{TN}}{\text{total}}.
+\tag{4.3}\]</span></span></p>
+<ul>
+<li><strong>Precision</strong>: se define como (objetivo: maximizar)</li>
+</ul>
+<p><span id="eq-prec"><span class="math display">\[
+\text{PREC} = \frac{\text{TP}}{\text{TP}+\text{FP}}.
+\tag{4.4}\]</span></span></p>
+<ul>
+<li><strong>Recall</strong> (<em>sensitivity</em>): se define como (objetivo: maximizar)</li>
+</ul>
+<p><span id="eq-recall"><span class="math display">\[
+\text{RECALL}= \frac{\text{TP}}{\text{TP}+\text{FN}}.
+\tag{4.5}\]</span></span></p>
+<ul>
+<li><strong>Specificity</strong>: se define como (objetivo: maximizar)</li>
+</ul>
+<p><span id="eq-spec"><span class="math display">\[
+\text{SPEC}=\frac{\text{TN}}{\text{TN}+\text{FP}}.
+\tag{4.6}\]</span></span></p>
+<ul>
+<li><strong>F1-score</strong>: se trata de la media armónica entre precisión y <em>recall</em>, dado por</li>
+</ul>
+<p><span id="eq-f1"><span class="math display">\[
+\text{F1} = 2\;\frac{\text{PREC}\times\text{RECALL}}{\text{PREC} + \text{RECALL}}
+\tag{4.7}\]</span></span></p>
+<ul>
+<li><strong>F-score generalizado</strong>: como el anterior, pero añadiendo pesos de ponderación, dado por</li>
+</ul>
+<p><span id="eq-f1-gral"><span class="math display">\[
+\text{F1} = (1+\beta^2)\;\frac{\text{PREC}\times\text{RECALL}}{\beta^2\text{PREC} + \text{RECALL}}
+\tag{4.8}\]</span></span></p>
+<p>Si <span class="math inline">\(\beta=1\)</span> tenemos el F1-score. Si <span class="math inline">\(\beta=2\)</span> otorgamos el doble de peso a la recuperación frente a la precisión y al contrario si <span class="math inline">\(\beta=0.5\)</span>.</p>
+<ul>
+<li><strong>AUC</strong> (Área Bajo la Curva ROC): dependiendo de los valores otorgados a los hiperparámetros del modelo, podremos mejorar la precisión, la sensitividad o ambas, minimizando los falsos positivos y falsos negativos. Las curvas ROC (<em>Receiver Operating Characteristic</em>) se crearon para represntar gráficamente estos valores en función de cada combinación de los hiperparámetros del modelo, permitiendo una evaluación gráfica más general de su rendimiento. En este caso el <em>Area Under the [ROC] Curve</em> (concretamente, entre la curva ROC y la línea recta diagonal que representa a un clasificador aleatorio) debe ser lo más grande posible. Estos conceptos se muestran en la</li>
+</ul>
+<ol class="example" type="1">
+<li></li>
+</ol>
+<div id="fig-ROC-modelling" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ROC-modelling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/ROC-modelling.png" class="img-fluid figure-img" style="width:95.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ROC-modelling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.2: Representación de varias curvas ROC y su interpretación en evaluación de modelos de clasificación. Fuente: Fig. 2.14 <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<p>Además de estas métricas, habituales en modelos de clasificación, podemos considerar otras posibles funciones de pérdida.</p>
+<ul>
+<li><p>Error de clasificación: Es el error promedio total, que buscamos <em>minimizar</em>. Por ejemplo, asumamos tenemos que clasificar la salida en dos posibles grupos y cada uno consta de 40 observaciones. Si fallamos al clasificar 6 elementos del primer grupo y 3 del segundo, en total hemos fallado en 9 de las 40 observaciones, lo que implica un ratio de clasificación incorrecta del 11,25%.</p></li>
+<li><p>Error promedio por clase: Este es el error promedio cometido dentro de cada clase. Por ejemplo, en el problema anterior sería <span class="math inline">\(6/40\)</span> en el primer grupo y <span class="math inline">\(3/40\)</span> en el segundo grupo. El propósito es minimizar este error.</p></li>
+<li><p>Entropía cruzada (<em>cross-entropy</em> o <em>Log Loss</em> o <em>deviance</em>): esta métrica penaliza en gran medida los casos en los que se asigna una alta probabilidad a una salida incorrecta (es decir, el modelo se dice muy seguro de la respuesta, pero ha fallado). El objetivo también es minimizar su valor.</p></li>
+<li><p>Índice de Gini: empleado en modelos basados en árboles de decisión, es una medida de <em>pureza</em> (<em>purity</em>), donde valores pequeños indican que un nodo contiene, de forma predominante, observaciones de una sola clase. Por tanto, permite medir lo bien que es capaz de separar las clases entre sí el árbol en cada nodo. El objetivo es minimizar su valor.</p></li>
+</ul>
+</section>
+<section id="ajuste-de-parámetros" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="ajuste-de-parámetros"><span class="header-section-number">4.2.3</span> Ajuste de parámetros</h3>
+<p>Como se ha explicado en la <a href="02-ml-supervisado.html#sec-cross-validation" class="quarto-xref"><span>Sección 2.4</span></a>, cuando escogemos una o varias métricas de evaluación de rendimiento, el procedimiento que solemos seguir es aplicar un método de validación (cruzada con <span class="math inline">\(k\)</span> conjuntos, <em>bootstrapping</em>) para obtener un resultado de evaluación en cada iteración. Finalmente, se combinan estos resultados para obtener una evaluación final de cada modelo, así como unos valores adecuados con los que fijar los hiperparámetros necesarios del modelo.</p>
+<p>En el caso de los modelos de regresión (salida numérica), este proceso es bastante directo, comparando los resultados de la métrica o métricas seleccionadas. Sin embargo, en el caso de modelos de clasificación la evaluación es más complicada, porque como hemos visto hay que tener en cuenta el rendimiento del modelo para cada uno de los posibles grupos o clases presentes en la variable de salida. Por ese motivo, y debido al hecho de que diferentes combinaciones de los hiperparámetros del modelo ofrecen resultados distintos para la sensibilidad y la especificidad, se prefiere optar por comparar modelos mediante las curvas ROC.</p>
+<p>En ciertas ocasiones, valdrá la pena, si tenemos tiempo y suficientes recursos computacionales a nuestra disposición, realizar una búsqueda sistemática de los posibles valores de los hiperparámetros de nuestro modelo para garantizar nuestra selección. Esta búsqueda sistemática o <em>grid search</em> implica definir un rango de posibles valores entre los cuales realizaremos un “barrido”, comparando los resultados obtenidos para intentar conseguir un resultado adecuado.</p>
 </section>
 </section>
 <section id="comparación-de-modelos" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="comparación-de-modelos"><span class="header-section-number">4.3</span> Comparación de modelos</h2>
 <section id="curvas-roc" class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="curvas-roc"><span class="header-section-number">4.3.1</span> Curvas ROC</h3>
+<p>ROC convex HULL <a href="#fig-ROC-convex-hull" class="quarto-xref">Figura&nbsp;<span>4.3</span></a></p>
+<div id="fig-ROC-convex-hull" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ROC-convex-hull-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/ROC-convex-hull.jpg" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ROC-convex-hull-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.3: Representación del <em>convex hull</em> bajo varias curvas ROC, que determina posibles clasificadores óptimos para un problema dado, en función de las restricciones y prioridades consideradas. Fuente: Fig. 7 <span class="citation" data-cites="fawcett2006">(<a href="references.html#ref-fawcett2006" role="doc-biblioref">Fawcett, 2006</a>)</span>.
+</figcaption>
+</figure>
+</div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-boehmke2019" class="csl-entry" role="listitem">
+Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</em> (1.ª ed.). Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9780367816377">https://doi.org/10.1201/9780367816377</a>
+</div>
+<div id="ref-fawcett2006" class="csl-entry" role="listitem">
+Fawcett, T. (2006). An introduction to ROC analysis. <em>Pattern Recognition Letters</em>, <em>27</em>(8), 861-874. https://doi.org/<a href="https://doi.org/10.1016/j.patrec.2005.10.010">https://doi.org/10.1016/j.patrec.2005.10.010</a>
+</div>
+</div>
 </section>
 </section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    const icon = "";
-    const anchorJS = new window.AnchorJS();
-    anchorJS.options = {
-      placement: 'right',
-      icon: icon
-    };
-    anchorJS.add('.anchored');
-    const isCodeAnnotation = (el) => {
-      for (const clz of el.classList) {
-        if (clz.startsWith('code-annotation-')) {                     
-          return true;
-        }
-      }
-      return false;
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
     }
-    const onCopySuccess = function(e) {
-      // button target
-      const button = e.trigger;
-      // don't keep focus
-      button.blur();
-      // flash "checked"
-      button.classList.add('code-copy-button-checked');
-      var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copiado");
-      let tooltip;
-      if (window.bootstrap) {
-        button.setAttribute("data-bs-toggle", "tooltip");
-        button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copiado");
-        tooltip = new bootstrap.Tooltip(button, 
-          { trigger: "manual", 
-            customClass: "code-copy-button-tooltip",
-            offset: [0, -8]});
-        tooltip.show();    
-      }
-      setTimeout(function() {
-        if (tooltip) {
-          tooltip.hide();
-          button.removeAttribute("data-bs-title");
-          button.removeAttribute("data-bs-toggle");
-          button.removeAttribute("data-bs-placement");
-        }
-        button.setAttribute("title", currentTitle);
-        button.classList.remove('code-copy-button-checked');
-      }, 1000);
-      // clear code selection
-      e.clearSelection();
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
     }
-    const getTextToCopy = function(trigger) {
-      const outerScaffold = trigger.parentElement.cloneNode(true);
-      const codeEl = outerScaffold.querySelector('code');
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-    }
-    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-      text: getTextToCopy
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
     });
-    clipboard.on('success', onCopySuccess);
-    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-        text: getTextToCopy,
-        container: window.document.getElementById('quarto-embedded-source-code-modal')
-      });
-      clipboardModal.on('success', onCopySuccess);
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
-      var isInternal = (href) => {
-          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-      }
-      // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-      for (var i=0; i<links.length; i++) {
-        const link = links[i];
-        if (!isInternal(link.href)) {
-          // undo the damage that might have been done by quarto-nav.js in the case of
-          // links that we want to consider external
-          if (link.dataset.originalHref !== undefined) {
-            link.href = link.dataset.originalHref;
-          }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
         }
       }
-    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-      const config = {
-        allowHTML: true,
-        maxWidth: 500,
-        delay: 100,
-        arrow: false,
-        appendTo: function(el) {
-            return el.parentElement;
-        },
-        interactive: true,
-        interactiveBorder: 10,
-        theme: 'quarto',
-        placement: 'bottom-start',
-      };
-      if (contentFn) {
-        config.content = contentFn;
-      }
-      if (onTriggerFn) {
-        config.onTrigger = onTriggerFn;
-      }
-      if (onUntriggerFn) {
-        config.onUntrigger = onUntriggerFn;
-      }
-      window.tippy(el, config); 
     }
-    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-    for (var i=0; i<noterefs.length; i++) {
-      const ref = noterefs[i];
-      tippyHover(ref, function() {
-        // use id or data attribute instead here
-        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-        try { href = new URL(href).hash; } catch {}
-        const id = href.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note) {
-          return note.innerHTML;
-        } else {
-          return "";
-        }
-      });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
     }
-    const xrefs = window.document.querySelectorAll('a.quarto-xref');
-    const processXRef = (id, note) => {
-      // Strip column container classes
-      const stripColumnClz = (el) => {
-        el.classList.remove("page-full", "page-columns");
-        if (el.children) {
-          for (const child of el.children) {
-            stripColumnClz(child);
-          }
-        }
-      }
-      stripColumnClz(note)
-      if (id === null || id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children && note.children.length > 2) {
-          container.appendChild(note.children[0].cloneNode(true));
-          for (let i = 1; i < note.children.length; i++) {
-            const child = note.children[i];
-            if (child.tagName === "P" && child.innerText === "") {
-              continue;
-            } else {
-              container.appendChild(child.cloneNode(true));
-              break;
-            }
-          }
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(container);
-          }
-          return container.innerHTML
-        } else {
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(note);
-          }
-          return note.innerHTML;
-        }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
       } else {
-        // Remove any anchor links if they are present
-        const anchorLink = note.querySelector('a.anchorjs-link');
-        if (anchorLink) {
-          anchorLink.remove();
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
         }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        if (note.classList.contains("callout")) {
-          return note.outerHTML;
-        } else {
-          return note.innerHTML;
-        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
       }
     }
-    for (var i=0; i<xrefs.length; i++) {
-      const xref = xrefs[i];
-      tippyHover(xref, undefined, function(instance) {
-        instance.disable();
-        let url = xref.getAttribute('href');
-        let hash = undefined; 
-        if (url.startsWith('#')) {
-          hash = url;
-        } else {
-          try { hash = new URL(url).hash; } catch {}
-        }
-        if (hash) {
-          const id = hash.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note !== null) {
-            try {
-              const html = processXRef(id, note.cloneNode(true));
-              instance.setContent(html);
-            } finally {
-              instance.enable();
-              instance.show();
-            }
-          } else {
-            // See if we can fetch this
-            fetch(url.split('#')[0])
-            .then(res => res.text())
-            .then(html => {
-              const parser = new DOMParser();
-              const htmlDoc = parser.parseFromString(html, "text/html");
-              const note = htmlDoc.getElementById(id);
-              if (note !== null) {
-                const html = processXRef(id, note);
-                instance.setContent(html);
-              } 
-            }).finally(() => {
-              instance.enable();
-              instance.show();
-            });
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
           }
         } else {
-          // See if we can fetch a full url (with no hash to target)
-          // This is a special case and we should probably do some content thinning / targeting
-          fetch(url)
+          // See if we can fetch this
+          fetch(url.split('#')[0])
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.querySelector('main.content');
+            const note = htmlDoc.getElementById(id);
             if (note !== null) {
-              // This should only happen for chapter cross references
-              // (since there is no id in the URL)
-              // remove the first header
-              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-                note.children[0].remove();
-              }
-              const html = processXRef(null, note);
+              const html = processXRef(id, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -562,161 +727,185 @@ ul.task-list li input[type="checkbox"] {
             instance.show();
           });
         }
-      }, function(instance) {
-      });
-    }
-        let selectedAnnoteEl;
-        const selectorForAnnotation = ( cell, annotation) => {
-          let cellAttr = 'data-code-cell="' + cell + '"';
-          let lineAttr = 'data-code-annotation="' +  annotation + '"';
-          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-          return selector;
-        }
-        const selectCodeLines = (annoteEl) => {
-          const doc = window.document;
-          const targetCell = annoteEl.getAttribute("data-target-cell");
-          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-          const lineIds = lines.map((line) => {
-            return targetCell + "-" + line;
-          })
-          let top = null;
-          let height = null;
-          let parent = null;
-          if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
-            }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
-            }
-            selectedAnnoteEl = annoteEl;
-          }
-        };
-        const unselectCodeLines = () => {
-          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-          elementsIds.forEach((elId) => {
-            const div = window.document.getElementById(elId);
-            if (div) {
-              div.remove();
-            }
-          });
-          selectedAnnoteEl = undefined;
-        };
-          // Handle positioning of the toggle
-      window.addEventListener(
-        "resize",
-        throttle(() => {
-          elRect = undefined;
-          if (selectedAnnoteEl) {
-            selectCodeLines(selectedAnnoteEl);
-          }
-        }, 10)
-      );
-      function throttle(fn, ms) {
-      let throttle = false;
-      let timer;
-        return (...args) => {
-          if(!throttle) { // first call gets through
-              fn.apply(this, args);
-              throttle = true;
-          } else { // all the others get throttled
-              if(timer) clearTimeout(timer); // cancel #2
-              timer = setTimeout(() => {
-                fn.apply(this, args);
-                timer = throttle = false;
-              }, ms);
-          }
-        };
-      }
-        // Attach click handler to the DT
-        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-        for (const annoteDlNode of annoteDls) {
-          annoteDlNode.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            if (clickedEl !== selectedAnnoteEl) {
-              unselectCodeLines();
-              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-              if (activeEl) {
-                activeEl.classList.remove('code-annotation-active');
-              }
-              selectCodeLines(clickedEl);
-              clickedEl.classList.add('code-annotation-active');
-            } else {
-              // Unselect the line
-              unselectCodeLines();
-              clickedEl.classList.remove('code-annotation-active');
-            }
-          });
-        }
-    const findCites = (el) => {
-      const parentEl = el.parentElement;
-      if (parentEl) {
-        const cites = parentEl.dataset.cites;
-        if (cites) {
-          return {
-            el,
-            cites: cites.split(' ')
-          };
-        } else {
-          return findCites(el.parentElement)
-        }
       } else {
-        return undefined;
-      }
-    };
-    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-    for (var i=0; i<bibliorefs.length; i++) {
-      const ref = bibliorefs[i];
-      const citeInfo = findCites(ref);
-      if (citeInfo) {
-        tippyHover(citeInfo.el, function() {
-          var popup = window.document.createElement('div');
-          citeInfo.cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
             }
-            popup.appendChild(citeDiv);
-          });
-          return popup.innerHTML;
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
         });
       }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
     }
-  });
-  </script>
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./03-algoritmos-modelos.html" class="pagination-link" aria-label="Algoritmos y modelos">
