@@ -90,8 +90,9 @@ hablará más bien de *entrenar un algoritmo* con datos, lo que trae consigo ele
 La única diferencia, por tanto, es en qué parte del mismo proceso se pone el foco en cada caso. En muchas ocasiones, en este taller usaremos indistintamente los términos *ajuste* o *entremaiento* aplicados a un modelo o algoritmo.
 :::
 
-El primer paso en esta secuencia de ajuste de modelos siempre es la **división del conjunto de datos** en
-dos grupos [@boehmke2019]:
+El proceso completo de ajuste o entrenamiento de un modelo se mostrará en la @fig-model-selec en el
+@sec-supervised-ml. El primer paso en esta secuencia de ajuste de modelos siempre es la 
+**división del conjunto de datos** en dos grupos [@boehmke2019]:
 
 - Datos de **entrenamiento** (*training*): son los datos que vamos a emplear para que el algoritmo/modelo
 aprenda a resolver el problema. Entre otros aspectos, permiten elegir las variables o entradas que vamos
@@ -124,6 +125,10 @@ ningún beneficio por utilizar muchos datos para entrenarlos. Por otro lado, si 
 dataset y $p$ el número de variables o *features* de entrada del modelo, cuando $p>>n$ sí se necesitan
 grandes conjuntos de datos para estimar de manera fiable posibles patrones en los datos.
 
+La pregunta es: ¿cómo podemos dividir nuestros datos en los conjuntos de entrenamiento y prueba? Para
+resolver esta tarea se aplican técnicas de **muestreo de datos**. A continuación, se describen algunas
+opciones habituales.
+
 ### Técnicas de muestreo
 
 Normalmente, la división de los datos en estos dos grupos se realiza por medio de técnicas de muestreo. Las
@@ -140,6 +145,132 @@ Podemos ver un ejemplo en la [Sec. 2.2.2](https://bradleyboehmke.github.io/HOML/
 [@boehmke2019].
 
 ![El muestreo aleatorio simple no tiene en cuenta la proporción de datos existente en el conjunto original. En este caso, después del muestreo el conjunto de entrenamiento mantiene aproximadamente estas proporciones, pero el de prueba no. Figura tomada de [@raschka2020modeleval].](img/random-sampling-train-test.png){#fig-random-sampling-train-test width=95%}
+
+### Particionado de datos con R {.unnumbered}
+
+En este apartado presentamos algunos ejemplos de implementación del proceso de particionado de datos
+en R, empleando varios paquetes.
+
+**Dataset: `AmesHousing`**: Información sobre ventas de propiedades inmobiliarias descrito en
+[@deCock2011] y proporcionado por el paquete `AmesHousing` [@kuhn2020ames].
+
+| Descripción              | Valor                                  |
+|:-------------------------|:---------------------------------------|
+| Tipo de problema         | Regresión (supervisada)                |
+| Respuesta                | `Sales_Price`                          |
+| Variables (*inputs*)     | 80                                     |
+| Observaciones            | 2.930                                  |
+| Objetivo                 | Predicción del precio de las viviendas |
+| Más información          | `?AmesHousing::ames_raw`                |
+
+: Descripción del dataset proporcionado por el paquete `AmesHousing`. {#tbl-desc-ames .striped .hover}
+
+```{r}
+#| label: chap1-packages
+#| message: false
+
+library(dplyr)    # Procesado y filtrado de datos
+library(ggplot2)  # Gráficos
+library(patchwork)
+
+# Paquetes para preparación y modelado de datos
+library(rsample)  # Técnicas de remuestreo
+library(caret)    # Remuestreo y entrenamiento (Kuhn & Johnson)
+library(h2o)      # Remuestreo y entrenamiento (H2O.ai)
+
+# Configuración inicial de h2o
+h2o.no_progress()  # Deshabilita barra de progreso de h2o
+h2o.init()         # Lanza el cluster (local) de h2o
+```
+
+```{r}
+#| label: ames-data
+
+ames <- AmesHousing::make_ames()
+ames.h2o <- as.h2o(ames)
+```
+
+#### Muestreo aleatorio simple {.unnumbered}
+
+```{r}
+#| label: random-sampling
+
+# Con R Base
+set.seed(123)  # Fijamos semilla, resultados reproducibles
+
+index_1 <- sample(1:nrow(ames), round(nrow(ames) * 0.7))
+train_1 <- ames[index_1, ]
+test_1  <- ames[-index_1, ]
+
+# Usando el paquete caret
+set.seed(123)  # Resultados reproducibles
+index_2 <- createDataPartition(ames$Sale_Price, p = 0.7, 
+                               list = FALSE)
+train_2 <- ames[index_2, ]
+test_2  <- ames[-index_2, ]
+
+# Usando el paquete rsample
+set.seed(123)  # Resultados reproducibles
+split_1  <- initial_split(ames, prop = 0.7)
+train_3  <- training(split_1)
+test_3   <- testing(split_1)
+
+# Usando el paquete h2o
+split_2 <- h2o.splitFrame(ames.h2o, ratios = 0.7, seed = 123)
+train_4 <- split_2[[1]]
+test_4  <- split_2[[2]]
+```
+
+La @fig-density-data-partitions muestra varios paneles donde podemos comprobar la distribución de valores 
+de las diferenes particiones, respecto de los datos originales.
+
+```{r}
+#| label: fig-density-data-partitions
+#| fig-cap: "Comparación de las distribuciones de valores obtenidas en las muestras. Rojo: datos originales; azul: partición de entrenamiento; verde: partición de prueba."
+#| code-fold: true
+#| code-summary: "Mostrar código"
+
+compara_dens <- function(orig, train, test, var_name, main_title,
+    name_orig = deparse(substitute(original)),
+    name_train = deparse(substitute(train)),
+    name_test = deparse(substitute(test))) {
+    
+    datos_combinados <- data.frame(
+    valor = c(orig, train, test),
+    grupo = c(rep(name_orig, length(orig)),
+        rep(name_train, length(train)), 
+        rep(name_test, length(test)))
+    )
+
+    p <- ggplot(datos_combinados, aes(x = valor, color = grupo)) +
+    geom_density(alpha = 0.4) + # 'alpha' controla la transparencia (0 a 1)
+    labs(
+        title = main_title,
+        subtitle = "Comparación train vs. test",
+        x = var_name,
+        y = "Densidad",
+        color = "Variable"
+    ) +
+    theme_minimal() + theme(legend.position="none")
+
+    return(p)
+}
+
+p1 <- compara_dens(ames$Sale_Price, train_1$Sale_Price, test_1$Sale_Price, "Sale_Price", "R base")
+p2 <- compara_dens(ames$Sale_Price, train_2$Sale_Price, test_2$Sale_Price, "Sale_Price", "caret")
+p3 <- compara_dens(ames$Sale_Price, train_3$Sale_Price, test_3$Sale_Price, "Sale_Price", "rsample")
+p4 <- compara_dens(ames$Sale_Price, as.data.frame(train_4)$Sale_Price, 
+                   as.data.frame(test_4)$Sale_Price, "Sale_Price", "h2o")
+
+wrap_plots(p1, p2, p3, p4)
+```
+
+#### Muestreo estratificado {.unnumbered}
+
+Consultar el ejemplo de la [Sec. 2.2.2](https://bradleyboehmke.github.io/HOML/process.html#stratified) en
+[@boehmke2019], que explica cómo utilizar el paquete `rsample` para obtener un muestreo estratificado.
+
+También es bastante directo obtener un [muestreo estratificado usando Tidyverse](https://rpubs.com/crossxwill/sampling_tidyverse).
 
 ### Desequilibrios en los datos
 
@@ -169,6 +300,7 @@ frecuencia, errores de codificación, ausencia de valores, escalas de representa
 otros problemas aparecen en nuestros datos y pueden malograr todos nuestros esfuerzos por conseguir ajustar
 nuestros modelos y elegir la opción más adecuada.
 
+Las tareas de limpieza y preparación de datos podrían llenar un taller o un curso entero por sí mismas.
 Se invita al lector a consultar el [capítulo 3](https://bradleyboehmke.github.io/HOML/engineering.html) de
 [@boehmke2019], así como las referencias [@kuhn2019featureeng] y [@zheng2018feature] para un tratamiento 
 más detallado de muchas de las tareas de limpieza y preparación de datos necesarias antes de 

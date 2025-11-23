@@ -1,8 +1,8 @@
-# Aprendizaje máquina supervisado
+# Aprendizaje máquina supervisado {#sec-supervised-ml}
 
 Como hemos introducido en el tema anterior, el aprendizaje máquina supervisado es un proceso que implica
 entrenar a un algoritmo computacional para que resuelva un problema de predicción (regresión o clasificación),
-utilizando para ello un conjunto de datos. La Figura \@fig-model-selec muestra un esquema del proceso completo.
+utilizando para ello un conjunto de datos. La @fig-model-selec muestra un esquema del proceso completo.
 
 ![Representación esquemática del proceso completo de ajuste y selección de modelos supervisados de aprendizaje máquina. Figura adaptada del cap. 1 de [@grigorev2021].](img/model-selection.png){#fig-model-selec width=95%}
 
