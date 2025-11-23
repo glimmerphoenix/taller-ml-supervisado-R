@@ -37,7 +37,7 @@ funciones de distancia son la familia de distancias Minkowski, incluyendo Manhat
 Chebyshev (Linf); la distancia de Haversine (para datos geolocalizados sobre la superficie terrestre); la
 similaridad del coseno (para documentos o datos textuales) o la distancia de Jaccard.
 
-## Modelos lineales
+## Modelos lineales {#sec-linear-models}
 
 Los modelos lineales asumen que existe una relación lineal entre las variables de entrada (*inputs*,
 *features*) y la salida que se desea predecir. Cuidado, porque esto no implica necesariamente que la forma

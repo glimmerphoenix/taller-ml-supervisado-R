@@ -186,6 +186,38 @@ Lo más habitual es usar valores $k=5$ o $k=10$ [@boehmke2019]. Cuanto mayor sea
 entre el rendimiento real y nuestra estimación, pero también será mayor el coste computacional para completar
 el procedimiento.
 
+#### k-fold cross validation con R
+
+La mayoría de paquetes orientados al entrenamiento y evaluación de modelos de aprendizaje automático en
+R ya incluyen argumentos para indicar el tipo de validación cruzada que queremos realizar.
+
+Por ejemplo, la función `h2o::h2o.glm()` para ajuste de modelos GLM (véase @sec-linear-models), incluye
+el argumento de entrada `nfolds` para controlar cuántos grupos usaremos en el procedimiento de validación
+cruzada. Si `nfolds = 0` no se aplica validación cruzada.
+
+```{r}
+#| label: h2o-glm-cv-example
+#| eval: false
+
+h2o.cv <- h2o.glm(
+  x = x, 
+  y = y, 
+  training_frame = ames.h2o,
+  nfolds = 10  # realiza 10-fold CV
+)
+```
+
+El paquete `rsample` contiene la función `rsample::vfold_cv()` que devuelve un *data frame* anidado. Cada
+elemento en `splits` es una lista que contiene el data frame de entrenamiento en esa iteración y los IDs
+de las observaciones que se usarán para entrenar vs. validar el modelo.
+
+```{r}
+#| label: rsample-cv-example
+#| eval: false
+#| 
+vfold_cv(ames, v = 10) # prepara 10-fold CV
+```
+
 ### Boostrapping
 
 La @fig-boostraping muestra un esquema de cómo se realiza el proceso de muestreo con reemplazo o
@@ -201,6 +233,17 @@ es el método empleado por *Random Forests*.
 Este procedimiento tiende a reducir la varianza de la estimación, pero en conjuntos de datos no muy
 grandes (< 1.000 muestras) puede incrementar el sesgo de la estimación de rendimiento. En la mayoría de
 conjuntos de datos actuales, con tamaños relativamente grandes, esto no suele constituir un problema.
+
+#### Muestras con *bootstrapping* en R {.unnumbered}
+
+La función `rsample::bootstraps()` permite generar los conjuntos que necesitemos mediante *bootstrapping*.
+
+```{r}
+#| label: rsample-bootstrap-example
+#| eval: false
+
+bootstraps(ames, times = 10)
+```
 
 ### Otros métodos de validación cruzada
 
