@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -315,6 +349,7 @@ window.Quarto = {
   <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">4.3</span> Comparación de modelos</a>
   <ul class="collapse">
   <li><a href="#curvas-roc" id="toc-curvas-roc" class="nav-link" data-scroll-target="#curvas-roc"><span class="header-section-number">4.3.1</span> Curvas ROC</a></li>
+  <li><a href="#comparación-de-modelos-con-r" id="toc-comparación-de-modelos-con-r" class="nav-link" data-scroll-target="#comparación-de-modelos-con-r"><span class="header-section-number">4.3.2</span> Comparación de modelos con R</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -464,7 +499,7 @@ Figura&nbsp;4.2: Representación de varias curvas ROC y su interpretación en ev
 <h2 data-number="4.3" class="anchored" data-anchor-id="comparación-de-modelos"><span class="header-section-number">4.3</span> Comparación de modelos</h2>
 <section id="curvas-roc" class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="curvas-roc"><span class="header-section-number">4.3.1</span> Curvas ROC</h3>
-<p>ROC convex HULL <a href="#fig-ROC-convex-hull" class="quarto-xref">Figura&nbsp;<span>4.3</span></a></p>
+<p>La <a href="#fig-ROC-convex-hull" class="quarto-xref">Figura&nbsp;<span>4.3</span></a> representa gráficamente el llamado ROC <em>convex hull</em> (ROCCH) <span class="citation" data-cites="fawcett2006">Fawcett &amp; Provost (<a href="references.html#ref-fawcett2001" role="doc-biblioref">2001</a>)</span>, que colorea en gris un área cuyo perímetro exterior corresponde a puntos que tienen el mismo rendimiento de clasificaión, desde el punto de vista de la curva ROC.</p>
 <div id="fig-ROC-convex-hull" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ROC-convex-hull-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -475,6 +510,104 @@ Figura&nbsp;4.3: Representación del <em>convex hull</em> bajo varias curvas ROC
 </figcaption>
 </figure>
 </div>
+<p>Por ejemplo, en la <a href="#fig-ROC-convex-hull" class="quarto-xref">Figura&nbsp;<span>4.3</span></a> a) (izq.) podemos ver que las curvas B y D están dentro de la región del <em>convex hull</em> y, por tanto, son subóptimas para cualquier condición. Por contra, el área principal del <em>convex hull</em> queda delimitada por partes de las curvas A y C. Por lo tanto, si buscamos un clasificador óptimo podríamos eliminar B y D del proceso de selección, directamente. También podemos descartar la utilización de cualquier configuración de los modelos A y C cuyo rendimiento no se encuentre sobre el perímetro del <em>convex hull</em>.</p>
+<p>Matemáticamente, dos puntos en el espacio ROC, <span class="math inline">\((FP_1, TP_1)\)</span> y <span class="math inline">\((FP_2, TP_2)\)</span> tienen un rendimiento equivalente desde el punto de vista de la curva ROC si:</p>
+<p><span class="math display">\[
+\frac{TP_2 - TP_1}{FP_2 - FP_1} = m\,.
+\]</span></p>
+<p>En la <a href="#fig-ROC-convex-hull" class="quarto-xref">Figura&nbsp;<span>4.3</span></a> b) (dcha.), se representan dos líneas explícitasa con rendimiento uniforme, <span class="math inline">\(\alpha\)</span> y <span class="math inline">\(\beta\)</span>.</p>
+<p>Consideremos un típico problema de clasificación binaria, con dos posibles clases de salida <span class="math inline">\(\{-1, 1\}\)</span>. En un primer escenario de clasificaión, en el que la clase negativa sobrepasa en número 10:1 a la clase positiva, pero los falsos negativos (FN) y los falsos positivos (FP) tienen el mismo coste, el resultado sería <span class="math inline">\(m = 10\)</span>. La línea con pendiente <span class="math inline">\(m = 10\)</span> mas al noroeste (esquina superior izq., mejor rendimiento) del la gráfica ROC es <span class="math inline">\(\alpha\)</span>, tangente al clasificador A. Ese sería el clasificador selecciónado.</p>
+<p>Si ahora tenemos otro escenario de clasificación, en el que la clase negativa y la positiva están balanceadas en número de observaciones, pero un FN es 10 veces más costoso que un FP, entonces el resultado de la ecuación anterior sería <span class="math inline">\(m=1/10\)</span>. La curva más al noroeste de la gráfica ROC con esa pendiente es <span class="math inline">\(\beta\)</span>, tangente al clasificador C. Por tanto, ese sería el clasificador más adecuado para este escenario <span class="citation" data-cites="fawcett2006">(<a href="references.html#ref-fawcett2006" role="doc-biblioref">Fawcett, 2006</a>)</span>. En consecuencia, no es inmediato determinar qué clasificador es mejor o peor en términos absolutos, puesto que es imprescindible tener en cuenta las condiciones de contorno del problema (balance de observaciones entre clases, coste de cada error de clasificación, etc.).</p>
+<p>Una forma muy habitual de reducir la información de la curva ROC es calcular el AUC, que hemos definido más arriba. Esta métrica tiene una propiedad interesante: el AUC de un clasificador es equivalente a la probabilidad de que el clasificador asigne un ranking mayor a una instancia positiva elegida al azar que a una instancia negativa elegida también al azar. Por otro lado, el AUC también está relacionado con el coeficiente de Gini <span class="citation" data-cites="hand2001">(<a href="references.html#ref-hand2001" role="doc-biblioref">Hand, 2001</a>)</span>: <span class="math inline">\(\text{Gini} + 1 = 2 \times \text{AUC}\)</span>.</p>
+</section>
+<section id="comparación-de-modelos-con-r" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="comparación-de-modelos-con-r"><span class="header-section-number">4.3.2</span> Comparación de modelos con R</h3>
+<p>Veamos ahora cómo comparar los modelos que hemos ajustado en los ejemplos del <a href="03-algoritmos-modelos.html" class="quarto-xref"><span>Capítulo 3</span></a>, usando el paquete <code>caret</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlbench)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>cl <span class="ot">&lt;-</span> <span class="fu">makePSOCKcluster</span>(<span class="dv">5</span>) <span class="co"># 5 cores para proc. paralelo</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cl)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/sonar-models.RData"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare model performances using resample()</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>models_compare <span class="ot">&lt;-</span> <span class="fu">resamples</span>(<span class="fu">list</span>(<span class="at">GLM=</span>model_glm, <span class="at">ADABOOST=</span>model_adaboost, <span class="at">KNN=</span>model_knn,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">XGBOOST=</span>model_xgbLinear, <span class="at">RF=</span>model_rf, <span class="at">GAM_MGCV=</span>model_gam_mgcv, </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">GAM_GAM=</span>model_gam, <span class="at">SVM=</span>model_svmRadial))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the models performances</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(models_compare)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+summary.resamples(object = models_compare)
+
+Models: GLM, ADABOOST, KNN, XGBOOST, RF, GAM_MGCV, GAM_GAM, SVM 
+Number of resamples: 5 
+
+ROC 
+              Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+GLM      0.7773109 0.7921569 0.8109244 0.8034314 0.8117647 0.8250000    0
+ADABOOST 0.7916667 0.8529412 0.8705882 0.8560364 0.8784314 0.8865546    0
+KNN      0.7773109 0.7875000 0.8078431 0.8092927 0.8130252 0.8607843    0
+XGBOOST  0.8039216 0.8541667 0.8781513 0.8780602 0.9254902 0.9285714    0
+RF       0.7767857 0.8509804 0.8588235 0.8782143 0.9201681 0.9843137    0
+GAM_MGCV 0.7000000 0.7352941 0.7836134 0.7928011 0.8666667 0.8784314    0
+GAM_GAM  0.6974790 0.8705882 0.8791667 0.8616597 0.8862745 0.9747899    0
+SVM      0.7812500 0.8487395 0.8784314 0.8789391 0.8941176 0.9921569    0
+
+Sens 
+              Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+GLM      0.6875000 0.7058824 0.7058824 0.7610294 0.8235294 0.8823529    0
+ADABOOST 0.7058824 0.7647059 0.8235294 0.8102941 0.8750000 0.8823529    0
+KNN      0.7058824 0.8125000 0.8235294 0.8213235 0.8823529 0.8823529    0
+XGBOOST  0.6875000 0.7647059 0.8235294 0.7963235 0.8235294 0.8823529    0
+RF       0.7058824 0.7500000 0.8235294 0.8323529 0.8823529 1.0000000    0
+GAM_MGCV 0.6470588 0.7500000 0.7647059 0.7500000 0.7647059 0.8235294    0
+GAM_GAM  0.6470588 0.7647059 0.8235294 0.8110294 0.8823529 0.9375000    0
+SVM      0.6875000 0.7647059 0.8235294 0.8198529 0.8823529 0.9411765    0
+
+Spec 
+              Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+GLM      0.6000000 0.7333333 0.7857143 0.7828571 0.8666667 0.9285714    0
+ADABOOST 0.6428571 0.6666667 0.7857143 0.7523810 0.8000000 0.8666667    0
+KNN      0.5333333 0.5333333 0.7142857 0.6733333 0.7857143 0.8000000    0
+XGBOOST  0.6666667 0.7142857 0.7333333 0.7542857 0.8000000 0.8571429    0
+RF       0.6428571 0.6666667 0.8000000 0.7942857 0.9285714 0.9333333    0
+GAM_MGCV 0.4666667 0.7142857 0.7857143 0.7266667 0.8000000 0.8666667    0
+GAM_GAM  0.6666667 0.7142857 0.7333333 0.7961905 0.8666667 1.0000000    0
+SVM      0.5714286 0.6000000 0.7857143 0.7514286 0.8000000 1.0000000    0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw box plots to compare models</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>scales <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x=</span><span class="fu">list</span>(<span class="at">relation=</span><span class="st">"free"</span>), <span class="at">y=</span><span class="fu">list</span>(<span class="at">relation=</span><span class="st">"free"</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bwplot</span>(models_compare, <span class="at">scales=</span>scales)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-model-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-model-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-seleccion-validacion_files/figure-html/fig-model-comparison-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-model-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.4: Comparación gráfica del rendimiento de varios modelos de clasificación candidatos para el problema del dataset <code>mlbench::Sonar</code>. Fuente: [kuhn2013applied].
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Análogamente, el paquete <code>caret</code> también incluye funciones que permiten analizar estadísticamente las diferencias entre los modelos, tal y como se explica en la <a href="https://topepo.github.io/caret/model-training-and-tuning.html#between-models">Sec. 5.8.2</a> del manual de paquete.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
@@ -483,6 +616,12 @@ Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</e
 </div>
 <div id="ref-fawcett2006" class="csl-entry" role="listitem">
 Fawcett, T. (2006). An introduction to ROC analysis. <em>Pattern Recognition Letters</em>, <em>27</em>(8), 861-874. <a href="https://doi.org/10.1016/j.patrec.2005.10.010">https://doi.org/10.1016/j.patrec.2005.10.010</a>
+</div>
+<div id="ref-fawcett2001" class="csl-entry" role="listitem">
+Fawcett, T., &amp; Provost, F. (2001). Robust Classification for Imprecise Environments. <em>Machine Learning</em>, <em>42</em>, 203-231. <a href="https://doi.org/10.1023/A:1007601015854">https://doi.org/10.1023/A:1007601015854</a>
+</div>
+<div id="ref-hand2001" class="csl-entry" role="listitem">
+Hand, T., D. J. (2001). A simple generalization of the area under the ROC curve to multiple class classification problems. <em>Machine Learning</em>, <em>45</em>(2), 171-186. <a href="https://doi.org/10.1023/A:1010920819831">https://doi.org/10.1023/A:1010920819831</a>
 </div>
 </div>
 </section>

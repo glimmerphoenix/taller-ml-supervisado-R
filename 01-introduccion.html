@@ -552,17 +552,25 @@ Tabla&nbsp;1.1: Descripción del dataset proporcionado por el paquete <code>Ames
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.no_progress</span>()  <span class="co"># Deshabilita barra de progreso de h2o</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.init</span>()         <span class="co"># Lanza el cluster (local) de h2o</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> Connection successful!
+<pre><code>
+H2O is not running yet, starting it now...
+
+Note:  In case of errors look at the following log files:
+    /tmp/Rtmps3zO24/file5d5367aa8ee9/h2o_jfelipe_started_from_r.out
+    /tmp/Rtmps3zO24/file5d53239829d9/h2o_jfelipe_started_from_r.err
+
+
+Starting H2O JVM and connecting: ... Connection successful!
 
 R is connected to the H2O cluster: 
-    H2O cluster uptime:         8 hours 26 minutes 
+    H2O cluster uptime:         1 seconds 461 milliseconds 
     H2O cluster timezone:       Europe/Madrid 
     H2O data parsing timezone:  UTC 
     H2O cluster version:        3.44.0.3 
-    H2O cluster version age:    1 year, 11 months and 3 days 
-    H2O cluster name:           H2O_started_from_R_jfelipe_jgi425 
+    H2O cluster version age:    1 year, 11 months and 4 days 
+    H2O cluster name:           H2O_started_from_R_jfelipe_lgd607 
     H2O cluster total nodes:    1 
-    H2O cluster total memory:   7.76 GB 
+    H2O cluster total memory:   7.78 GB 
     H2O cluster total cores:    12 
     H2O cluster allowed cores:  12 
     H2O cluster healthy:        TRUE 
@@ -574,7 +582,7 @@ R is connected to the H2O cluster:
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in h2o.clusterInfo(): 
-Your H2O cluster version is (1 year, 11 months and 3 days) old. There may be a newer version available.
+Your H2O cluster version is (1 year, 11 months and 4 days) old. There may be a newer version available.
 Please download and install the latest version from: https://h2o-release.s3.amazonaws.com/h2o/latest_stable.html</code></pre>
 </div>
 </div>
