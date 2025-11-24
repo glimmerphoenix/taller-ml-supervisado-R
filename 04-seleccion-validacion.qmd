@@ -175,6 +175,98 @@ para intentar conseguir un resultado adecuado.
 
 ### Curvas ROC
 
-ROC convex HULL @fig-ROC-convex-hull [@fawcett2006]
+La @fig-ROC-convex-hull representa gráficamente el llamado ROC *convex hull* (ROCCH) 
+[@fawcett2006,@fawcett2001], que colorea en gris un área cuyo perímetro exterior corresponde a puntos que
+tienen el mismo rendimiento de clasificaión, desde el punto de vista de la curva ROC.
 
 ![Representación del *convex hull* bajo varias curvas ROC, que determina posibles clasificadores óptimos para un problema dado, en función de las restricciones y prioridades consideradas. Fuente: Fig. 7 [@fawcett2006].](img/ROC-convex-hull.jpg){#fig-ROC-convex-hull width="100%"}
+
+Por ejemplo, en la @fig-ROC-convex-hull a) (izq.) podemos ver que las curvas B y D están dentro
+de la región del *convex hull* y, por tanto, son subóptimas para cualquier condición. Por contra, el área
+principal del *convex hull* queda delimitada por partes de las curvas A y C. Por lo tanto, si buscamos un
+clasificador óptimo podríamos eliminar B y D del proceso de selección, directamente. También podemos descartar
+la utilización de cualquier configuración de los modelos A y C cuyo rendimiento no se encuentre sobre el
+perímetro del *convex hull*.
+
+Matemáticamente, dos puntos en el espacio ROC, $(FP_1, TP_1)$ y $(FP_2, TP_2)$ tienen un rendimiento
+equivalente desde el punto de vista de la curva ROC si:
+
+$$
+\frac{TP_2 - TP_1}{FP_2 - FP_1} = m\,.
+$$
+
+En la @fig-ROC-convex-hull b) (dcha.), se representan dos líneas explícitasa con rendimiento uniforme,
+$\alpha$ y $\beta$. 
+
+Consideremos un típico problema de clasificación binaria, con dos posibles clases 
+de salida $\{-1, 1\}$. En un primer escenario de clasificaión, en el que la clase negativa sobrepasa
+en número 10:1 a la clase positiva, pero los falsos negativos (FN) y los falsos positivos (FP) tienen
+el mismo coste, el resultado sería $m = 10$. La línea con pendiente $m = 10$ mas al noroeste (esquina
+superior izq., mejor rendimiento) del la gráfica ROC es $\alpha$, tangente al clasificador A. Ese sería
+el clasificador selecciónado.
+
+Si ahora tenemos otro escenario de clasificación, en el que la clase negativa y la positiva están
+balanceadas en número de observaciones, pero un FN es 10 veces más costoso que un FP, entonces el resultado
+de la ecuación anterior sería $m=1/10$. La curva más al noroeste de la gráfica ROC con esa pendiente es
+$\beta$, tangente al clasificador C. Por tanto, ese sería el clasificador más adecuado para este escenario
+[@fawcett2006]. En consecuencia, no es inmediato determinar qué clasificador es mejor o peor en términos
+absolutos, puesto que es imprescindible tener en cuenta las condiciones de contorno del problema (balance
+de observaciones entre clases, coste de cada error de clasificación, etc.).
+
+Una forma muy habitual de reducir la información de la curva ROC es calcular el AUC, que hemos definido
+más arriba. Esta métrica tiene una propiedad interesante: el AUC de un clasificador es equivalente a la 
+probabilidad de que el clasificador asigne un ranking mayor a una instancia positiva elegida al azar que
+a una instancia negativa elegida también al azar. Por otro lado, el AUC también está relacionado con el
+coeficiente de Gini [@hand2001]: $\text{Gini} + 1 = 2 \times \text{AUC}$.
+
+### Comparación de modelos con R
+
+Veamos ahora cómo comparar los modelos que hemos ajustado en los ejemplos del @sec-algo-modelos, usando
+el paquete `caret`.
+
+```{r}
+#| label: pkgs-chap4
+#| message: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(caret)
+library(doParallel)
+library(mlbench)
+
+cl <- makePSOCKcluster(5) # 5 cores para proc. paralelo
+registerDoParallel(cl)
+```
+
+```{r}
+#| label: sonar-model-compare
+
+load("data/sonar-models.RData")
+
+# Compare model performances using resample()
+models_compare <- resamples(list(GLM=model_glm, ADABOOST=model_adaboost, KNN=model_knn,
+                                 XGBOOST=model_xgbLinear, RF=model_rf, GAM_MGCV=model_gam_mgcv, 
+                                 GAM_GAM=model_gam, SVM=model_svmRadial))
+
+# Summary of the models performances
+summary(models_compare)
+```
+
+
+```{r}
+#| label: fig-model-comparison
+#| fig-cap: "Comparación gráfica del rendimiento de varios modelos de clasificación candidatos para el problema del dataset `mlbench::Sonar`. Fuente: [kuhn2013applied]."
+
+# Draw box plots to compare models
+scales <- list(x=list(relation="free"), y=list(relation="free"))
+bwplot(models_compare, scales=scales)
+```
+
+Análogamente, el paquete `caret` también incluye funciones que permiten analizar estadísticamente las
+diferencias entre los modelos, tal y como se explica en la [Sec. 5.8.2](https://topepo.github.io/caret/model-training-and-tuning.html#between-models) del manual de paquete.
+
+```{r}
+stopCluster(cl)
+```

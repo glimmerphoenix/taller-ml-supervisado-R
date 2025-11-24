@@ -1,4 +1,4 @@
-# Algoritmos y modelos
+# Algoritmos y modelos {#sec-algo-modelos}
 
 En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente,
 mostraremos cómo se pueden entrenar y evaluar con R. Necesitaremos los siguientes paquetes.
@@ -495,6 +495,9 @@ model_xgbLinear = train(Class ~ ., data=training, method='xgbLinear',
 # model_xgbLinear
 ```
 
+```{r}
+stopCluster(cl)
+```
 
 ## Apilado de modelos
 
@@ -504,3 +507,10 @@ de varios modelos de aprendizaje de base. El meta-algoritmo que combina las sali
 *super learner* permite mejorar aún más el rendimiento de los modelos de aprendizaje de base (como RF o 
 XGBoost).  En el [Capítulo 15](https://bradleyboehmke.github.io/HOML/stacking.html) de [@boehmke2019] se 
 puede encontrar más información y ejemplos de este tipo de modelos.
+
+```{r}
+#| label: save-sonar-models
+#| echo: false
+
+save.image(file = "data/sonar-models.RData")
+```
