@@ -23,12 +23,10 @@ book:
       chapters:
         - 05-modelos-clasicos.qmd
         - 06-modelos-avanzados.qmd
-    - part: "Tidymodels"
+    - part: "Entornos de modelado"
       chapters:
         - 07-tidymodels.qmd
-    - part: "Otros entornos"
-      chapters:
-        - 08-mlr3.qmd
+        - 08-mlr3.qmd  
     - 09-add-resources.qmd
     - references.qmd
   appendices: 
