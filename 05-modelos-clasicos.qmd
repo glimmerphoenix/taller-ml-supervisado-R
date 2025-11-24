@@ -1,21 +1,382 @@
 # Modelos clásicos
 
-This is a book created from markdown and executable code.
+En este apartado vamos a presentar un caso de estudio completo en el que podamos ver
+paso a paso el proceso de entrenamiento y validación de varios modelos de aprendizaje
+máquina supervisado.
 
-See @knuth84 for additional discussion of literate programming.
+Vamos a utilizar un conjunto de datos del paquete `DMwR2`, que ya no está disponible
+en CRAN. También usaremos otro paquete llamado `performanceEstimation`, del mismo autor
+que el anterior. Ambos están disponibles en GitHub y podemos instalarlos con el siguiente código.
 
-## K vecinos más cercanos (k-NN)
+```{r}
+#| label: install-DMwR2
+#| eval: false
+
+library(devtools)  # Comprueba si está instalado
+install_github("ltorgo/DMwR2",ref="develop")
+install_github("ltorgo/performanceEstimation",ref="develop")
+```
+
+Usaremos los siguientes paquetes.
+
+```{r}
+#| label: pkgs-chap5
+#| message: false
+
+library(Hmisc)
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(RColorBrewer)
+
+library(corrplot)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+library(performanceEstimation)
+library(DMwR2)
+```
 
 
-## Modelos lineales
+## Problema: predicción de concentración de algas dañinas en ríos
+
+El caso de estudio se centra en un conjunto de datos recogidos para estudiar
+el problema de la proliferación de algas perniciosas en algunos ríos europeos.
+Las poblaciones de estas algas pueden crecer desmesuradamente en ciertos periodos
+del año y crean un importante problema para los ecosistemas locales.
+El caso está desarrollado en [@torgo_data_2016], y todo el código de ejemplo
+está disponible en http://ltorgo.github.io/DMwR2/Ralgae.html.
+
+Concretamente, se miden varias propiedades químicas del agua (covariables), junto
+con la frecuencia de aparición de siete especies de algas potencialmente dañinas.
+También se registran variables con información adicional, como el periodo del año
+en el que se recogió la muestra, el tamaño del río y la velocidad de sus aguas.
+
+El objetivo del caso de estudio es doble:
+
+- Por una parte, intentar abaratar costes de monitorización, creando un modelo que
+permita guiar sistemas automáticos de recolección de información que puedan alertar
+sobre la posible creación de situaciones de riesgo en ecosistemas locales.
+
+- Por otra parte, también se pretende entender mejor los factores que puedan estar
+influyendo en la aparición de estas algas perniciosas, es decir, identificar si estas
+frecuencias están correladas de alguna forma con las características químicas descriptivas
+de la muestra tomada o con alguna otra variable (tipo del río, época del año en la
+que se tomó la muestra, etc.).
+
+## Datasets
+
+ID: **`DMwR2::algae`**.
+
+Los datos para este estudio provienen de la competición internacional de análisis de
+datos COIL 1999, y están disponibles a través de diferentes fuentes, incluyendo
+el [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/).
+
+El conjunto de datos contiene en total 200 muestras tomadas de diferentes ríos europeos.
+Los datos pueden cargarse directamente desde el paquete `DMwR2` de la siguiente forma:
+
+```{r algae-data}
+data(algae, package="DMwR2")
+algae
+```
+
+Cada observación (fila) contiene información sobre 11 variables, tres de las cuales
+son categóricas y el resto cuantitativas:
+
+- `season`: Estación del año en la que se tomó la muestra.
+- `size`: Tamaño del río.
+- `speed`: Velocidad de las aguas del río.
+- `mxPH`: Máximo valor del PH del río.
+- `mnO2`: Mínimo valor de oxígeno del río.
+- `Cl`: Valor medio de cloro.
+- `NO3`: Valor medio de nitratos.
+- `NH4`: Valor medio de amonio.
+- `oPO4`: Valor medio de ortofosfato.
+- `PO4`: Valor medio de total de fosfatos.
+- `Chla`: Valor medio de clorofila.
+- `a1` hasta `a7`: Frecuencia de aparición de cada uno de los 7 tipos de algas
+dañinas analizados en la muestra de agua tomada.
+
+Adicionalmente, existe otro data set en el mismo paquete, llamado `test.algae`, que contiene
+otras 140 observaciones adicionales, conteniendo las mismas variables descriptivas, pero que
+no contiene las columnas correspondientes a los valores de frecuencia de cada especie de algas.
+
+En este contexto, podemos usar `algae` como un conjunto de datos de *entrenamiento* para nuestro
+modelo, mientra que `test.algae` se puede usar como conjunto de datos de test. Finalmente,
+el dataset `algae.sols` contiene los valores de las 7 columnas restantes con las frecuencias
+de aparición de cada especie de algas para cada fila del testing set `test.alage`. De este modo,
+podemos evaluar el modelo propuesto.
+
+## Descripción y preparación de datos
+
+### Análisis descriptivo
+
+Un primer resumen descriptivo de las variables implicadas en el análisis es:
+
+```{r}
+#| label: algae-describe
+#| message: false
+
+describe(algae)
+```
+
+También podemos obtener varios gráficos que permiten hacernos una idea de la
+posible correlación entre algunas de las variables de nuestro conjunto de datos. Estos
+ejemplos los podemos encontrar en el epígrafe 
+["Data Visualization and Summarization"](http://ltorgo.github.io/DMwR2/Ralgae.html#data_visualization_and_summarization) de la página que contiene el código original para el caso de estudio.
+
+Particularmente importantes son los comandos para organizar las etiquetas de las
+variables categóricas siguiendo un orden en particular:
+
+```{r}
+#| label: cat-relevel
+algae <- algae |>
+  mutate(size=fct_relevel(size,c("small","medium","large")),
+         speed=fct_relevel(speed,c("low","medium","high")),
+         season=fct_relevel(season,c("spring","summer","autumn","winter")))
+```
+
+Donde usamos la biblioteca `forcats`, de reciente creación y parte del metapaquete `tidyverse`
+(con paquetes asociados al concepto de Tidy Data promulgado por H. Wickham). Este paquete contiene
+funciones muy útiles para operar con variables categóricas en el contexto de *tidy data* [^3].
+
+[^3]: Más información sobre los paquetes que componen el *tidyverse* disponible en
+http://tidyverse.org/.
+
+También es interesante representar el valor de la concentración de algas en función de alguna
+de las variables categóricas, de forma que podamos explorar posibles correlaciones:
+
+```{r}
+#| label: fig-algae-cdplot
+#| fig-cap: "Caption"
+#| message: false
+
+data2graph <- filter(algae,!is.na(mnO2)) |>
+    mutate(minO2=cut(mnO2, quantile(mnO2,c(0,0.25,.5,.75,1)), include.lowest=TRUE))
+ggplot(data2graph,aes(x=a3,y=season, color=season)) + geom_point() + 
+    facet_wrap(~ minO2) + 
+    guides(color="none") +
+  ggtitle("Cdplot de freq. alga a3 vs. estación del año")
+```
+
+```{r}
+#| label: fig-corrplot
+#| fig-cap: ""
+
+library(corrplot)
+cm <- cor(algae[,4:18], use="complete.obs")
+corrplot(cm, type="upper", tl.pos="d")
+corrplot(cm, add=TRUE, type="lower",method="number", 
+         diag=FALSE, tl.pos="n", cl.pos="n")
+```
+
+### Imputación de datos faltantes
+
+Las siguientes secciones del ejemplo muestran código paso a paso para implementar algunas
+de las técnicas de imputación que hemos visto en este documento. A veces encontraremos funciones
+de utilidad que el autor del paquete ha creado para automatizar métodos de imputación avanzados,
+por ejemplo `knnImputation` para imputación de valores faltantes utilizando información de
+los $k$ vecinos más próximos a un punto dado.
+
+- [Eliminación de casos con valores faltantes](http://ltorgo.github.io/DMwR2/Ralgae.html#removing_the_observations_with_unknown_values).
+- [Imputación con valores más frecuentes](http://ltorgo.github.io/DMwR2/Ralgae.html#filling_in_the_unknowns_with_the_most_frequent_values).
+- [Imputación mediante exploración de correlaciones entre los datos](http://ltorgo.github.io/DMwR2/Ralgae.html#filling_in_the_unknown_values_by_exploring_correlations).
+- [Imputación de datos mediante búsqueda de similiaridad](http://ltorgo.github.io/DMwR2/Ralgae.html#filling_in_the_unknown_values_by_exploring_similarities_between_cases).
+
+## Ajuste de modelos/algoritmos
+
+En las siguientes secciones, el ejemplo continua desarrollando varios tipos de modelos
+para los datos disponibles:
+
+- Un modelo de predicción basado en regresión lineal múltiple.
+- Un modelo orientado a inferencia, creando árboles de regresión.
+- Un algoritmo de ensamblado de modelos, Random Forests.
+
+### Regresión lineal múltiple
+
+Para este caso, en primer lugar debemos de rellenar los datos faltantes con algún método de 
+imputación de datos. Aquí se utiliza el método de fijarnos en las obseraciones del dataset
+de entrenamiento que son similares a las que contienen datos faltantes para rellenar los valores
+desconocidos.
+
+```{r}
+#| label: data-imputation
+
+algae <-  algae[-manyNAs(algae), ]
+clean.algae <- knnImputation(algae, k = 10)
+```
+
+Comenzamos por ajustar un modelo *saturado*, es decir, con todas las posibles variables que se
+han observado, para ir simplificándolo paulatinamente.
+
+```{r}
+#| label: full-model
+
+lm_a1 <- lm(a1 ~ ., data = clean.algae[, 1:12])
+summary(lm_a1)
+```
+
+Después, se puede utilizar un análisis ANOVA para efectuar un análisis secuencial de la construcción
+del modelo, viendo cómo se reduce el RSS (error total) conforme añadimos términos a la fórmula en cada
+paso.
+
+```{r}
+#| label: anova
+
+anova(lm_a1)
+```
+
+`season` es la variable que menos contribuye a reducir el error total, así que la eliminamos.
+
+```{r}
+#| label: remove-season
+
+lm2_a1 <- update(lm_a1, . ~ . - season)
+summary(lm2_a1)
+```
+
+Volvemos a usar ANOVA, pero ahora para comprobar la mejora entre los dos modelos.
+
+```{r}
+#| label: anova-lms
+
+anova(lm_a1, lm2_a1)
+```
+
+La función `step()` permite realizar una eliminación secuencial hacia atras (*backward elimination*)
+para simplificar el modelo, usando en cada paso el *Akaike Information Criterion* (AIC) para identificar
+la variable candidata a ser eliminada.
+
+```{r}
+#| label: backward-elim
+#| echo: false
+
+# Se omite la salida para abreviar el documento
+final_lm <- step(lm_a1)
+```
+
+Inspeccionamos el modelo final.
+
+```{r}
+#| label: final-lm
+
+summary(final_lm)
+```
+
+Observamos que el $R_{adj}^2$ es tan sólo $0.3324$, un resultado cuanto menos demasiado modesto.
+Entre otras posibles causas, esto puede indicar que los presupuestos de linealidad que exige este
+modelo tan sencillo no son aplicables a este problema. 
+
+### Árboles de regresión
+
+En el caso del modelo orientado a inferencia estadística, la construcción se centra en
+la variable de salida `a1`.
+
+```{r}
+#| label: rt-fit
+
+data(algae, package="DMwR2") 
+algae <- algae[-manyNAs(algae), ]
+rt_a1 <- rpart(a1 ~ ., data = algae[, 1:12])
+rt_a1
+# summary(rt_a1) # Produce mucha información
+```
+
+```{r}
+#| label: fig-reg-tree
+#| fig-cap: "Cálculo y representación de un modelo de árbol de regresión para el dataset `algae`."
+
+# Función rpart.plot::prp
+prp(rt_a1, extra=101, box.col="orange", split.box.col="grey")
+```
+
+Partiendo de este árbol complejo y profundo podemos simplificar el modelo podándolo mediante
+el criterio de *cost complexity*, implementado en el paquete `rpart`. El método de poda
+intenta seguir una solución de compromiso entre la capacidad predictiva del modelo y y
+el tamaño del árbol. Utilizando este criterio, R puede calcular subconjuntos del árbol
+original estimando su capacidad predictiva. Esta información está disponible mediante
+la función `printcp()`.
+
+```{r}
+printcp(rt_a1)
+```
+
+Según [@torgo_data_2016], se pueden seguir varios criterios para seleccionar el árbol más
+adecuado:
+
+1. Seleccionando aquel que tenga el menor error relativo estimado (columna `xerror` en
+la salida). En este caso sería el tercer árbol.
+
+2. Seleccionando aquel que tenga el menor error de validación cruzada estimado (columna
+`xerror`) más 1-SE (columna `xstd`). En este caso, sería el árbol más pequeño cuyo valor
+en la columna `xerror` sea menor que $0.67151 + 0.11508$. Se seleccionaría el árbol número 2.
+
+Si nos quedamos con el árbol número dos, usamo el valor de `cp = 0.08`.
+
+```{r}
+#| label: pruned-tree
+
+rt2_a1 <- prune(rt_a1, cp = 0.08)
+rt2_a1 
+```
+
+La función `DMwR2::rpartXse` automatiza todo este proceso.
+
+### Random Forests
+
+Comparemos ahora lo que ocurre cuando enfrentamos el modelo de regresión lineal múltiple y el modelo
+basado en árbol de decisión con un algoritmo más robusto y avanzado, como Random Forests (RF), basado
+en un método de ensamblado de árboles de decisión aleatorizados. El paquete `performanceEstimation`
+permite utilizar una sintáxis muy explícita para configurar el proceso de ajuste y comparación de
+modelos.
+
+La métrica utilizada en este caso es el NMSE (*Normalised MSE*), que se obtiene calculando el cociente
+entre el rendimiento de nuestro modelo y el de un modelo de base (*baseline*) como, por ejemplo, el valor
+promedio de la salida (*null model*).
+
+```{r}
+#| label: fit-compare-lm-rt-rf
+#| echo: false
+
+DSs <- sapply(names(algae)[12:18],
+          function(x,names.attrs) { 
+            f <- as.formula(paste(x, "~ ."))
+            PredTask(f, algae[,c(names.attrs,x)], x, copy=TRUE) 
+          },
+          names(algae)[1:11])
+
+res_all <- performanceEstimation(
+    DSs,
+    c(Workflow(learner="lm", pre="knnImp",post="onlyPos"),
+      workflowVariants(learner="rpartXse",
+                       learner.pars=list(se=c(0,0.5,1))),
+      workflowVariants(learner="randomForest", pre="knnImp",
+                       learner.pars=list(ntree=c(200,500,700)))),
+    EstimationTask(metrics="nmse",method=CV(nReps=5,nFolds=10)))
+```
+
+```{r}
+#| label: rank-workflows
+
+rankWorkflows(res_all, top=3)
+```
+
+```{r}
+#| label: Bonferroni-Dunn-test
+
+p <- pairedComparisons(res_all, baseline="randomForest.v3")
+p$nmse$F.test
+p$nmse$BonferroniDunn.test
+```
 
 
-## Máquinas de vector soporte (SVM)
+## Predicción de valores
 
+Finalmente, se ofrecen varias alternativas de evaluación de los modelos propuestos, centrado
+en la utilización del paquete `performanceEstimation` desarrollado por el mismo autor (Torgo, 2014).
 
-## Modelos probabilísticos: Naïve Bayes
-
-
-## Random Forests
-
-
+La última sección ofrece pasos detallados para calcular las predicciones del
+modelo seleccionado, utilizando el testing dataset de 140 casos adicionales. Podemos
+encontrar también el código en 
+[la sección "Predictions for Seven Algae"](http://ltorgo.github.io/DMwR2/Ralgae.html#predictions_for_the_seven_algae) del
+documento de este caso de estudio.
