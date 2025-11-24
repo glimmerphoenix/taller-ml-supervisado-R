@@ -157,11 +157,11 @@ en R, empleando varios paquetes.
 | Descripción              | Valor                                  |
 |:-------------------------|:---------------------------------------|
 | Tipo de problema         | Regresión (supervisada)                |
-| Respuesta                | `Sales_Price`                          |
+| Respuesta                | `Sales_Price`, cuantitativa            |
 | Variables (*inputs*)     | 80                                     |
 | Observaciones            | 2.930                                  |
 | Objetivo                 | Predicción del precio de las viviendas |
-| Más información          | `?AmesHousing::ames_raw`                |
+| Más información          | `?AmesHousing::ames_raw`               |
 
 : Descripción del dataset proporcionado por el paquete `AmesHousing`. {#tbl-desc-ames .striped .hover}
 

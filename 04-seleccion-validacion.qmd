@@ -73,7 +73,7 @@ con precaución puesto que, como se indica en [@boehmke2019] (Sec. 2.6.2), dos m
 diferentes que tengan el mismo RMSE, pero en los que el primero tenga menos variabilidad (dispersión) en los
 valores de la salida del modelo que el segundo tendrá también un $R^2$ menor.
 
-### Modelos de clasificación
+### Modelos de clasificación {#sec-eval-classification}
 
 Las métricas de rendimiento de los modelos de clasificación se suelen construir a partir de los valores de la
 llamada **matriz de confusión**, que refleja el tipo de aciertos y errores cometidos por el modelo al clasificar,

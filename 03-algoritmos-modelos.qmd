@@ -1,7 +1,37 @@
 # Algoritmos y modelos
 
 En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente,
-mostraremos cómo se pueden entrenar y evaluar con R.
+mostraremos cómo se pueden entrenar y evaluar con R. Necesitaremos los siguientes paquetes.
+
+```{r}
+#| label: chap3-packages
+#| message: false
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+library(caret)
+library(doParallel)
+library(mlbench)
+library(car)
+library(effects)
+library(faraway)
+```
+
+Además, será necesario tener instalados varios paquetes más que `caret` emplea internamente para ajustar
+cada tipo de algoritmo o modelo solicitado.
+
+| Paquete         | Modelo                     |
+|:----------------|:---------------------------|
+| `stepPlr`       | Reg. Logística penalizada  |
+| `adabag`        | Adaboost                   |
+| `mgcv`          | GAM                        |
+| `gam`           | GAM                        |
+| `xgboost`       | XGBoost                    |
+| `randomForest`  | Random Forests             |
+| `kernlab`       | SVM                        |
+
+: Paquetes R necesarios para ejecutar los ejemplos de este capítulo. {#tbl-pkgs-chap3 .striped .hover}
 
 Antes de comenzar, es importante hacer una distinción entre dos tipos de modelos o algoritmos [@james2021]:
 
@@ -12,16 +42,100 @@ ejemplo sería un modelo de regresión lineal.
 - **Modelos no paramétricos**: estos no asumen una forma paramétrica para la función de predicción $f(X)$,
 ofreciendo una alternativa más flexible para resolver el problema de regresión.
 
+En este capítulo vamos a utilizar el paquete `caret` en modo de ejecución paralela, para aprovechar las
+capacidades multi-núcleo de la mayoría de computadores modernos.
+
+```{r}
+#| label: caret-parallel
+#| message: false
+
+library(doParallel)
+cl <- makePSOCKcluster(5) # 5 cores para proc. paralelo
+registerDoParallel(cl)
+```
+
+## Datasets
+
+**Dataset: `Sonar`**: El objetivo es discriminar entre dos tipos de blancos detectados con un
+sistema sónar [@gorman1988]:
+
+- Cilindro metálico.
+- Roca aproximadamente cilíndrica.
+
+Está incluido en el paquete `mlbench` [@leisch2024mlbench,@UCI1998].
+
+| Descripción              | Valor                                  |
+|:-------------------------|:---------------------------------------|
+| Tipo de problema         | Clasificación binaria (supervisada)    |
+| Respuesta                | `Class`; etiquetas: `M` o `R`          |
+| Variables (*inputs*)     | 60; rango $[0.0, 1.0]$                 |
+| Observaciones            | 208                                    |
+| Objetivo                 | Distinguir tipo de blanco sónar        |
+| Más información          | `?mlbench::Sonar`                      |
+
+: Descripción del dataset `mlbench::Sonar`. {#tbl-desc-Sonar .striped .hover}
+
+### Particionado de datos
+
+**Dataset: `mlbench::Sonar`**.
+
+La preparación esta [documentada en el paquete `caret`](https://cran.r-project.org/web/packages/caret/vignettes/caret.html).
+
+```{r}
+#| label: sonar-partition
+
+data(Sonar)
+SonarData = Sonar[,c(1,11,17,23,28,34,40,45,56,61)]
+
+set.seed(107)
+inTrain <- createDataPartition(
+  y = SonarData$Class,  # se necesitan los datos de la salida
+  p = .75,              # 75% datos para entrenamiento
+  list = FALSE
+)
+## Formato de resultados
+
+## La salidad es un conjunto de enteros que representan los
+## índices de las filas en el dataset original escogidos para
+## entrar en el training set.
+str(inTrain)
+
+training <- SonarData[ inTrain,]
+testing  <- SonarData[-inTrain,]
+
+nrow(training)
+nrow(testing)
+```
+
+Sólo queda configurar es sistema de evaluación cruzada para medir el rendimiento de los modelos antes
+de enfrentarse al conjunto final de prueba, así como para ajustar los hiperparámetros que sean necesarios.
+En todos los ejemplos aplicaremos validación cruzada con 5 grupos.
+
+```{r}
+#| label: sonar-train-config
+
+config_control <- trainControl(
+    method = 'cv',                   # k-fold cross-validation
+    # method = 'repeatedcv',         # k-fold cross-validation repetida (variante)
+    number = 5,                      # número de grupos o iteraciones de remuestreo
+    # repeats = 10,                  # número de conjuntos completos de grupos a computar
+    savePredictions = 'final',       # guardar las predicciones para ajuste óptimo de hiperparámetros
+    classProbs = TRUE,               # se devuelven las probabilidades de clase
+    summaryFunction=twoClassSummary  # tipo de función para resumir resultados (según el tipo de problema)
+)
+```
+
+
 ## K vecinos más cercanos (K-NN)
 
-Se trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la regresión,
+Se trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la **regresión**,
 fijado un valor para $K$ y un punto de predicción $x_0$, se identifican las $K$ observaciones del conjunto de
 entrenamiento más cercanas a $x_0$, denotadas por $\mathcal{N}_0$. Entonces, se estima $f(x_0)$ como el valor
 promedio de todas las respuestas contenidas en $\mathcal{N}_0$, es decir:
 
 $$
 \hat{f}(x_0) = \frac{1}{K}\sum_{x_i \in \mathcal{N}_0} \,y_i.
-$$ {#eq-KNN}
+$$ {#eq-KNN-reg}
 
 
 ![Valores estimados para una regresión KNN en un conjunto de datos en dos dimensiones con 64 observaciones. Izq.: K=1. Dcha.: K=9. Fuente: Fig. 3.16 [@james2021].](img/KNN-fit-ISLRv2.png){#fig-KNN-fit width="95%"}
@@ -36,6 +150,31 @@ discuten algunas medidas de disimilaridad que se pueden computar entre pares de 
 funciones de distancia son la familia de distancias Minkowski, incluyendo Manhattan (L1), Euclídea (L2) o 
 Chebyshev (Linf); la distancia de Haversine (para datos geolocalizados sobre la superficie terrestre); la
 similaridad del coseno (para documentos o datos textuales) o la distancia de Jaccard.
+
+El modelo KNN para **clasificación** es muy directo. Sea $K$ un número entero positivo y $x_0$ una observación
+que deseamos clasificar. Primero, el algoritmo identifica las $K$ observaciones más cercanas a $x_0$, que
+denotamos por $\mathcal{N}_0$. Entonces, se estima la probabilidad condicional para la clase $j$ como
+la fracción de puntos pertenecientes a $\mathcal{N}_0$ cuyos valores de respuesta son la clase $j$. En otras
+palabras, se asigna la etiqueta de salida de la mayorí ade vecinos cercanos como la clase más probable 
+para la salida a predecir para el punto $x_0$:
+
+$$
+P(Y=j \mid X=x_0)= \frac{1}{K}\sum_{i \in \mathcal{N}_0} \,I(y_i = j).
+$$ {#eq-KNN-class}
+
+### Ajuste de un modelo de clasificación KNN
+
+En el siguiente ejemplo se muestra cómo ajustar un modelo KNN para clasificación con el dataset `mlbench::Sonar`.
+La métrica que emplearemos para ajustar el hiperparámetro $K$ es la curva ROC, presentada en la
+@sec-eval-classification.
+
+```{r}
+#| label: sonar-fit-KNN
+
+model_knn = train(Class ~ ., data=training, method='knn',
+                       metric="ROC", trControl = config_control)
+model_knn
+```
 
 ## Modelos lineales {#sec-linear-models}
 
@@ -77,6 +216,31 @@ alrededor del valor promedio que se predice. Distribuciones habituales son la No
 | Reg. de Poisson     | Poisson          | Cuantitativas o cualitativas     |
 
 : Algunos modelos GLM y sus elementos constitutivos asociados. {#tbl-my .striped .hover}
+
+### Ajuste de un modelo de clasificación LR
+
+Seguidamente, se presenta el proceso de ajuste y evaluación de un modelo de clasificación mediante
+regresión logística (LR). Este modelo estima una probabilidad a la salida y debemos establecer un umbral
+o *threshold* para dicha probabilidad estimada, a partir de cual (para valores superiores o iguales)
+asignamos una de las dos posibles etiquetas de salida (por ejemplo, `1`). Para una probabilidad estimada 
+menor que el umbral asignamos la otra posible etiqueta de salida (por ejemplo, `0`).
+
+```{r}
+#| label: sonar-fit-LR
+
+# Regresión logística
+model_glm <- train(
+  Class ~ .,
+  data = training,
+  method = "glm",
+  metric = "ROC",
+  trControl = config_control
+)
+model_glm
+
+# Recuperamos los coeficientes del modelo final ajustado
+summary(model_glm$finalModel)
+```
 
 ### Regularización en modelos lineales
 
@@ -133,6 +297,37 @@ La @fig-example-GAM-fit muestra un ejemplo del resultado de ajustar un modelo GA
 
 ![Ejemplo de ajuste de un modelo GAM, con dos predictores cuantitativos (izq. y centro) y otro cualitativo (dcha.). Se puede apreciar que las funciones para los predictores cuantiativos son flexibles y suaves. Fuente: Fig. 7.12 [@james2021].](img/example-GAM-fit.png){#fig-example-GAM-fit width="95%"}
 
+### Ajuste de un modelo GAM para clasificación
+
+Los modelos GAM pueden aplicarse tanto a problemas de regresión como de clasificación. En el paquete `caret`,
+podemos escoger ajustar un modelo de este tipo con el paquete `mgcv` o bien con el paquete `gam`.
+
+En este caso, podremos ver que la función de enlace (*link function*) establecida para relacionar la salida
+con la combinación lineal de los regresores es *logit*.
+
+```{r}
+#| label: sonar-fit-gam-mgcv
+#| message: false
+
+model_gam_mgcv = train(Class ~ ., data=training, method='gam',
+                  metric="ROC", trControl = config_control)
+model_gam_mgcv
+
+summary(model_gam_mgcv$finalModel)
+```
+
+
+```{r}
+#| label: sonar-fit-gam-gam
+#| message: false
+
+model_gam = train(Class ~ ., data=training, method='gamSpline',
+                  metric="ROC", trControl = config_control)
+model_gam
+
+coef(model_gam$finalModel)
+```
+
 
 ## Máquinas de vector soporte (SVM)
 
@@ -163,6 +358,20 @@ evidente explicar el papel que juega cada una de las variables en la identificac
 separación entre clases.
 
 ![Fronteras de separación entre dos grupos de datos que se organizan en forma de espiral. Izq.: frontera de clasificación determinada mediante un algoritmo RF. Dcha.: frontera de clasificación identificada mediante un algoritmo SVM que usa una función núcleo de base radial (*radial basis kernel*). Fuente: Fig. 14.7 [@boehmke2019].](img/two-spirals-SVM.png){#fig-two-spirals-SVM width="95%"}
+
+### Ajuste de un modelo SVM (RBF)
+
+Mostramos un ejemplo de cómo entrenar un modelo SVM, utilizando como función *kernel* la función de
+base radial (*Radial Basis Function*). Los hiperparámetros que controlan la complejidad del modelo son
+`sigma` y `C`.
+
+```{r}
+#| label: sonar-fit-SVM
+
+model_svmRadial = train(Class ~ ., data=training, method='svmRadial',
+                        metric="ROC", tuneLength=15, trControl = config_control)
+model_svmRadial
+```
 
 
 ## Modelos probabilísticos: Naïve Bayes
@@ -252,6 +461,40 @@ débil, pueden ser "potenciados" (*boosted*) de este modo para crear un comité 
 rendimiento muy bueno. Uno de los primeros métodos propuestos con esta estrategia fue AdaBoost. Una de las 
 variantes más populares actualmente es XGBoost (*Extreme Gradient Boosting*) (véase [Sec. 12.5](https://bradleyboehmke.github.io/HOML/gbm.html#xgboost) de [@boehmke2019]), que incluye hiperparámetros para
 controlar términos de penalización del modelo que reduzcan su complejidad y prevengan el sobreajuste.
+
+### Ejemplo de ajuste de un modelo Random Forests (RF)
+
+```{r}
+#| label: sonar-fit-RF
+
+model_rf = train(Class ~ ., data=training, method='rf',
+                 metric="ROC", tuneLength=5, trControl = config_control)
+model_rf
+```
+
+### Ejemplo de ajuste de un modelo AdaBoost
+
+```{r}
+#| label: sonar-fit-AdaBoost
+
+model_adaboost = train(Class ~ ., data=training, method='AdaBoost.M1',
+                       metric="ROC", tuneLength=2, trControl = config_control)
+model_adaboost
+```
+
+### Ejemplo de ajuste de modelos XGBoost
+
+**XGBoost lineal**
+
+```{r}
+#| label: sonar-fit-XGBoost-linear
+
+model_xgbLinear = train(Class ~ ., data=training, method='xgbLinear',
+                        metric="ROC", tuneLength=5, trControl = config_control, verbose=F)
+# Descomentar para ver iteraciones
+# model_xgbLinear
+```
+
 
 ## Apilado de modelos
 
