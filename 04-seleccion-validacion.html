@@ -309,7 +309,7 @@ window.Quarto = {
   <li><a href="#métricas-de-rendimiento" id="toc-métricas-de-rendimiento" class="nav-link" data-scroll-target="#métricas-de-rendimiento"><span class="header-section-number">4.2</span> Métricas de rendimiento</a>
   <ul class="collapse">
   <li><a href="#modelos-de-regresión" id="toc-modelos-de-regresión" class="nav-link" data-scroll-target="#modelos-de-regresión"><span class="header-section-number">4.2.1</span> Modelos de regresión</a></li>
-  <li><a href="#modelos-de-clasificación" id="toc-modelos-de-clasificación" class="nav-link" data-scroll-target="#modelos-de-clasificación"><span class="header-section-number">4.2.2</span> Modelos de clasificación</a></li>
+  <li><a href="#sec-eval-classification" id="toc-sec-eval-classification" class="nav-link" data-scroll-target="#sec-eval-classification"><span class="header-section-number">4.2.2</span> Modelos de clasificación</a></li>
   <li><a href="#ajuste-de-parámetros" id="toc-ajuste-de-parámetros" class="nav-link" data-scroll-target="#ajuste-de-parámetros"><span class="header-section-number">4.2.3</span> Ajuste de parámetros</a></li>
   </ul></li>
   <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">4.3</span> Comparación de modelos</a>
@@ -379,8 +379,8 @@ window.Quarto = {
 <li><span class="math inline">\(R^2\)</span> y <span class="math inline">\(R_{adj}^2\)</span>: son métricas que representan el porcentaje de la varianza total de los datos que el modelo es capaz de explicar. La versión ajustada intenta tener en cuenta el número de variables predictoras empleadas, penalizando modelos más complejos. De otro modo, usar un mayor número de variables normalmente aumentaría sin más el valor de <span class="math inline">\(R^2\)</span>. El objetivo aquí es <em>maximizar</em> su valor. No obstante, es preciso obrar con precaución puesto que, como se indica en <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> (Sec. 2.6.2), dos modelos entrenados con datos diferentes que tengan el mismo RMSE, pero en los que el primero tenga menos variabilidad (dispersión) en los valores de la salida del modelo que el segundo tendrá también un <span class="math inline">\(R^2\)</span> menor.</li>
 </ul>
 </section>
-<section id="modelos-de-clasificación" class="level3" data-number="4.2.2">
-<h3 data-number="4.2.2" class="anchored" data-anchor-id="modelos-de-clasificación"><span class="header-section-number">4.2.2</span> Modelos de clasificación</h3>
+<section id="sec-eval-classification" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="sec-eval-classification"><span class="header-section-number">4.2.2</span> Modelos de clasificación</h3>
 <p>Las métricas de rendimiento de los modelos de clasificación se suelen construir a partir de los valores de la llamada <strong>matriz de confusión</strong>, que refleja el tipo de aciertos y errores cometidos por el modelo al clasificar, como muesgtra la <a href="#fig-confusion-matrix" class="quarto-xref">Figura&nbsp;<span>4.1</span></a>.</p>
 <div id="fig-confusion-matrix" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -482,7 +482,7 @@ Figura&nbsp;4.3: Representación del <em>convex hull</em> bajo varias curvas ROC
 Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</em> (1.ª ed.). Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9780367816377">https://doi.org/10.1201/9780367816377</a>
 </div>
 <div id="ref-fawcett2006" class="csl-entry" role="listitem">
-Fawcett, T. (2006). An introduction to ROC analysis. <em>Pattern Recognition Letters</em>, <em>27</em>(8), 861-874. https://doi.org/<a href="https://doi.org/10.1016/j.patrec.2005.10.010">https://doi.org/10.1016/j.patrec.2005.10.010</a>
+Fawcett, T. (2006). An introduction to ROC analysis. <em>Pattern Recognition Letters</em>, <em>27</em>(8), 861-874. <a href="https://doi.org/10.1016/j.patrec.2005.10.010">https://doi.org/10.1016/j.patrec.2005.10.010</a>
 </div>
 </div>
 </section>

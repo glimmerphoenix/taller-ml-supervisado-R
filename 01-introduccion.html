@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -310,6 +344,7 @@ window.Quarto = {
   <li><a href="#ajuste-de-modelos" id="toc-ajuste-de-modelos" class="nav-link" data-scroll-target="#ajuste-de-modelos"><span class="header-section-number">1.3</span> Ajuste de modelos</a>
   <ul class="collapse">
   <li><a href="#técnicas-de-muestreo" id="toc-técnicas-de-muestreo" class="nav-link" data-scroll-target="#técnicas-de-muestreo"><span class="header-section-number">1.3.1</span> Técnicas de muestreo</a></li>
+  <li><a href="#particionado-de-datos-con-r" id="toc-particionado-de-datos-con-r" class="nav-link" data-scroll-target="#particionado-de-datos-con-r">Particionado de datos con R</a></li>
   <li><a href="#desequilibrios-en-los-datos" id="toc-desequilibrios-en-los-datos" class="nav-link" data-scroll-target="#desequilibrios-en-los-datos"><span class="header-section-number">1.3.2</span> Desequilibrios en los datos</a></li>
   </ul></li>
   <li><a href="#preparación-de-los-datos" id="toc-preparación-de-los-datos" class="nav-link" data-scroll-target="#preparación-de-los-datos"><span class="header-section-number">1.4</span> Preparación de los datos</a></li>
@@ -407,7 +442,7 @@ Nota
 <p>La única diferencia, por tanto, es en qué parte del mismo proceso se pone el foco en cada caso. En muchas ocasiones, en este taller usaremos indistintamente los términos <em>ajuste</em> o <em>entremaiento</em> aplicados a un modelo o algoritmo.</p>
 </div>
 </div>
-<p>El primer paso en esta secuencia de ajuste de modelos siempre es la <strong>división del conjunto de datos</strong> en dos grupos <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>:</p>
+<p>El proceso completo de ajuste o entrenamiento de un modelo se mostrará en la <a href="02-ml-supervisado.html#fig-model-selec" class="quarto-xref">Figura&nbsp;<span>2.1</span></a> en el <a href="02-ml-supervisado.html" class="quarto-xref"><span>Capítulo 2</span></a>. El primer paso en esta secuencia de ajuste de modelos siempre es la <strong>división del conjunto de datos</strong> en dos grupos <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>:</p>
 <ul>
 <li><p>Datos de <strong>entrenamiento</strong> (<em>training</em>): son los datos que vamos a emplear para que el algoritmo/modelo aprenda a resolver el problema. Entre otros aspectos, permiten elegir las variables o entradas que vamos a utilizar, calcular valores óptimos para los <em>hiperparámetros</em> del modelo, comparar el rendimiento de varios modelos y el resto de acciones que conducen a elegir un modelo final.</p></li>
 <li><p>Datos de <strong>prueba</strong>: una vez que hemos seleccionado un modelo final, estos datos sirven para obtener una <em>estimación no sesgada</em> del rendimiento de nuestro modelo cuando se enfrenta a datos que no ha visto previamente, lo que denominamos <strong>error de generalización</strong>.</p></li>
@@ -437,6 +472,7 @@ Importante
 </div>
 <p>Los porcentajes del total del datos que se recomendia usar para cada grupo suelen oscilar entre 60% (training) - 40% (testing), 70%-30% u 80%-20%. Usar más del 80% de los datos para entrenamiento sería contraproducente, puesto que no tendríamos suficientes datos como para hacer una valoración adecuada del modelo y, además, el ajuste encajaría demasiado en los datos observados y perdería capacidad de generalización (<strong>sobreajuste</strong>, <em>overfitting</em> en inglés). Por contra, emplear demasiados datos en probar el modelo (&gt;40%) implicaría no tener suficientes datos como para ajustar sus parámetros de manera robusta.</p>
 <p>No obstante, existen casos particulares. Si tenemos un dataset de gran tamaño, entonces no tiene demasiado sentido crear un conjunto de entrenamiento muy grande, ya que la mayoría de los algoritmos de aprendizaje automático (exceptuando, por ejemplo, los modelos basados en aprendizaje profundo más recientes) no obtienen ningún beneficio por utilizar muchos datos para entrenarlos. Por otro lado, si <span class="math inline">\(n\)</span> es el tamaño de nuestro dataset y <span class="math inline">\(p\)</span> el número de variables o <em>features</em> de entrada del modelo, cuando <span class="math inline">\(p&gt;&gt;n\)</span> sí se necesitan grandes conjuntos de datos para estimar de manera fiable posibles patrones en los datos.</p>
+<p>La pregunta es: ¿cómo podemos dividir nuestros datos en los conjuntos de entrenamiento y prueba? Para resolver esta tarea se aplican técnicas de <strong>muestreo de datos</strong>. A continuación, se describen algunas opciones habituales.</p>
 <section id="técnicas-de-muestreo" class="level3" data-number="1.3.1">
 <h3 data-number="1.3.1" class="anchored" data-anchor-id="técnicas-de-muestreo"><span class="header-section-number">1.3.1</span> Técnicas de muestreo</h3>
 <p>Normalmente, la división de los datos en estos dos grupos se realiza por medio de técnicas de muestreo. Las dos técnicas más comúnmente aplicadas son:</p>
@@ -455,6 +491,183 @@ Figura&nbsp;1.4: El muestreo aleatorio simple no tiene en cuenta la proporción 
 </figure>
 </div>
 </section>
+<section id="particionado-de-datos-con-r" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="particionado-de-datos-con-r">Particionado de datos con R</h3>
+<p>En este apartado presentamos algunos ejemplos de implementación del proceso de particionado de datos en R, empleando varios paquetes.</p>
+<p><strong>Dataset: <code>AmesHousing</code></strong>: Información sobre ventas de propiedades inmobiliarias descrito en <span class="citation" data-cites="deCock2011">(<a href="references.html#ref-deCock2011" role="doc-biblioref">De Cock, 2011</a>)</span> y proporcionado por el paquete <code>AmesHousing</code> <span class="citation" data-cites="kuhn2020ames">(<a href="references.html#ref-kuhn2020ames" role="doc-biblioref">Kuhn, 2020</a>)</span>.</p>
+<div id="tbl-desc-ames" class="striped hover quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-desc-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;1.1: Descripción del dataset proporcionado por el paquete <code>AmesHousing</code>.
+</figcaption>
+<div aria-describedby="tbl-desc-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Descripción</th>
+<th style="text-align: left;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tipo de problema</td>
+<td style="text-align: left;">Regresión (supervisada)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Respuesta</td>
+<td style="text-align: left;"><code>Sales_Price</code>, cuantitativa</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Variables (<em>inputs</em>)</td>
+<td style="text-align: left;">80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Observaciones</td>
+<td style="text-align: left;">2.930</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Objetivo</td>
+<td style="text-align: left;">Predicción del precio de las viviendas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Más información</td>
+<td style="text-align: left;"><code>?AmesHousing::ames_raw</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)    <span class="co"># Procesado y filtrado de datos</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)  <span class="co"># Gráficos</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Paquetes para preparación y modelado de datos</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)  <span class="co"># Técnicas de remuestreo</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)    <span class="co"># Remuestreo y entrenamiento (Kuhn &amp; Johnson)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(h2o)      <span class="co"># Remuestreo y entrenamiento (H2O.ai)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Configuración inicial de h2o</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.no_progress</span>()  <span class="co"># Deshabilita barra de progreso de h2o</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.init</span>()         <span class="co"># Lanza el cluster (local) de h2o</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Connection successful!
+
+R is connected to the H2O cluster: 
+    H2O cluster uptime:         8 hours 26 minutes 
+    H2O cluster timezone:       Europe/Madrid 
+    H2O data parsing timezone:  UTC 
+    H2O cluster version:        3.44.0.3 
+    H2O cluster version age:    1 year, 11 months and 3 days 
+    H2O cluster name:           H2O_started_from_R_jfelipe_jgi425 
+    H2O cluster total nodes:    1 
+    H2O cluster total memory:   7.76 GB 
+    H2O cluster total cores:    12 
+    H2O cluster allowed cores:  12 
+    H2O cluster healthy:        TRUE 
+    H2O Connection ip:          localhost 
+    H2O Connection port:        54321 
+    H2O Connection proxy:       NA 
+    H2O Internal Security:      FALSE 
+    R Version:                  R version 4.5.2 (2025-10-31) </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in h2o.clusterInfo(): 
+Your H2O cluster version is (1 year, 11 months and 3 days) old. There may be a newer version available.
+Please download and install the latest version from: https://h2o-release.s3.amazonaws.com/h2o/latest_stable.html</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ames <span class="ot">&lt;-</span> AmesHousing<span class="sc">::</span><span class="fu">make_ames</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ames.h2o <span class="ot">&lt;-</span> <span class="fu">as.h2o</span>(ames)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="muestreo-aleatorio-simple" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="muestreo-aleatorio-simple">Muestreo aleatorio simple</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Con R Base</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># Fijamos semilla, resultados reproducibles</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>index_1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(ames), <span class="fu">round</span>(<span class="fu">nrow</span>(ames) <span class="sc">*</span> <span class="fl">0.7</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>train_1 <span class="ot">&lt;-</span> ames[index_1, ]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>test_1  <span class="ot">&lt;-</span> ames[<span class="sc">-</span>index_1, ]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Usando el paquete caret</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># Resultados reproducibles</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>index_2 <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(ames<span class="sc">$</span>Sale_Price, <span class="at">p =</span> <span class="fl">0.7</span>, </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                               <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>train_2 <span class="ot">&lt;-</span> ames[index_2, ]</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>test_2  <span class="ot">&lt;-</span> ames[<span class="sc">-</span>index_2, ]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Usando el paquete rsample</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># Resultados reproducibles</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>split_1  <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames, <span class="at">prop =</span> <span class="fl">0.7</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>train_3  <span class="ot">&lt;-</span> <span class="fu">training</span>(split_1)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>test_3   <span class="ot">&lt;-</span> <span class="fu">testing</span>(split_1)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Usando el paquete h2o</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>split_2 <span class="ot">&lt;-</span> <span class="fu">h2o.splitFrame</span>(ames.h2o, <span class="at">ratios =</span> <span class="fl">0.7</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>train_4 <span class="ot">&lt;-</span> split_2[[<span class="dv">1</span>]]</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>test_4  <span class="ot">&lt;-</span> split_2[[<span class="dv">2</span>]]</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La <a href="#fig-density-data-partitions" class="quarto-xref">Figura&nbsp;<span>1.5</span></a> muestra varios paneles donde podemos comprobar la distribución de valores de las diferenes particiones, respecto de los datos originales.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Mostrar código</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>compara_dens <span class="ot">&lt;-</span> <span class="cf">function</span>(orig, train, test, var_name, main_title,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">name_orig =</span> <span class="fu">deparse</span>(<span class="fu">substitute</span>(original)),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">name_train =</span> <span class="fu">deparse</span>(<span class="fu">substitute</span>(train)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">name_test =</span> <span class="fu">deparse</span>(<span class="fu">substitute</span>(test))) {</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    datos_combinados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">valor =</span> <span class="fu">c</span>(orig, train, test),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">grupo =</span> <span class="fu">c</span>(<span class="fu">rep</span>(name_orig, <span class="fu">length</span>(orig)),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rep</span>(name_train, <span class="fu">length</span>(train)), </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rep</span>(name_test, <span class="fu">length</span>(test)))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(datos_combinados, <span class="fu">aes</span>(<span class="at">x =</span> valor, <span class="at">color =</span> grupo)) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> <span class="co"># 'alpha' controla la transparencia (0 a 1)</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> main_title,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="st">"Comparación train vs. test"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> var_name,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Densidad"</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Variable"</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">compara_dens</span>(ames<span class="sc">$</span>Sale_Price, train_1<span class="sc">$</span>Sale_Price, test_1<span class="sc">$</span>Sale_Price, <span class="st">"Sale_Price"</span>, <span class="st">"R base"</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">compara_dens</span>(ames<span class="sc">$</span>Sale_Price, train_2<span class="sc">$</span>Sale_Price, test_2<span class="sc">$</span>Sale_Price, <span class="st">"Sale_Price"</span>, <span class="st">"caret"</span>)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">compara_dens</span>(ames<span class="sc">$</span>Sale_Price, train_3<span class="sc">$</span>Sale_Price, test_3<span class="sc">$</span>Sale_Price, <span class="st">"Sale_Price"</span>, <span class="st">"rsample"</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">compara_dens</span>(ames<span class="sc">$</span>Sale_Price, <span class="fu">as.data.frame</span>(train_4)<span class="sc">$</span>Sale_Price, </span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">as.data.frame</span>(test_4)<span class="sc">$</span>Sale_Price, <span class="st">"Sale_Price"</span>, <span class="st">"h2o"</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(p1, p2, p3, p4)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-density-data-partitions" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-density-data-partitions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="01-introduccion_files/figure-html/fig-density-data-partitions-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-density-data-partitions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1.5: Comparación de las distribuciones de valores obtenidas en las muestras. Rojo: datos originales; azul: partición de entrenamiento; verde: partición de prueba.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="muestreo-estratificado" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="muestreo-estratificado">Muestreo estratificado</h4>
+<p>Consultar el ejemplo de la <a href="https://bradleyboehmke.github.io/HOML/process.html#stratified">Sec. 2.2.2</a> en <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>, que explica cómo utilizar el paquete <code>rsample</code> para obtener un muestreo estratificado.</p>
+<p>También es bastante directo obtener un <a href="https://rpubs.com/crossxwill/sampling_tidyverse">muestreo estratificado usando Tidyverse</a>.</p>
+</section>
+</section>
 <section id="desequilibrios-en-los-datos" class="level3" data-number="1.3.2">
 <h3 data-number="1.3.2" class="anchored" data-anchor-id="desequilibrios-en-los-datos"><span class="header-section-number">1.3.2</span> Desequilibrios en los datos</h3>
 <p>Otro aspecto que también tenemos que considerar es si existe algún tipo de <strong>desequilibrio</strong> entre las categorias o la distribución de valores de nuestro conjunto de datos. Esto ocurre, por ejemplo, en datos etiquetados en los que una categoría tiene muchas menos instancias que otras, como en los problemas de fraude o impagos. En un dataset con dos categorías, <code>"fraudulento"</code> o <code>"legítimo"</code>, si la primera categoría tiene sólo un 1% del total de muestras y la segunda el 99% restante será difícil que los conjuntos de entrenamiento y prueba mantengan esa proporción. Por otro lado, también será complicado que el modelo pueda aprender a identificar instancias de la categoría minoritaria si tiene pocos ejemplos de los que poder aprender a reconocerla. Por ello, existen varias técnicas para mitigar esta limitación:</p>
@@ -469,12 +682,18 @@ Figura&nbsp;1.4: El muestreo aleatorio simple no tiene en cuenta la proporción 
 <section id="preparación-de-los-datos" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="preparación-de-los-datos"><span class="header-section-number">1.4</span> Preparación de los datos</h2>
 <p>Antes de presentar algunos ejemplos de modelos supervisados de aprendizaje máquina y cómo podemos emplearlos en R, conviene recordar que un paso previo imprescindible es preparar adecuadamente nuestros datos. Con demasiada frecuencia, errores de codificación, ausencia de valores, escalas de representación demasiado amplias y muchos otros problemas aparecen en nuestros datos y pueden malograr todos nuestros esfuerzos por conseguir ajustar nuestros modelos y elegir la opción más adecuada.</p>
-<p>Se invita al lector a consultar el <a href="https://bradleyboehmke.github.io/HOML/engineering.html">capítulo 3</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>, así como las referencias <span class="citation" data-cites="kuhn2019featureeng">(<a href="references.html#ref-kuhn2019featureeng" role="doc-biblioref">Kuhn &amp; Johnson, 2019</a>)</span> y <span class="citation" data-cites="zheng2018feature">(<a href="references.html#ref-zheng2018feature" role="doc-biblioref">Zheng &amp; Casari, 2018</a>)</span> para un tratamiento más detallado de muchas de las tareas de limpieza y preparación de datos necesarias antes de implementar y evaluar nuestros modelos de aprendizaje automático.</p>
+<p>Las tareas de limpieza y preparación de datos podrían llenar un taller o un curso entero por sí mismas. Se invita al lector a consultar el <a href="https://bradleyboehmke.github.io/HOML/engineering.html">capítulo 3</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>, así como las referencias <span class="citation" data-cites="kuhn2019featureeng">(<a href="references.html#ref-kuhn2019featureeng" role="doc-biblioref">Kuhn &amp; Johnson, 2019</a>)</span> y <span class="citation" data-cites="zheng2018feature">(<a href="references.html#ref-zheng2018feature" role="doc-biblioref">Zheng &amp; Casari, 2018</a>)</span> para un tratamiento más detallado de muchas de las tareas de limpieza y preparación de datos necesarias antes de implementar y evaluar nuestros modelos de aprendizaje automático.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
 <div id="ref-boehmke2019" class="csl-entry" role="listitem">
 Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</em> (1.ª ed.). Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9780367816377">https://doi.org/10.1201/9780367816377</a>
+</div>
+<div id="ref-deCock2011" class="csl-entry" role="listitem">
+De Cock, D. (2011). Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project. <em>Journal of Statistics Education</em>, <em>19</em>(3). <a href="https://doi.org/10.1080/10691898.2011.11889627">https://doi.org/10.1080/10691898.2011.11889627</a>
+</div>
+<div id="ref-kuhn2020ames" class="csl-entry" role="listitem">
+Kuhn, M. (2020). <em>AmesHousing: The Ames Iowa Housing Data</em>. <a href="https://doi.org/10.32614/CRAN.package.AmesHousing">https://doi.org/10.32614/CRAN.package.AmesHousing</a>
 </div>
 <div id="ref-kuhn2019featureeng" class="csl-entry" role="listitem">
 Kuhn, M., &amp; Johnson, K. (2019). <em><span>Feature Engineering and Selection: A Practical Approach for Predictive Models</span></em>. Chapman &amp; Hall/CRC. <a href="http://www.feat.engineering/">http://www.feat.engineering/</a>

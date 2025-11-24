@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -322,7 +356,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-introduccion.html">Fundamentos</a></li><li class="breadcrumb-item"><a href="./02-ml-supervisado.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Aprendizaje máquina supervisado</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Aprendizaje máquina supervisado</span></h1>
+<h1 class="title"><span id="sec-supervised-ml" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Aprendizaje máquina supervisado</span></span></h1>
 </div>
 
 
@@ -339,7 +373,7 @@ window.Quarto = {
 </header>
 
 
-<p>Como hemos introducido en el tema anterior, el aprendizaje máquina supervisado es un proceso que implica entrenar a un algoritmo computacional para que resuelva un problema de predicción (regresión o clasificación), utilizando para ello un conjunto de datos. La Figura @fig-model-selec muestra un esquema del proceso completo.</p>
+<p>Como hemos introducido en el tema anterior, el aprendizaje máquina supervisado es un proceso que implica entrenar a un algoritmo computacional para que resuelva un problema de predicción (regresión o clasificación), utilizando para ello un conjunto de datos. La <a href="#fig-model-selec" class="quarto-xref">Figura&nbsp;<span>2.1</span></a> muestra un esquema del proceso completo.</p>
 <div id="fig-model-selec" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-model-selec-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -490,6 +524,23 @@ Figura&nbsp;2.7: Esquema que explica el procedimiento de validación cruzada con
 <li><p>Por último, para cada modelo se combinan (calculando el promedio o de otras formas) las evaluaciones individuales en cada iteración para ofrecer un resultado de evaluación global, que se compara con el resto de modelos para seleccionar el más adecuado.</p></li>
 </ol>
 <p>Lo más habitual es usar valores <span class="math inline">\(k=5\)</span> o <span class="math inline">\(k=10\)</span> <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>. Cuanto mayor sea <span class="math inline">\(k\)</span> menor será la diferencia entre el rendimiento real y nuestra estimación, pero también será mayor el coste computacional para completar el procedimiento.</p>
+<section id="k-fold-cross-validation-con-r" class="level4" data-number="2.4.1.1">
+<h4 data-number="2.4.1.1" class="anchored" data-anchor-id="k-fold-cross-validation-con-r"><span class="header-section-number">2.4.1.1</span> k-fold cross validation con R</h4>
+<p>La mayoría de paquetes orientados al entrenamiento y evaluación de modelos de aprendizaje automático en R ya incluyen argumentos para indicar el tipo de validación cruzada que queremos realizar.</p>
+<p>Por ejemplo, la función <code>h2o::h2o.glm()</code> para ajuste de modelos GLM (véase <a href="03-algoritmos-modelos.html#sec-linear-models" class="quarto-xref"><span>Sección 3.3</span></a>), incluye el argumento de entrada <code>nfolds</code> para controlar cuántos grupos usaremos en el procedimiento de validación cruzada. Si <code>nfolds = 0</code> no se aplica validación cruzada.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>h2o.cv <span class="ot">&lt;-</span> <span class="fu">h2o.glm</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">training_frame =</span> ames.h2o,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds =</span> <span class="dv">10</span>  <span class="co"># realiza 10-fold CV</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>El paquete <code>rsample</code> contiene la función <code>rsample::vfold_cv()</code> que devuelve un <em>data frame</em> anidado. Cada elemento en <code>splits</code> es una lista que contiene el data frame de entrenamiento en esa iteración y los IDs de las observaciones que se usarán para entrenar vs.&nbsp;validar el modelo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vfold_cv</span>(ames, <span class="at">v =</span> <span class="dv">10</span>) <span class="co"># prepara 10-fold CV</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 </section>
 <section id="boostrapping" class="level3" data-number="2.4.2">
 <h3 data-number="2.4.2" class="anchored" data-anchor-id="boostrapping"><span class="header-section-number">2.4.2</span> Boostrapping</h3>
@@ -506,6 +557,13 @@ Figura&nbsp;2.8: Esquema que explica el procedimiento de <em>bootstrapping</em>.
 </div>
 <p>En promedio, un 63,21% de las muestras originales son seleccionadas en cada muestra <em>boostrap</em>, mientras que las restantes que no han sido seleccionadas se marcan como <em>out-of-bag</em> (OOB). En este procedimiento, podemos entrenar un modelo con la muestra <em>boostrap</em> y validarlo con las muestras OOB. Por ejemplo este es el método empleado por <em>Random Forests</em>.</p>
 <p>Este procedimiento tiende a reducir la varianza de la estimación, pero en conjuntos de datos no muy grandes (&lt; 1.000 muestras) puede incrementar el sesgo de la estimación de rendimiento. En la mayoría de conjuntos de datos actuales, con tamaños relativamente grandes, esto no suele constituir un problema.</p>
+<section id="muestras-con-bootstrapping-en-r" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="muestras-con-bootstrapping-en-r">Muestras con <em>bootstrapping</em> en R</h4>
+<p>La función <code>rsample::bootstraps()</code> permite generar los conjuntos que necesitemos mediante <em>bootstrapping</em>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bootstraps</span>(ames, <span class="at">times =</span> <span class="dv">10</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 </section>
 <section id="otros-métodos-de-validación-cruzada" class="level3" data-number="2.4.3">
 <h3 data-number="2.4.3" class="anchored" data-anchor-id="otros-métodos-de-validación-cruzada"><span class="header-section-number">2.4.3</span> Otros métodos de validación cruzada</h3>

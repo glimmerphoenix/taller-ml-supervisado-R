@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -305,17 +339,36 @@ window.Quarto = {
     <h2 id="toc-title">Tabla de contenidos</h2>
    
   <ul>
-  <li><a href="#k-vecinos-más-cercanos-k-nn" id="toc-k-vecinos-más-cercanos-k-nn" class="nav-link active" data-scroll-target="#k-vecinos-más-cercanos-k-nn"><span class="header-section-number">3.1</span> K vecinos más cercanos (K-NN)</a></li>
-  <li><a href="#modelos-lineales" id="toc-modelos-lineales" class="nav-link" data-scroll-target="#modelos-lineales"><span class="header-section-number">3.2</span> Modelos lineales</a>
+  <li><a href="#datasets" id="toc-datasets" class="nav-link active" data-scroll-target="#datasets"><span class="header-section-number">3.1</span> Datasets</a>
   <ul class="collapse">
-  <li><a href="#regularización-en-modelos-lineales" id="toc-regularización-en-modelos-lineales" class="nav-link" data-scroll-target="#regularización-en-modelos-lineales"><span class="header-section-number">3.2.1</span> Regularización en modelos lineales</a></li>
+  <li><a href="#particionado-de-datos" id="toc-particionado-de-datos" class="nav-link" data-scroll-target="#particionado-de-datos"><span class="header-section-number">3.1.1</span> Particionado de datos</a></li>
   </ul></li>
-  <li><a href="#extensiones-del-modelo-lineal" id="toc-extensiones-del-modelo-lineal" class="nav-link" data-scroll-target="#extensiones-del-modelo-lineal"><span class="header-section-number">3.3</span> Extensiones del modelo lineal</a></li>
-  <li><a href="#máquinas-de-vector-soporte-svm" id="toc-máquinas-de-vector-soporte-svm" class="nav-link" data-scroll-target="#máquinas-de-vector-soporte-svm"><span class="header-section-number">3.4</span> Máquinas de vector soporte (SVM)</a></li>
-  <li><a href="#modelos-probabilísticos-naïve-bayes" id="toc-modelos-probabilísticos-naïve-bayes" class="nav-link" data-scroll-target="#modelos-probabilísticos-naïve-bayes"><span class="header-section-number">3.5</span> Modelos probabilísticos: Naïve Bayes</a></li>
-  <li><a href="#redes-neuronales-y-aprendizaje-profundo" id="toc-redes-neuronales-y-aprendizaje-profundo" class="nav-link" data-scroll-target="#redes-neuronales-y-aprendizaje-profundo"><span class="header-section-number">3.6</span> Redes neuronales y aprendizaje profundo</a></li>
-  <li><a href="#ensamblado-de-modelos" id="toc-ensamblado-de-modelos" class="nav-link" data-scroll-target="#ensamblado-de-modelos"><span class="header-section-number">3.7</span> Ensamblado de modelos</a></li>
-  <li><a href="#apilado-de-modelos" id="toc-apilado-de-modelos" class="nav-link" data-scroll-target="#apilado-de-modelos"><span class="header-section-number">3.8</span> Apilado de modelos</a></li>
+  <li><a href="#k-vecinos-más-cercanos-k-nn" id="toc-k-vecinos-más-cercanos-k-nn" class="nav-link" data-scroll-target="#k-vecinos-más-cercanos-k-nn"><span class="header-section-number">3.2</span> K vecinos más cercanos (K-NN)</a>
+  <ul class="collapse">
+  <li><a href="#ajuste-de-un-modelo-de-clasificación-knn" id="toc-ajuste-de-un-modelo-de-clasificación-knn" class="nav-link" data-scroll-target="#ajuste-de-un-modelo-de-clasificación-knn"><span class="header-section-number">3.2.1</span> Ajuste de un modelo de clasificación KNN</a></li>
+  </ul></li>
+  <li><a href="#sec-linear-models" id="toc-sec-linear-models" class="nav-link" data-scroll-target="#sec-linear-models"><span class="header-section-number">3.3</span> Modelos lineales</a>
+  <ul class="collapse">
+  <li><a href="#ajuste-de-un-modelo-de-clasificación-lr" id="toc-ajuste-de-un-modelo-de-clasificación-lr" class="nav-link" data-scroll-target="#ajuste-de-un-modelo-de-clasificación-lr"><span class="header-section-number">3.3.1</span> Ajuste de un modelo de clasificación LR</a></li>
+  <li><a href="#regularización-en-modelos-lineales" id="toc-regularización-en-modelos-lineales" class="nav-link" data-scroll-target="#regularización-en-modelos-lineales"><span class="header-section-number">3.3.2</span> Regularización en modelos lineales</a></li>
+  </ul></li>
+  <li><a href="#extensiones-del-modelo-lineal" id="toc-extensiones-del-modelo-lineal" class="nav-link" data-scroll-target="#extensiones-del-modelo-lineal"><span class="header-section-number">3.4</span> Extensiones del modelo lineal</a>
+  <ul class="collapse">
+  <li><a href="#ajuste-de-un-modelo-gam-para-clasificación" id="toc-ajuste-de-un-modelo-gam-para-clasificación" class="nav-link" data-scroll-target="#ajuste-de-un-modelo-gam-para-clasificación"><span class="header-section-number">3.4.1</span> Ajuste de un modelo GAM para clasificación</a></li>
+  </ul></li>
+  <li><a href="#máquinas-de-vector-soporte-svm" id="toc-máquinas-de-vector-soporte-svm" class="nav-link" data-scroll-target="#máquinas-de-vector-soporte-svm"><span class="header-section-number">3.5</span> Máquinas de vector soporte (SVM)</a>
+  <ul class="collapse">
+  <li><a href="#ajuste-de-un-modelo-svm-rbf" id="toc-ajuste-de-un-modelo-svm-rbf" class="nav-link" data-scroll-target="#ajuste-de-un-modelo-svm-rbf"><span class="header-section-number">3.5.1</span> Ajuste de un modelo SVM (RBF)</a></li>
+  </ul></li>
+  <li><a href="#modelos-probabilísticos-naïve-bayes" id="toc-modelos-probabilísticos-naïve-bayes" class="nav-link" data-scroll-target="#modelos-probabilísticos-naïve-bayes"><span class="header-section-number">3.6</span> Modelos probabilísticos: Naïve Bayes</a></li>
+  <li><a href="#redes-neuronales-y-aprendizaje-profundo" id="toc-redes-neuronales-y-aprendizaje-profundo" class="nav-link" data-scroll-target="#redes-neuronales-y-aprendizaje-profundo"><span class="header-section-number">3.7</span> Redes neuronales y aprendizaje profundo</a></li>
+  <li><a href="#ensamblado-de-modelos" id="toc-ensamblado-de-modelos" class="nav-link" data-scroll-target="#ensamblado-de-modelos"><span class="header-section-number">3.8</span> Ensamblado de modelos</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-de-ajuste-de-un-modelo-random-forests-rf" id="toc-ejemplo-de-ajuste-de-un-modelo-random-forests-rf" class="nav-link" data-scroll-target="#ejemplo-de-ajuste-de-un-modelo-random-forests-rf"><span class="header-section-number">3.8.1</span> Ejemplo de ajuste de un modelo Random Forests (RF)</a></li>
+  <li><a href="#ejemplo-de-ajuste-de-un-modelo-adaboost" id="toc-ejemplo-de-ajuste-de-un-modelo-adaboost" class="nav-link" data-scroll-target="#ejemplo-de-ajuste-de-un-modelo-adaboost"><span class="header-section-number">3.8.2</span> Ejemplo de ajuste de un modelo AdaBoost</a></li>
+  <li><a href="#ejemplo-de-ajuste-de-modelos-xgboost" id="toc-ejemplo-de-ajuste-de-modelos-xgboost" class="nav-link" data-scroll-target="#ejemplo-de-ajuste-de-modelos-xgboost"><span class="header-section-number">3.8.3</span> Ejemplo de ajuste de modelos XGBoost</a></li>
+  </ul></li>
+  <li><a href="#apilado-de-modelos" id="toc-apilado-de-modelos" class="nav-link" data-scroll-target="#apilado-de-modelos"><span class="header-section-number">3.9</span> Apilado de modelos</a></li>
   </ul>
 </nav>
     </div>
@@ -341,16 +394,185 @@ window.Quarto = {
 </header>
 
 
-<p>En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente, mostraremos cómo se pueden entrenar y evaluar con R.</p>
+<p>En este apartado, vamos a presentar algunos modelos de aprendizaje máquina supervisado que, posteriormente, mostraremos cómo se pueden entrenar y evaluar con R. Necesitaremos los siguientes paquetes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlbench)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Además, será necesario tener instalados varios paquetes más que <code>caret</code> emplea internamente para ajustar cada tipo de algoritmo o modelo solicitado.</p>
+<div id="tbl-pkgs-chap3" class="striped hover quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pkgs-chap3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;3.1: Paquetes R necesarios para ejecutar los ejemplos de este capítulo.
+</figcaption>
+<div aria-describedby="tbl-pkgs-chap3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Paquete</th>
+<th style="text-align: left;">Modelo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>stepPlr</code></td>
+<td style="text-align: left;">Reg. Logística penalizada</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>adabag</code></td>
+<td style="text-align: left;">Adaboost</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mgcv</code></td>
+<td style="text-align: left;">GAM</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>gam</code></td>
+<td style="text-align: left;">GAM</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>xgboost</code></td>
+<td style="text-align: left;">XGBoost</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>randomForest</code></td>
+<td style="text-align: left;">Random Forests</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>kernlab</code></td>
+<td style="text-align: left;">SVM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
 <p>Antes de comenzar, es importante hacer una distinción entre dos tipos de modelos o algoritmos <span class="citation" data-cites="james2021">(<a href="references.html#ref-james2021" role="doc-biblioref">James, 2021</a>)</span>:</p>
 <ul>
 <li><p><strong>Modelos paramétricos</strong>: son aquellos en los que se utiliza una función <span class="math inline">\(f(X)\)</span> para predecir la salida, cuya forma viene determinada por una serie de parámetros que podemos ajustar a partir de los datos. Un ejemplo sería un modelo de regresión lineal.</p></li>
 <li><p><strong>Modelos no paramétricos</strong>: estos no asumen una forma paramétrica para la función de predicción <span class="math inline">\(f(X)\)</span>, ofreciendo una alternativa más flexible para resolver el problema de regresión.</p></li>
 </ul>
-<section id="k-vecinos-más-cercanos-k-nn" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="k-vecinos-más-cercanos-k-nn"><span class="header-section-number">3.1</span> K vecinos más cercanos (K-NN)</h2>
-<p>Se trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la regresión, fijado un valor para <span class="math inline">\(K\)</span> y un punto de predicción <span class="math inline">\(x_0\)</span>, se identifican las <span class="math inline">\(K\)</span> observaciones del conjunto de entrenamiento más cercanas a <span class="math inline">\(x_0\)</span>, denotadas por <span class="math inline">\(\mathcal{N}_0\)</span>. Entonces, se estima <span class="math inline">\(f(x_0)\)</span> como el valor promedio de todas las respuestas contenidas en <span class="math inline">\(\mathcal{N}_0\)</span>, es decir:</p>
-<p><span id="eq-KNN"><span class="math display">\[
+<p>En este capítulo vamos a utilizar el paquete <code>caret</code> en modo de ejecución paralela, para aprovechar las capacidades multi-núcleo de la mayoría de computadores modernos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cl <span class="ot">&lt;-</span> <span class="fu">makePSOCKcluster</span>(<span class="dv">5</span>) <span class="co"># 5 cores para proc. paralelo</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cl)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="datasets" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="datasets"><span class="header-section-number">3.1</span> Datasets</h2>
+<p><strong>Dataset: <code>Sonar</code></strong>: El objetivo es discriminar entre dos tipos de blancos detectados con un sistema sónar <span class="citation" data-cites="gorman1988">(<a href="references.html#ref-gorman1988" role="doc-biblioref">Gorman &amp; Sejnowski, 1988</a>)</span>:</p>
+<ul>
+<li>Cilindro metálico.</li>
+<li>Roca aproximadamente cilíndrica.</li>
+</ul>
+<p>Está incluido en el paquete <code>mlbench</code> <span class="citation" data-cites="leisch2024mlbench">Blake &amp; Merz (<a href="references.html#ref-UCI1998" role="doc-biblioref">1998</a>)</span>.</p>
+<div id="tbl-desc-Sonar" class="striped hover quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-desc-Sonar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabla&nbsp;3.2: Descripción del dataset <code>mlbench::Sonar</code>.
+</figcaption>
+<div aria-describedby="tbl-desc-Sonar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Descripción</th>
+<th style="text-align: left;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tipo de problema</td>
+<td style="text-align: left;">Clasificación binaria (supervisada)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Respuesta</td>
+<td style="text-align: left;"><code>Class</code>; etiquetas: <code>M</code> o <code>R</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Variables (<em>inputs</em>)</td>
+<td style="text-align: left;">60; rango <span class="math inline">\([0.0, 1.0]\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Observaciones</td>
+<td style="text-align: left;">208</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Objetivo</td>
+<td style="text-align: left;">Distinguir tipo de blanco sónar</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Más información</td>
+<td style="text-align: left;"><code>?mlbench::Sonar</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="particionado-de-datos" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="particionado-de-datos"><span class="header-section-number">3.1.1</span> Particionado de datos</h3>
+<p><strong>Dataset: <code>mlbench::Sonar</code></strong>.</p>
+<p>La preparación esta <a href="https://cran.r-project.org/web/packages/caret/vignettes/caret.html">documentada en el paquete <code>caret</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Sonar)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>SonarData <span class="ot">=</span> Sonar[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">11</span>,<span class="dv">17</span>,<span class="dv">23</span>,<span class="dv">28</span>,<span class="dv">34</span>,<span class="dv">40</span>,<span class="dv">45</span>,<span class="dv">56</span>,<span class="dv">61</span>)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">107</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>inTrain <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> SonarData<span class="sc">$</span>Class,  <span class="co"># se necesitan los datos de la salida</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> .<span class="dv">75</span>,              <span class="co"># 75% datos para entrenamiento</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">list =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Formato de resultados</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="do">## La salidad es un conjunto de enteros que representan los</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="do">## índices de las filas en el dataset original escogidos para</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="do">## entrar en el training set.</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(inTrain)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:157, 1] 1 2 3 4 5 7 10 11 12 13 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr "Resample1"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>training <span class="ot">&lt;-</span> SonarData[ inTrain,]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>testing  <span class="ot">&lt;-</span> SonarData[<span class="sc">-</span>inTrain,]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(training)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 157</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(testing)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 51</code></pre>
+</div>
+</div>
+<p>Sólo queda configurar es sistema de evaluación cruzada para medir el rendimiento de los modelos antes de enfrentarse al conjunto final de prueba, así como para ajustar los hiperparámetros que sean necesarios. En todos los ejemplos aplicaremos validación cruzada con 5 grupos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>config_control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">'cv'</span>,                   <span class="co"># k-fold cross-validation</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># method = 'repeatedcv',         # k-fold cross-validation repetida (variante)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">number =</span> <span class="dv">5</span>,                      <span class="co"># número de grupos o iteraciones de remuestreo</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># repeats = 10,                  # número de conjuntos completos de grupos a computar</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">savePredictions =</span> <span class="st">'final'</span>,       <span class="co"># guardar las predicciones para ajuste óptimo de hiperparámetros</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">classProbs =</span> <span class="cn">TRUE</span>,               <span class="co"># se devuelven las probabilidades de clase</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">summaryFunction=</span>twoClassSummary  <span class="co"># tipo de función para resumir resultados (según el tipo de problema)</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="k-vecinos-más-cercanos-k-nn" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="k-vecinos-más-cercanos-k-nn"><span class="header-section-number">3.2</span> K vecinos más cercanos (K-NN)</h2>
+<p>Se trata de un modelo que puede realizar funciones de regresión o clasificación. En el caso de la <strong>regresión</strong>, fijado un valor para <span class="math inline">\(K\)</span> y un punto de predicción <span class="math inline">\(x_0\)</span>, se identifican las <span class="math inline">\(K\)</span> observaciones del conjunto de entrenamiento más cercanas a <span class="math inline">\(x_0\)</span>, denotadas por <span class="math inline">\(\mathcal{N}_0\)</span>. Entonces, se estima <span class="math inline">\(f(x_0)\)</span> como el valor promedio de todas las respuestas contenidas en <span class="math inline">\(\mathcal{N}_0\)</span>, es decir:</p>
+<p><span id="eq-KNN-reg"><span class="math display">\[
 \hat{f}(x_0) = \frac{1}{K}\sum_{x_i \in \mathcal{N}_0} \,y_i.
 \tag{3.1}\]</span></span></p>
 <div id="fig-KNN-fit" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -365,9 +587,42 @@ Figura&nbsp;3.1: Valores estimados para una regresión KNN en un conjunto de dat
 </div>
 <p>Este modelo se basa en la premisa de que las observaciones similares se encontrarán próximas entre sí dentro del espacio de representación de los datos. Sin embargo, no siempre es fácil encontrar espacios de representación que describan nuestro problema de forma adecuada para que se cumpla esta premisa. En todo caso, este modelo ha demostrado ser muy útil en gran variedad de problemas.</p>
 <p>En la <a href="https://bradleyboehmke.github.io/HOML/knn.html#measuring-similarity">Sec. 8.2</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>, se discuten algunas medidas de disimilaridad que se pueden computar entre pares de observaciones. Algunas funciones de distancia son la familia de distancias Minkowski, incluyendo Manhattan (L1), Euclídea (L2) o Chebyshev (Linf); la distancia de Haversine (para datos geolocalizados sobre la superficie terrestre); la similaridad del coseno (para documentos o datos textuales) o la distancia de Jaccard.</p>
+<p>El modelo KNN para <strong>clasificación</strong> es muy directo. Sea <span class="math inline">\(K\)</span> un número entero positivo y <span class="math inline">\(x_0\)</span> una observación que deseamos clasificar. Primero, el algoritmo identifica las <span class="math inline">\(K\)</span> observaciones más cercanas a <span class="math inline">\(x_0\)</span>, que denotamos por <span class="math inline">\(\mathcal{N}_0\)</span>. Entonces, se estima la probabilidad condicional para la clase <span class="math inline">\(j\)</span> como la fracción de puntos pertenecientes a <span class="math inline">\(\mathcal{N}_0\)</span> cuyos valores de respuesta son la clase <span class="math inline">\(j\)</span>. En otras palabras, se asigna la etiqueta de salida de la mayorí ade vecinos cercanos como la clase más probable para la salida a predecir para el punto <span class="math inline">\(x_0\)</span>:</p>
+<p><span id="eq-KNN-class"><span class="math display">\[
+P(Y=j \mid X=x_0)= \frac{1}{K}\sum_{i \in \mathcal{N}_0} \,I(y_i = j).
+\tag{3.2}\]</span></span></p>
+<section id="ajuste-de-un-modelo-de-clasificación-knn" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="ajuste-de-un-modelo-de-clasificación-knn"><span class="header-section-number">3.2.1</span> Ajuste de un modelo de clasificación KNN</h3>
+<p>En el siguiente ejemplo se muestra cómo ajustar un modelo KNN para clasificación con el dataset <code>mlbench::Sonar</code>. La métrica que emplearemos para ajustar el hiperparámetro <span class="math inline">\(K\)</span> es la curva ROC, presentada en la <a href="04-seleccion-validacion.html#sec-eval-classification" class="quarto-xref"><span>Sección 4.2.2</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model_knn <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'knn'</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>model_knn</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>k-Nearest Neighbors 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 126, 126, 126, 125, 125 
+Resampling results across tuning parameters:
+
+  k  ROC        Sens       Spec     
+  5  0.8092927  0.8213235  0.6733333
+  7  0.7894853  0.8213235  0.5895238
+  9  0.7808088  0.8095588  0.6285714
+
+ROC was used to select the optimal model using the largest value.
+The final value used for the model was k = 5.</code></pre>
+</div>
+</div>
 </section>
-<section id="modelos-lineales" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="modelos-lineales"><span class="header-section-number">3.2</span> Modelos lineales</h2>
+</section>
+<section id="sec-linear-models" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-linear-models"><span class="header-section-number">3.3</span> Modelos lineales</h2>
 <p>Los modelos lineales asumen que existe una relación lineal entre las variables de entrada (<em>inputs</em>, <em>features</em>) y la salida que se desea predecir. Cuidado, porque esto no implica necesariamente que la forma de la función ajustada sea una línea recta, una confusión bastante común que suele asaltar a muchas personas.</p>
 <p>El dos ejemplos muy básicos de este tipo de modelos son la regresión lineal simple y la regresión lineal múltiple, presentados en detalle en el <a href="https://bradleyboehmke.github.io/HOML/linear-regression.html">Capítulo 4</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>, así como en el Capítulo 3 de <span class="citation" data-cites="james2021">(<a href="references.html#ref-james2021" role="doc-biblioref">James, 2021</a>)</span>. Sin embargo, un polinomio de grado (parábola) sigue siendo un modelo lineal ya que, aunque su forma son sea una línea recta, la ecuación se sigue expresando como una combinación lineal de varias componentes.</p>
 <p>Los Modelos Lineales Generalizados (GLM por sus siglas en inglés) extienden el modelo lineal original para responder a muchos tipos de problemas: variables respuesta que no siguen una distribución normal, relaciones no lineales (no recta) entre las entradas y la variable de salida, o salidas de tipo categórico (binarias, multinomiales, ordenadas, etc.).</p>
@@ -377,11 +632,11 @@ Figura&nbsp;3.1: Valores estimados para una regresión KNN en un conjunto de dat
 <li><p><strong>Distribución de probabilidad</strong> (componente aleatoria): describe el “ruido” o variabilidad de los datos alrededor del valor promedio que se predice. Distribuciones habituales son la Normal, Binomial o Poisson.</p></li>
 <li><p><strong>Estructura lineal</strong>: todas las variables de entrada se relacionan entre sí mediante una combinación lineal, ponderadas por coeficientes que se ajustan a partir de los datos de entrenamiento. Sin embargo, la estructura generalizada del modelo permite asumir formas no lineales, así como incorporar variables de entrada categóricas, mediante la codificación adecuada.</p></li>
 </ul>
-<p>La <a href="#tbl-my" class="quarto-xref">Tabla&nbsp;<span>3.1</span></a> presenta algunos modelos GLM frecuentemente empleados.</p>
+<p>La <a href="#tbl-my" class="quarto-xref">Tabla&nbsp;<span>3.3</span></a> presenta algunos modelos GLM frecuentemente empleados.</p>
 <div id="tbl-my" class="striped hover quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-my-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabla&nbsp;3.1: Algunos modelos GLM y sus elementos constitutivos asociados.
+Tabla&nbsp;3.3: Algunos modelos GLM y sus elementos constitutivos asociados.
 </figcaption>
 <div aria-describedby="tbl-my-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped table-hover caption-top table">
@@ -423,8 +678,68 @@ Tabla&nbsp;3.1: Algunos modelos GLM y sus elementos constitutivos asociados.
 </div>
 </figure>
 </div>
-<section id="regularización-en-modelos-lineales" class="level3" data-number="3.2.1">
-<h3 data-number="3.2.1" class="anchored" data-anchor-id="regularización-en-modelos-lineales"><span class="header-section-number">3.2.1</span> Regularización en modelos lineales</h3>
+<section id="ajuste-de-un-modelo-de-clasificación-lr" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="ajuste-de-un-modelo-de-clasificación-lr"><span class="header-section-number">3.3.1</span> Ajuste de un modelo de clasificación LR</h3>
+<p>Seguidamente, se presenta el proceso de ajuste y evaluación de un modelo de clasificación mediante regresión logística (LR). Este modelo estima una probabilidad a la salida y debemos establecer un umbral o <em>threshold</em> para dicha probabilidad estimada, a partir de cual (para valores superiores o iguales) asignamos una de las dos posibles etiquetas de salida (por ejemplo, <code>1</code>). Para una probabilidad estimada menor que el umbral asignamos la otra posible etiqueta de salida (por ejemplo, <code>0</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regresión logística</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model_glm <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  Class <span class="sc">~</span> .,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> training,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"glm"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">"ROC"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> config_control</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>model_glm</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized Linear Model 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 125, 126, 126, 125, 126 
+Resampling results:
+
+  ROC        Sens       Spec     
+  0.8034314  0.7610294  0.7828571</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recuperamos los coeficientes del modelo final ajustado</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_glm<span class="sc">$</span>finalModel)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+NULL
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)   2.4778     1.5031   1.648 0.099268 .  
+V1          -17.1009    12.1553  -1.407 0.159466    
+V11          -8.2378     2.3484  -3.508 0.000452 ***
+V17           2.3566     1.0500   2.244 0.024808 *  
+V23          -2.3698     1.0091  -2.348 0.018859 *  
+V28           0.4797     0.9750   0.492 0.622699    
+V34           2.0068     1.0909   1.840 0.065818 .  
+V40           3.3099     1.5339   2.158 0.030933 *  
+V45          -8.4562     2.1913  -3.859 0.000114 ***
+V56         -42.1597    42.1564  -1.000 0.317273    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 216.88  on 156  degrees of freedom
+Residual deviance: 144.85  on 147  degrees of freedom
+AIC: 164.85
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+</section>
+<section id="regularización-en-modelos-lineales" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="regularización-en-modelos-lineales"><span class="header-section-number">3.3.2</span> Regularización en modelos lineales</h3>
 <p>En los conjuntos de datos actuales, normalmente de gran tamaño, existe el riesgo de que los modelos lineales tiendan al sobreajuste de los datos de entrenamiento, incrementando nuestro error de generalización. Una estrategia muy útil para restringir este efecto pernicioso es la <strong>regularización</strong> del modelo, que consiste en aplicar una serie de “penalizaciones” a los coeficientes estimados para reducir la varianza (dentro del compromiso varianza-sesgo) y así mantener a raya el problema del sobreajuste.</p>
 <p>Tres opciones muy comunes de regularización son:</p>
 <ul>
@@ -445,13 +760,13 @@ Figura&nbsp;3.2: Gráficos de contorno para los errores en las estimaciones y fu
 </div>
 </section>
 </section>
-<section id="extensiones-del-modelo-lineal" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="extensiones-del-modelo-lineal"><span class="header-section-number">3.3</span> Extensiones del modelo lineal</h2>
+<section id="extensiones-del-modelo-lineal" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="extensiones-del-modelo-lineal"><span class="header-section-number">3.4</span> Extensiones del modelo lineal</h2>
 <p>Además de los modelos polinómicos o los GLM descritos anteriormente, existen más extensiones de los modelos lineales. La aproximación común a muchos de ellos es utilizar funciones polinómicas con formas suaves para ir ajustando tramos de la función de predicción. En consecuencia, la superposición (combinación lineal) de estas funciones suaves dará como resultado un modelo tremendamente flexible que se puede adaptar a problemas muy complicados.</p>
-<p>Un primer ejemplo son los modelos MARS (<em>Multivariate Adaptive Regression Splines</em>), presentados en el <a href="https://bradleyboehmke.github.io/HOML/mars.html#the-basic-idea">Capítulo 7</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>. Otro ejemplo son los modelos GAM (<em>Generalized Additive Models</em>) que se explican en la Sección 7.7 de <span class="citation" data-cites="james2021">(<a href="references.html#ref-james2021" role="doc-biblioref">James, 2021</a>)</span>. En el caso de estos últimos se extiende el modelo lineal manteniendo la combinación aditiva (suma) de los componentes de predicción. Sin embargo, en cada componente se emplea una función lineal <span class="math inline">\(f_j(x_{ij})\)</span>, cuya forma debemos estimar a partir de los datos, según la <a href="#eq-GAM" class="quarto-xref">Ecuación&nbsp;<span>3.2</span></a>:</p>
+<p>Un primer ejemplo son los modelos MARS (<em>Multivariate Adaptive Regression Splines</em>), presentados en el <a href="https://bradleyboehmke.github.io/HOML/mars.html#the-basic-idea">Capítulo 7</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>. Otro ejemplo son los modelos GAM (<em>Generalized Additive Models</em>) que se explican en la Sección 7.7 de <span class="citation" data-cites="james2021">(<a href="references.html#ref-james2021" role="doc-biblioref">James, 2021</a>)</span>. En el caso de estos últimos se extiende el modelo lineal manteniendo la combinación aditiva (suma) de los componentes de predicción. Sin embargo, en cada componente se emplea una función lineal <span class="math inline">\(f_j(x_{ij})\)</span>, cuya forma debemos estimar a partir de los datos, según la <a href="#eq-GAM" class="quarto-xref">Ecuación&nbsp;<span>3.3</span></a>:</p>
 <p><span id="eq-GAM"><span class="math display">\[
 y_i = \beta_0 + \sum_{j=1}^{p}f_j(x_{ij})+\epsilon_i
-\tag{3.2}\]</span></span></p>
+\tag{3.3}\]</span></span></p>
 <p>La <a href="#fig-example-GAM-fit" class="quarto-xref">Figura&nbsp;<span>3.3</span></a> muestra un ejemplo del resultado de ajustar un modelo GAM utilizando dos variables de entrada cuantitativas y una cualitativa.</p>
 <div id="fig-example-GAM-fit" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -463,9 +778,102 @@ Figura&nbsp;3.3: Ejemplo de ajuste de un modelo GAM, con dos predictores cuantit
 </figcaption>
 </figure>
 </div>
+<section id="ajuste-de-un-modelo-gam-para-clasificación" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="ajuste-de-un-modelo-gam-para-clasificación"><span class="header-section-number">3.4.1</span> Ajuste de un modelo GAM para clasificación</h3>
+<p>Los modelos GAM pueden aplicarse tanto a problemas de regresión como de clasificación. En el paquete <code>caret</code>, podemos escoger ajustar un modelo de este tipo con el paquete <code>mgcv</code> o bien con el paquete <code>gam</code>.</p>
+<p>En este caso, podremos ver que la función de enlace (<em>link function</em>) establecida para relacionar la salida con la combinación lineal de los regresores es <em>logit</em>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model_gam_mgcv <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'gam'</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>model_gam_mgcv</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized Additive Model using Splines 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 125, 126, 126, 125, 126 
+Resampling results across tuning parameters:
+
+  select  ROC        Sens       Spec     
+  FALSE   0.7728817  0.8095588  0.6171429
+   TRUE   0.7928011  0.7500000  0.7266667
+
+Tuning parameter 'method' was held constant at a value of GCV.Cp
+ROC was used to select the optimal model using the largest value.
+The final values used for the model were select = TRUE and method = GCV.Cp.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_gam_mgcv<span class="sc">$</span>finalModel)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: binomial 
+Link function: logit 
+
+Formula:
+.outcome ~ s(V56) + s(V1) + s(V23) + s(V28) + s(V17) + s(V11) + 
+    s(V34) + s(V40) + s(V45)
+
+Parametric coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)  -0.3515     0.2604   -1.35    0.177
+
+Approximate significance of smooth terms:
+          edf Ref.df Chi.sq  p-value    
+s(V56) 0.7416      9  1.815 0.108066    
+s(V1)  0.7876      9  2.435 0.071601 .  
+s(V23) 2.0615      9  7.979 0.009524 ** 
+s(V28) 2.4275      9  7.407 0.020306 *  
+s(V17) 1.7828      9  6.784 0.013827 *  
+s(V11) 2.0751      9 16.218 5.11e-05 ***
+s(V34) 3.8758      9 10.983 0.012560 *  
+s(V40) 1.6428      9  3.822 0.074852 .  
+s(V45) 1.0000      9 14.341 0.000108 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.548   Deviance explained = 53.3%
+UBRE = -0.1328  Scale est. = 1         n = 157</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>model_gam <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'gamSpline'</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>model_gam</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized Additive Model using Splines 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 126, 125, 126, 125, 126 
+Resampling results across tuning parameters:
+
+  df  ROC        Sens       Spec     
+  1   0.8047129  0.7639706  0.7295238
+  2   0.8616597  0.8110294  0.7961905
+  3   0.8607353  0.7992647  0.7676190
+
+ROC was used to select the optimal model using the largest value.
+The final value used for the model was df = 2.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(model_gam<span class="sc">$</span>finalModel)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept) s(V56, df = 2)  s(V1, df = 2) s(V23, df = 2) s(V28, df = 2) 
+      2.174201     -53.809688     -17.909083      -2.124357       0.518643 
+s(V17, df = 2) s(V11, df = 2) s(V34, df = 2) s(V40, df = 2) s(V45, df = 2) 
+      2.457338      -6.963477       2.165397       3.161222      -9.148652 </code></pre>
+</div>
+</div>
 </section>
-<section id="máquinas-de-vector-soporte-svm" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="máquinas-de-vector-soporte-svm"><span class="header-section-number">3.4</span> Máquinas de vector soporte (SVM)</h2>
+</section>
+<section id="máquinas-de-vector-soporte-svm" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="máquinas-de-vector-soporte-svm"><span class="header-section-number">3.5</span> Máquinas de vector soporte (SVM)</h2>
 <p>Las SVM son ejemplos de modelos de clasificación (salida cualitativa), en los que el objetivo es encontrar un hiperplano que separe de la mejor forma posible los elementos pertenecientes a dos grupos (asumiendo que la salida es una variable binaria).</p>
 <p>La <a href="#fig-svm-hmc1" class="quarto-xref">Figura&nbsp;<span>3.4</span></a> muestra cómo se identifican los llamados “vectores soporte” para definir la frontera de separación entre los puntos pertenecientes a los dos grupos de la variable de salida, para el caso de un clasficador de margen rígido (es decir, que no admite que puntos de uno de los grupos desborden la frontera con el otro grupo).</p>
 <div id="fig-svm-hmc1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -490,25 +898,67 @@ Figura&nbsp;3.5: Fronteras de separación entre dos grupos de datos que se organ
 </figcaption>
 </figure>
 </div>
+<section id="ajuste-de-un-modelo-svm-rbf" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="ajuste-de-un-modelo-svm-rbf"><span class="header-section-number">3.5.1</span> Ajuste de un modelo SVM (RBF)</h3>
+<p>Mostramos un ejemplo de cómo entrenar un modelo SVM, utilizando como función <em>kernel</em> la función de base radial (<em>Radial Basis Function</em>). Los hiperparámetros que controlan la complejidad del modelo son <code>sigma</code> y <code>C</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model_svmRadial <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'svmRadial'</span>,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">tuneLength=</span><span class="dv">15</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>model_svmRadial</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Support Vector Machines with Radial Basis Function Kernel 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 125, 125, 127, 125, 126 
+Resampling results across tuning parameters:
+
+  C        ROC        Sens       Spec     
+     0.25  0.8440616  0.8441176  0.7104762
+     0.50  0.8624300  0.8316176  0.7095238
+     1.00  0.8698669  0.8323529  0.7371429
+     2.00  0.8789391  0.8198529  0.7514286
+     4.00  0.8760784  0.8198529  0.7390476
+     8.00  0.8634139  0.8198529  0.7657143
+    16.00  0.8351225  0.8198529  0.7257143
+    32.00  0.8435609  0.8080882  0.7123810
+    64.00  0.8480917  0.7705882  0.7266667
+   128.00  0.8480917  0.8308824  0.6990476
+   256.00  0.8480917  0.7955882  0.7123810
+   512.00  0.8480917  0.7955882  0.6990476
+  1024.00  0.8480917  0.7955882  0.6990476
+  2048.00  0.8480917  0.7838235  0.6980952
+  4096.00  0.8480917  0.8191176  0.6990476
+
+Tuning parameter 'sigma' was held constant at a value of 0.07543981
+ROC was used to select the optimal model using the largest value.
+The final values used for the model were sigma = 0.07543981 and C = 2.</code></pre>
+</div>
+</div>
 </section>
-<section id="modelos-probabilísticos-naïve-bayes" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="modelos-probabilísticos-naïve-bayes"><span class="header-section-number">3.5</span> Modelos probabilísticos: Naïve Bayes</h2>
+</section>
+<section id="modelos-probabilísticos-naïve-bayes" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="modelos-probabilísticos-naïve-bayes"><span class="header-section-number">3.6</span> Modelos probabilísticos: Naïve Bayes</h2>
 <p>Un ejemplo de modelos de clasificación probabilísticos es el llamado Naïve Bayes (Bayes ingenuo), cuyo funcionamiento se basa en una aplicación directa del Teorema de Bayes. Se emplean con frecuencia en problemas de clasificación con datos textuales, cuando tenemos muchas variables de entrada o bien cuando el rango de valores de las variables de entrada es muy amplio.</p>
 <p>Recordemos que el Teorema de Bayes viene dado por:</p>
 <p><span id="eq-Bayes-theorem"><span class="math display">\[
 P(B \mid A) = \frac{P(B)P(A \mid B)}{P(A)}
-\tag{3.3}\]</span></span></p>
+\tag{3.4}\]</span></span></p>
 <p>Si consideramos que las variables predictoras son independientes entre sí, entonces tenemos que la fórmula de predicción es:</p>
 <p><span id="eq-Naive-Bayes"><span class="math display">\[
 P(Y_k \mid X_1, \dots, X_p) = \frac{P(Y_k)\prod_{j=1}^p P(X_j \mid Y_k)}{P(X_1, X_2, \dots, X_p)}
-\tag{3.4}\]</span></span></p>
+\tag{3.5}\]</span></span></p>
 <p>Puesto que el denominador es una constante, nos centramos en calcular el valor del numerador para poder comparar las probabilidades condicionadas a los valores de las variables de entrada. La clase predicha maximiza la expresión:</p>
 <p><span class="math display">\[
 \underset{x}{\arg\max} \left\{ P(Y_k) \prod_{j=1}^p P(X_j \mid Y_k)\right\}.
 \]</span></p>
 </section>
-<section id="redes-neuronales-y-aprendizaje-profundo" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="redes-neuronales-y-aprendizaje-profundo"><span class="header-section-number">3.6</span> Redes neuronales y aprendizaje profundo</h2>
+<section id="redes-neuronales-y-aprendizaje-profundo" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="redes-neuronales-y-aprendizaje-profundo"><span class="header-section-number">3.7</span> Redes neuronales y aprendizaje profundo</h2>
 <p>Muchos modelos de aprendizaje automático solamente incorporan una o dos capas de transformación de datos para aprender la representación de los datos de salida. Estos modelos se denominan superficiales (<em>shallow models</em>). En contraste, los <strong>modelos profundos</strong> (<em>deep models</em>) siguen una aproximación multicapa para aprender las representaciones de los datos. El caso más habitual es el de usar múltiples capas de <strong>redes neuronales</strong>. El <a href="https://bradleyboehmke.github.io/HOML/deep-learning.html">Capítulo 13</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> y el Capítulo 10 de <span class="citation" data-cites="james2021">(<a href="references.html#ref-james2021" role="doc-biblioref">James, 2021</a>)</span> proporcionan dos buenas introducciones a este tipo de modelos.</p>
 <p>La <a href="#fig-multi-layer-NN" class="quarto-xref">Figura&nbsp;<span>3.6</span></a> muestra el diseño de una red neuronal con dos capas ocultas que podría utilizarse para predecir los 10 posibles valores de salida del dataset MNIST, con imágenes de cifras manuscritas.</p>
 <div id="fig-multi-layer-NN" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -537,8 +987,8 @@ Videotutorial sobre aprendizaje profundo
 </div>
 </div>
 </section>
-<section id="ensamblado-de-modelos" class="level2" data-number="3.7">
-<h2 data-number="3.7" class="anchored" data-anchor-id="ensamblado-de-modelos"><span class="header-section-number">3.7</span> Ensamblado de modelos</h2>
+<section id="ensamblado-de-modelos" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="ensamblado-de-modelos"><span class="header-section-number">3.8</span> Ensamblado de modelos</h2>
 <p>El ensamblado de modelos es una aproximación para resolver el problema del aprendizaje máquina que consiste en combinar la salida de múltiples modelos individuales para dar una predicción final que mejora el rendimiento que podríamos alcanzar con un solo modelo. La referencia más completa para entender bien esta estrategia de aprendizaje máquina es <span class="citation" data-cites="kuncheva2014">(<a href="references.html#ref-kuncheva2014" role="doc-biblioref">Kuncheva, 2014</a>)</span>.</p>
 <p>Algunos de los modelos más conocidos son:</p>
 <ul>
@@ -546,9 +996,87 @@ Videotutorial sobre aprendizaje profundo
 <li><p><em>Random Forests</em> (bosques aleatorios): fueron propuestos por el insigne Leo Breiman en 2001 <span class="citation" data-cites="breiman2001random">(<a href="references.html#ref-breiman2001random" role="doc-biblioref">Breiman, 2001</a>)</span>. Es una modificación de la estrategia de <em>bagging</em> aplicada a modelos de árboles de decisión, que emplea una amplia colección de árboles <em>decorrelados entre sí</em> para mejorar la eficiencia de predicción de la variable de salida. Además de tomar muestras <em>bootstrap</em> de los datos de entrenamiento, este método realiza selecciones aleatorias de las variables de entrada <em>en cada nodo del árbol</em>, tras lo cual se selecciona de entre las características tomadas la azar la mejor para dividir los caminos desde ese nodo. Es uno de los métodos más populares hoy en día, puesto que ofrece un buen rendimiento con un coste computacional contenido y con relativamente poco esfuerzo de ajuste de hiperparámetros. El <a href="https://bradleyboehmke.github.io/HOML/random-forest.html">Capítulo 11</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> muestra el trabajo con este tipo de algoritmos.</p></li>
 <li><p><em>Boosting</em>: propone la construcción de un ensamblado de árboles poco profundos, secuencialmente, en el que cada árbol que se añade mejora al anterior. Aunque cada árbol poco profundo es una herramienta de aprendizaje débil, pueden ser “potenciados” (<em>boosted</em>) de este modo para crear un comité de modelos que ofrece un rendimiento muy bueno. Uno de los primeros métodos propuestos con esta estrategia fue AdaBoost. Una de las variantes más populares actualmente es XGBoost (<em>Extreme Gradient Boosting</em>) (véase <a href="https://bradleyboehmke.github.io/HOML/gbm.html#xgboost">Sec. 12.5</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>), que incluye hiperparámetros para controlar términos de penalización del modelo que reduzcan su complejidad y prevengan el sobreajuste.</p></li>
 </ul>
+<section id="ejemplo-de-ajuste-de-un-modelo-random-forests-rf" class="level3" data-number="3.8.1">
+<h3 data-number="3.8.1" class="anchored" data-anchor-id="ejemplo-de-ajuste-de-un-modelo-random-forests-rf"><span class="header-section-number">3.8.1</span> Ejemplo de ajuste de un modelo Random Forests (RF)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>model_rf <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'rf'</span>,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">tuneLength=</span><span class="dv">5</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>model_rf</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random Forest 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 125, 127, 125, 126, 125 
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec     
+  2     0.8592857  0.8330882  0.7942857
+  3     0.8732826  0.7970588  0.7809524
+  5     0.8693452  0.8323529  0.7809524
+  7     0.8782143  0.8323529  0.7942857
+  9     0.8717192  0.8088235  0.7800000
+
+ROC was used to select the optimal model using the largest value.
+The final value used for the model was mtry = 7.</code></pre>
+</div>
+</div>
 </section>
-<section id="apilado-de-modelos" class="level2" data-number="3.8">
-<h2 data-number="3.8" class="anchored" data-anchor-id="apilado-de-modelos"><span class="header-section-number">3.8</span> Apilado de modelos</h2>
+<section id="ejemplo-de-ajuste-de-un-modelo-adaboost" class="level3" data-number="3.8.2">
+<h3 data-number="3.8.2" class="anchored" data-anchor-id="ejemplo-de-ajuste-de-un-modelo-adaboost"><span class="header-section-number">3.8.2</span> Ejemplo de ajuste de un modelo AdaBoost</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>model_adaboost <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'AdaBoost.M1'</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">tuneLength=</span><span class="dv">2</span>, <span class="at">trControl =</span> config_control)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>model_adaboost</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>AdaBoost.M1 
+
+157 samples
+  9 predictor
+  2 classes: 'M', 'R' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 125, 126, 125, 126, 126 
+Resampling results across tuning parameters:
+
+  coeflearn  maxdepth  mfinal  ROC        Sens       Spec     
+  Breiman    1          50     0.8149160  0.7735294  0.6571429
+  Breiman    1         100     0.8295518  0.7963235  0.7266667
+  Breiman    2          50     0.8341527  0.7852941  0.7400000
+  Breiman    2         100     0.8396429  0.7970588  0.7257143
+  Freund     1          50     0.8370448  0.7852941  0.7247619
+  Freund     1         100     0.8375700  0.7970588  0.7523810
+  Freund     2          50     0.8490966  0.7500000  0.7114286
+  Freund     2         100     0.8391246  0.7970588  0.6980952
+  Zhu        1          50     0.8489286  0.7375000  0.7390476
+  Zhu        1         100     0.8407633  0.7382353  0.7390476
+  Zhu        2          50     0.8560364  0.8102941  0.7523810
+  Zhu        2         100     0.8264146  0.7742647  0.7228571
+
+ROC was used to select the optimal model using the largest value.
+The final values used for the model were mfinal = 50, maxdepth = 2
+ and coeflearn = Zhu.</code></pre>
+</div>
+</div>
+</section>
+<section id="ejemplo-de-ajuste-de-modelos-xgboost" class="level3" data-number="3.8.3">
+<h3 data-number="3.8.3" class="anchored" data-anchor-id="ejemplo-de-ajuste-de-modelos-xgboost"><span class="header-section-number">3.8.3</span> Ejemplo de ajuste de modelos XGBoost</h3>
+<p><strong>XGBoost lineal</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model_xgbLinear <span class="ot">=</span> <span class="fu">train</span>(Class <span class="sc">~</span> ., <span class="at">data=</span>training, <span class="at">method=</span><span class="st">'xgbLinear'</span>,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">metric=</span><span class="st">"ROC"</span>, <span class="at">tuneLength=</span><span class="dv">5</span>, <span class="at">trControl =</span> config_control, <span class="at">verbose=</span>F)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Descomentar para ver iteraciones</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># model_xgbLinear</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="apilado-de-modelos" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="apilado-de-modelos"><span class="header-section-number">3.9</span> Apilado de modelos</h2>
 <p>Por último, otra posible estrategia de combinación de modelos de aprendizaje individuales es el <strong>apilado de modelos</strong> (<em>model stacking</em>), que implica el entrenamiento de un nuevo modelo que combina las predicciones de varios modelos de aprendizaje de base. El meta-algoritmo que combina las salidas previas, llamado <em>super learner</em> permite mejorar aún más el rendimiento de los modelos de aprendizaje de base (como RF o XGBoost). En el <a href="https://bradleyboehmke.github.io/HOML/stacking.html">Capítulo 15</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> se puede encontrar más información y ejemplos de este tipo de modelos.</p>
 
 
@@ -556,17 +1084,26 @@ Videotutorial sobre aprendizaje profundo
 <div id="ref-agresti2015" class="csl-entry" role="listitem">
 Agresti, A. (2015). <em><span>Foundations of Linear and Generalized Linear Models</span></em> (1.ª ed.). John Wiley &amp; Sons.
 </div>
+<div id="ref-UCI1998" class="csl-entry" role="listitem">
+Blake, C. L., &amp; Merz, C. J. (1998). <em>UCI Repository of Machine Learning Databases</em>. University of California, Irvine, Department of Information; Computer Sciences.
+</div>
 <div id="ref-boehmke2019" class="csl-entry" role="listitem">
 Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</em> (1.ª ed.). Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9780367816377">https://doi.org/10.1201/9780367816377</a>
 </div>
 <div id="ref-breiman2001random" class="csl-entry" role="listitem">
 Breiman, L. (2001). Random forests. <em>Machine learning</em>, <em>45</em>(1), 5-32.
 </div>
+<div id="ref-gorman1988" class="csl-entry" role="listitem">
+Gorman, R. P., &amp; Sejnowski, T. J. (1988). Analysis of Hidden Units in a Layered Network Trained to Classify Sonar Targets. <em>Neural Networks</em>, <em>1</em>, 75-89. <a href="https://doi.org/10.1016/0893-6080(88)90023">https://doi.org/10.1016/0893-6080(88)90023</a>
+</div>
 <div id="ref-james2021" class="csl-entry" role="listitem">
 James, W., G. (2021). <em><span>An Introduction to Statistical Learning with Applications in R</span></em> (2.ª ed.). Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>
 </div>
 <div id="ref-kuncheva2014" class="csl-entry" role="listitem">
 Kuncheva, L. I. (2014). <em>Combining Pattern Classifiers: Methods and Algorithms</em> (2.ª ed.). Wiley-Interscience. <a href="https://lucykuncheva.co.uk/Combining_Pattern_Classifiers_Methods_and_Algorithms_2nd_ed_Kuncheva%202014-09-09.pdf">https://lucykuncheva.co.uk/Combining_Pattern_Classifiers_Methods_and_Algorithms_2nd_ed_Kuncheva%202014-09-09.pdf</a>
+</div>
+<div id="ref-leisch2024mlbench" class="csl-entry" role="listitem">
+Leisch, F., &amp; Dimitriadou, E. (2024). <em>mlbench: Machine Learning Benchmark Problems</em>. <a href="https://CRAN.R-project.org/package=mlbench">https://CRAN.R-project.org/package=mlbench</a>
 </div>
 </div>
 </section>
