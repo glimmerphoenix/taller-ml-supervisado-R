@@ -2,7 +2,7 @@
 
 ## Flujo de trabajo con Tidymodels
 
-Jesús Herranz ofreció en septiembre de 2024 un taller titulado ["Guía rápida para el uso de tidymodels"](https://madrid.r-es.org/98-miercoles-24-de-septiembre-2025/).
+Jesús Herranz ofreció en septiembre de 2025 un taller titulado ["Guía rápida para el uso de tidymodels"](https://madrid.r-es.org/98-miercoles-24-de-septiembre-2025/).
 
 - [Materiales](https://github.com/jesusherranz/Guia_Rapida_Uso_tidymodels) (repositorio GitHub).
 
