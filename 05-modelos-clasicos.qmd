@@ -249,7 +249,7 @@ la variable candidata a ser eliminada.
 
 ```{r}
 #| label: backward-elim
-#| echo: false
+#| output: false
 
 # Se omite la salida para abreviar el documento
 final_lm <- step(lm_a1)
@@ -336,7 +336,7 @@ promedio de la salida (*null model*).
 
 ```{r}
 #| label: fit-compare-lm-rt-rf
-#| echo: false
+#| output: false
 
 DSs <- sapply(names(algae)[12:18],
           function(x,names.attrs) { 
