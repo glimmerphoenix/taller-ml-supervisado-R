@@ -2,14 +2,30 @@
 
 ## Flujo de trabajo con Tidymodels
 
+Jesús Herranz ofreció en septiembre de 2024 un taller titulado ["Guía rápida para el uso de tidymodels"](https://madrid.r-es.org/98-miercoles-24-de-septiembre-2025/).
 
-## Otro paquete
+- [Materiales](https://github.com/jesusherranz/Guia_Rapida_Uso_tidymodels) (repositorio GitHub).
 
+Louise E. Sinks tiene también un [tutorial sobre `tidymodels`](https://lsinks.github.io/posts/2023-04-10-tidymodels/tidymodels_tutorial.html).
 
 ## Preparación de datos con `recipes`
 
+El paquete `recipes` juega un papel esencial dentro de la estructura de `tidymodels`, ya que codifica y
+permite sistematizar la preparación y transformación de los datos, previa a la etapa de ajuste/entrenamiento.
 
-## Ajuste de modelos con...
+- La documentación oficial de `tidymodels` incluye una [introducción al uso de `recipes`](https://recipes.tidymodels.org/articles/recipes.html).
+
+
+## Ajuste de modelos
+
+El listado oficial de [artículos formativos](https://www.tidymodels.org/learn/) sobre `tidymodels` incluye
+numerosos ejemplos que explican, paso a paso, cómo ajustar/entrenar y evaluar diferentes tipos de modelos
+con este ecosistema.
 
 
 ## Evaluación de modelos con `yardstick`
+
+El paquete `yardstick` centraliza todos los cálculos de métricas de evaluación de modelos en `tidymodels`.
+
+Consulta el [artículo sobre métricas](https://yardstick.tidymodels.org/articles/metric-types.html) soportadas
+por este paquete en la documentación oficial.
