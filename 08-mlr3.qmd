@@ -13,7 +13,7 @@ permitiendo al usuario cambiar de modelo con una sintaxis estandarizada.
 La figura @fig-mlr3-verse muestra las diferentes conexiones entre los paquetes que constituyen este
 *framework* de desarrollo.
 
-![Organización y dependencias del conjunto de paquetes MLR3. Fuente: Sitio web oficial de mlr3: <https://mlr3.mlr-org.com/>.](img/mlr3-verse.svg){#fig-mlr3-verse width="98%"}
+![Organización y dependencias del conjunto de paquetes MLR3. Fuente: Sitio web oficial de mlr3: <https://mlr3.mlr-org.com/>.](img/mlr3verse.svg){#fig-mlr3-verse width="98%"}
 
 El flujo de trabajo en `mlr3` se basa en la interacción de objetos R6. Para construir un 
 modelo, debemos considerar varios tipos de "elementos de construcción".
