@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -253,6 +288,17 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#preparación-de-datos-con-recipes" id="toc-preparación-de-datos-con-recipes" class="nav-link" data-scroll-target="#preparación-de-datos-con-recipes"><span class="header-section-number">7.2</span> Preparación de datos con <code>recipes</code></a></li>
   <li><a href="#ajuste-de-modelos" id="toc-ajuste-de-modelos" class="nav-link" data-scroll-target="#ajuste-de-modelos"><span class="header-section-number">7.3</span> Ajuste de modelos</a></li>
   <li><a href="#evaluación-de-modelos-con-yardstick" id="toc-evaluación-de-modelos-con-yardstick" class="nav-link" data-scroll-target="#evaluación-de-modelos-con-yardstick"><span class="header-section-number">7.4</span> Evaluación de modelos con <code>yardstick</code></a></li>
+  <li><a href="#ejemplo-con-r" id="toc-ejemplo-con-r" class="nav-link" data-scroll-target="#ejemplo-con-r"><span class="header-section-number">7.5</span> Ejemplo con R</a>
+  <ul class="collapse">
+  <li><a href="#paquetes-y-carga-de-datos" id="toc-paquetes-y-carga-de-datos" class="nav-link" data-scroll-target="#paquetes-y-carga-de-datos"><span class="header-section-number">7.5.1</span> Paquetes y carga de datos</a></li>
+  <li><a href="#particionado-de-datos" id="toc-particionado-de-datos" class="nav-link" data-scroll-target="#particionado-de-datos"><span class="header-section-number">7.5.2</span> Particionado de datos</a></li>
+  <li><a href="#preparación-con-recipes" id="toc-preparación-con-recipes" class="nav-link" data-scroll-target="#preparación-con-recipes"><span class="header-section-number">7.5.3</span> Preparación con <code>recipes</code></a></li>
+  <li><a href="#especificación-del-modelo" id="toc-especificación-del-modelo" class="nav-link" data-scroll-target="#especificación-del-modelo"><span class="header-section-number">7.5.4</span> Especificación del modelo</a></li>
+  <li><a href="#configuración-del-workflow" id="toc-configuración-del-workflow" class="nav-link" data-scroll-target="#configuración-del-workflow"><span class="header-section-number">7.5.5</span> Configuración del <em>workflow</em></a></li>
+  <li><a href="#entrenamiento-del-modelo" id="toc-entrenamiento-del-modelo" class="nav-link" data-scroll-target="#entrenamiento-del-modelo"><span class="header-section-number">7.5.6</span> Entrenamiento del modelo</a></li>
+  <li><a href="#predicción-y-evaluación" id="toc-predicción-y-evaluación" class="nav-link" data-scroll-target="#predicción-y-evaluación"><span class="header-section-number">7.5.7</span> Predicción y evaluación</a></li>
+  <li><a href="#interpretación-de-los-resultados" id="toc-interpretación-de-los-resultados" class="nav-link" data-scroll-target="#interpretación-de-los-resultados"><span class="header-section-number">7.5.8</span> Interpretación de los resultados</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -301,8 +347,144 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="7.4" class="anchored" data-anchor-id="evaluación-de-modelos-con-yardstick"><span class="header-section-number">7.4</span> Evaluación de modelos con <code>yardstick</code></h2>
 <p>El paquete <code>yardstick</code> centraliza todos los cálculos de métricas de evaluación de modelos en <code>tidymodels</code>.</p>
 <p>Consulta el <a href="https://yardstick.tidymodels.org/articles/metric-types.html">artículo sobre métricas</a> soportadas por este paquete en la documentación oficial.</p>
+</section>
+<section id="ejemplo-con-r" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="ejemplo-con-r"><span class="header-section-number">7.5</span> Ejemplo con R</h2>
+<p><strong>Dataset: <code>AmesHousing</code></strong>.</p>
+<section id="paquetes-y-carga-de-datos" class="level3" data-number="7.5.1">
+<h3 data-number="7.5.1" class="anchored" data-anchor-id="paquetes-y-carga-de-datos"><span class="header-section-number">7.5.1</span> Paquetes y carga de datos</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Carga de librerías necesarias</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)  <span class="co"># Paquete principal</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AmesHousing) <span class="co"># Contiene los datos</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)      <span class="co"># Motor de cálculo para Random Forest</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Carga de datos</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># make_ames() limpia nombres de columnas y ajusta factores </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># automáticamente</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ames_data <span class="ot">&lt;-</span> <span class="fu">make_ames</span>()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Fijamos una semilla para reproducibilidad</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="particionado-de-datos" class="level3" data-number="7.5.2">
+<h3 data-number="7.5.2" class="anchored" data-anchor-id="particionado-de-datos"><span class="header-section-number">7.5.2</span> Particionado de datos</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># División 80% entrenamiento / 20% prueba</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames_data, <span class="at">prop =</span> <span class="fl">0.80</span>, <span class="at">strata =</span> Sale_Price)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">training</span>(data_split)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>test_data  <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_split)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="preparación-con-recipes" class="level3" data-number="7.5.3">
+<h3 data-number="7.5.3" class="anchored" data-anchor-id="preparación-con-recipes"><span class="header-section-number">7.5.3</span> Preparación con <code>recipes</code></h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ames_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> train_data) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Eliminar variables con varianza cercana a cero </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (aportan poca información)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_nzv</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Agrupar categorías poco frecuentes en una categoría "Other" </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (para evitar overfitting)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>(), <span class="at">threshold =</span> <span class="fl">0.01</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convertir variables categóricas a numéricas (One-Hot Encoding)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Aunque ranger maneja factores, esto es buena práctica en tidymodels</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="especificación-del-modelo" class="level3" data-number="7.5.4">
+<h3 data-number="7.5.4" class="anchored" data-anchor-id="especificación-del-modelo"><span class="header-section-number">7.5.4</span> Especificación del modelo</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rf_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">trees =</span> <span class="dv">1000</span>,       <span class="co"># Número de árboles</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="dv">5</span>           <span class="co"># Mínimo de datos por nodo terminal</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">seed =</span> <span class="dv">123</span>) <span class="sc">%&gt;%</span> <span class="co"># Motor computacional (backend)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)               <span class="co"># Tipo de problema</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="configuración-del-workflow" class="level3" data-number="7.5.5">
+<h3 data-number="7.5.5" class="anchored" data-anchor-id="configuración-del-workflow"><span class="header-section-number">7.5.5</span> Configuración del <em>workflow</em></h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rf_workflow <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(ames_recipe) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(rf_spec)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="entrenamiento-del-modelo" class="level3" data-number="7.5.6">
+<h3 data-number="7.5.6" class="anchored" data-anchor-id="entrenamiento-del-modelo"><span class="header-section-number">7.5.6</span> Entrenamiento del modelo</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rf_fit <span class="ot">&lt;-</span> rf_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> train_data)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># (Opcional) Ver el objeto del modelo entrenado</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>rf_fit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>══ Workflow [trained] ══════════════════════════════════════════════════════════
+Preprocessor: Recipe
+Model: rand_forest()
+
+── Preprocessor ────────────────────────────────────────────────────────────────
+3 Recipe Steps
+
+• step_nzv()
+• step_other()
+• step_dummy()
+
+── Model ───────────────────────────────────────────────────────────────────────
+Ranger result
+
+Call:
+ ranger::ranger(x = maybe_data_frame(x), y = y, num.trees = ~1000,      min.node.size = min_rows(~5, x), seed = ~123, num.threads = 1,      verbose = FALSE) 
+
+Type:                             Regression 
+Number of trees:                  1000 
+Sample size:                      2342 
+Number of independent variables:  189 
+Mtry:                             13 
+Target node size:                 5 
+Variable importance mode:         none 
+Splitrule:                        variance 
+OOB prediction error (MSE):       695493903 
+R squared (OOB):                  0.88637 </code></pre>
+</div>
+</div>
+</section>
+<section id="predicción-y-evaluación" class="level3" data-number="7.5.7">
+<h3 data-number="7.5.7" class="anchored" data-anchor-id="predicción-y-evaluación"><span class="header-section-number">7.5.7</span> Predicción y evaluación</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar predicciones sobre datos de prueba</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, <span class="at">new_data =</span> test_data) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(test_data) <span class="co"># Unimos las predicciones con valores reales</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Definir métricas de interés</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>eval_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, mae)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular métricas</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>metrics_result <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">eval_metrics</span>(<span class="at">truth =</span> Sale_Price, <span class="at">estimate =</span> .pred)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar resultado</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(metrics_result)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard      27887.
+2 mae     standard      15586.</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretación-de-los-resultados" class="level3" data-number="7.5.8">
+<h3 data-number="7.5.8" class="anchored" data-anchor-id="interpretación-de-los-resultados"><span class="header-section-number">7.5.8</span> Interpretación de los resultados</h3>
+<ul>
+<li><p><strong>RMSE</strong>: Penaliza más los errores grandes. Un valor de $25.000 significa que, en promedio, el modelo se desvía esa cantidad (en dólares) del precio real, pero siendo sensible a propiedades donde falló por bastante margen.</p></li>
+<li><p><strong>MAE</strong>: Es el promedio directo de los errores absolutos, más fácil de interpretar: “En promedio, nuestro modelo se equivoca en el precio de la casa en $16.000 dólares”.</p></li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
