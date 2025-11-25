@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -246,8 +266,10 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#gradient-boosting" id="toc-gradient-boosting" class="nav-link active" data-scroll-target="#gradient-boosting"><span class="header-section-number">6.1</span> Gradient Boosting</a></li>
-  <li><a href="#aprendizaje-profundo" id="toc-aprendizaje-profundo" class="nav-link" data-scroll-target="#aprendizaje-profundo"><span class="header-section-number">6.2</span> Aprendizaje profundo</a></li>
-  <li><a href="#mixturas-gaussianas" id="toc-mixturas-gaussianas" class="nav-link" data-scroll-target="#mixturas-gaussianas"><span class="header-section-number">6.3</span> Mixturas Gaussianas</a></li>
+  <li><a href="#aprendizaje-profundo" id="toc-aprendizaje-profundo" class="nav-link" data-scroll-target="#aprendizaje-profundo"><span class="header-section-number">6.2</span> Aprendizaje profundo</a>
+  <ul class="collapse">
+  <li><a href="#dependencias-software" id="toc-dependencias-software" class="nav-link" data-scroll-target="#dependencias-software"><span class="header-section-number">6.2.1</span> Dependencias software</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -275,14 +297,50 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="gradient-boosting" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="gradient-boosting"><span class="header-section-number">6.1</span> Gradient Boosting</h2>
+<p>El <a href="https://bradleyboehmke.github.io/HOML/gbm.html">Capítulo 12</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> explica en detalle ejemplos prácticos de entrenamiento y evaluación de modelos de aprendizaje de tipo <em>Gradient Boosting Machines</em> (GBM). La <a href="#fig-boosted-trees-proc" class="quarto-xref">Figura&nbsp;<span>6.1</span></a> muestra de forma esquemática el proceso de ajuste y obtención de predicciones, mediante una aproximación de construcción secuencial de mejora de los <em>weak learners</em> individuales.</p>
+<div id="fig-boosted-trees-proc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-boosted-trees-proc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/boosted-trees-process.png" class="img-fluid figure-img" style="width:98.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boosted-trees-proc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.1: Proceso secuencial de entrenamiento de un modelo de aprendizaje de tipo GBM. Fuente: Fig. 12.1 <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<p>La <a href="#fig-boosting-action" class="quarto-xref">Figura&nbsp;<span>6.2</span></a> muestra un ejemplo de ajuste iterativo de un modelo GBM para un problema de regresión, en el que se observa como la secuencia de ajuste va aproximando de forma cada vez más precisa un modelo de predicción GBM (rojo) sobre la verdadera función curvilínea (azul) que se ha empleado para generar los datos sintéticos (al fondo, en negro).</p>
+<div id="fig-boosting-action" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-boosting-action-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/boosting-in-action.png" class="img-fluid figure-img" style="width:98.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boosting-action-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.2: Secuencia de etapas de ajuste de un modelo GBM para regresión (rojo) sobre la función real de generación de los datos simulados (azul). Fuente: Fig. 12.2 <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<p>Una de las variantes más potentes y empleadas hoy en día, debido a su flexibilidad y capacidad de computación distribuida, es XGBoost. Se explica en detalle en la <a href="https://bradleyboehmke.github.io/HOML/gbm.html#xgboost">Sec. 12.5</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span>.</p>
 </section>
 <section id="aprendizaje-profundo" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="aprendizaje-profundo"><span class="header-section-number">6.2</span> Aprendizaje profundo</h2>
+<p>El <a href="https://bradleyboehmke.github.io/HOML/deep-learning.html">Capítulo 13</a> de <span class="citation" data-cites="boehmke2019">(<a href="references.html#ref-boehmke2019" role="doc-biblioref">Boehmke &amp; Greenwell, 2019</a>)</span> desarrolla varios ejemplos de redes neuronales multicapa (<em>deep learning</em> o aprendizaje profundo). Este tipo de modelos enfocan el problema del aprendizaje mapeando las características de entrada a los valores de una o varias variables de salida a través de estas capas, basándose en transformaciones de datos simples y en señales de <em>retroalimentación</em>.</p>
+<section id="dependencias-software" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="dependencias-software"><span class="header-section-number">6.2.1</span> Dependencias software</h3>
+<p>Se necesita una infraestructura hardware y software de cierta complejidad para poder entrenar y resolver este tipo de modelos. Normalmente, el primer paso en el diseño de nuestro sistema es seleccionar un entorno de trabajo o <em>framework</em> que nos ofrezca soporte para su creación, entrenamiento y validación. Hay muchas opciones disponibles en la actualidad, aunque todas ellas utilizan primordialmente el lenguaje de programación Python.</p>
+<ul>
+<li><p><strong>TensorFlow</strong>: Es una <a href="https://github.com/tensorflow/tensorflow">librería software</a> desarrollada por Google Brain, que permite implementar muchas tareas de IA y aprendizaje automático, pero que está centrada especialmente en entreamiento e inferencia de redes neuronales. Su API de programación usa el lenguaje Python, aunque internamente está escrita en C++ y también emplea bibliotecas de programación CUDA para utilizar nucleos tensores y otros recursos hardware de GPUs, para acelerar el cómputo.</p></li>
+<li><p><strong>PyTorch</strong>: Es otra <a href="https://github.com/pytorch/pytorch">librería software</a> muy habitual en desarrollo de redes neuronales multicapa para aprendizaje profundo. Incialmente desarrollada por Meta, cuenta en la actualidad con el respaldo de la Linux Foundation. Al igual que la anterior, ofrece una interfaz de programación en Python, aunque internamente está escrita en C++ y también aprovecha a bajo nivel las bibliotecas de programación CUDA para aceleración de cómputo con GPUs.</p></li>
+<li><p><strong>Keras</strong>: Es otra <a href="https://github.com/keras-team/keras">herramienta software</a> muy popular para desarrollo de este tipo de modelos de aprendizaje automático. Aunque durante bastante tiempo estuvo estrechamente ligada al proyecto TensorFlow, su versión 3.0 levanta esa restricción, ya que está reescrita para poder utilizar varios “motores” de bajo nivel, como PyTorch, JAX o TensorFlow, usando la misma base de código.</p></li>
+</ul>
+<p>Es recomendable leer con detenimiento y preparar las instrucciones de instalación de todo el <em>stack</em> software necesario con antelación. Además, si tienes pensado utilizar CUDA y una GPU para acelerar el cómputo de estos modelos, es muy recomendable estudiar con atención las recomendaciones sobre cómo instalar las dependencias necesarias en cada proyecto. Por ejemplo, Keras 3 incluye instrucciones específicas sobre <a href="https://keras.io/getting_started/#gpu-dependencies">el entorno GPU</a> y cómo instalar las dependencias software necesarias en cada caso.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-boehmke2019" class="csl-entry" role="listitem">
+Boehmke, B., &amp; Greenwell, B. (2019). <em>Hands-On Machine Learning with R</em> (1.ª ed.). Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9780367816377">https://doi.org/10.1201/9780367816377</a>
+</div>
+</div>
 </section>
-<section id="mixturas-gaussianas" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="mixturas-gaussianas"><span class="header-section-number">6.3</span> Mixturas Gaussianas</h2>
-
-
 </section>
 
 </main> <!-- /main -->
