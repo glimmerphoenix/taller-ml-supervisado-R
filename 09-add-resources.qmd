@@ -1,5 +1,21 @@
 # Recursos adicionales
 
-This is a book created from markdown and executable code.
-
-See @knuth84 for additional discussion of literate programming.
+- La principal referencia práctica sobre implementación de modelos de aprendizaje máquina
+en R sigue siendo [@boehmke2019], tal y como hemos visto en todo este taller.
+    + [Libro completo publicado en abierto](https://bradleyboehmke.github.io/HOML/).
+- El propio B. Boehmke mantiene un estupendo 
+[listado de recursos de aprendizaje para Ciencia de Datos](https://github.com/bradleyboehmke/data-science-learning-resources). El listado de [referencias sobre aprendizaje máquina](https://github.com/bradleyboehmke/data-science-learning-resources) es muy extenso, aunque incluye contenidos tanto
+en Python como en R y otros lenguajes.
+- Después de su segunda edición, [An Introduction to Statistical Learning](https://www.statlearning.com/)
+continúa siendo una de las referencias más sólidas, accesibles y completas para comprender los fundamentos
+de aprendizaje estadístico en los que se basan muchos de estos modelos/algoritmos, desde ese punto
+de vista. Como nota adicional, recalcar que el mismo libro está ahora disponible tanto en su
+[versión para R](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html) como en [otra versión para Python](https://hastie.su.domains/ISLP/ISLP_website.pdf.download.html), 
+lo que incrementa aún más si cabe su valor.
+- Otra referencia destacada para conocer en detalle los entresijos de los modelos de aprendizaje
+profundo es [Deep Learning with Python (3rd ed.)](https://www.manning.com/books/deep-learning-with-python-third-edition). Este fue el primer libro de referencia que introdujo la
+tendencia de publicarse en dos "sabores", con una versión en Python y otra en R. En esta tercera
+edición, la [Deep Learning with R (3rd ed.)](https://www.manning.com/books/deep-learning-with-r-third-edition)
+todavía tardará un poco en estar disponible (fecha estimada de publicación: primavera de 2026).
+- Por último, [Machine Learning with R (4th ed.)](https://learning.oreilly.com/library/view/machine-learning-with/9781801071321/) es otro clásico que se sigue renovando para incorporar las últimas tendencias, y también
+incluye numerosos ejemplos que ilustran diferentes algoritmos y métodos de ajuste y evaluación.
