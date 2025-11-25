@@ -29,3 +29,118 @@ El paquete `yardstick` centraliza todos los cálculos de métricas de evaluació
 
 Consulta el [artículo sobre métricas](https://yardstick.tidymodels.org/articles/metric-types.html) soportadas
 por este paquete en la documentación oficial.
+
+## Ejemplo con R
+
+**Dataset: `AmesHousing`**.
+
+### Paquetes y carga de datos
+
+```{r}
+#| label: tidymodels-data-load
+#| message: false
+
+# Carga de librerías necesarias
+library(tidymodels)  # Paquete principal
+library(AmesHousing) # Contiene los datos
+library(ranger)      # Motor de cálculo para Random Forest
+
+# 1. Carga de datos
+# make_ames() limpia nombres de columnas y ajusta factores 
+# automáticamente
+ames_data <- make_ames()
+
+# Fijamos una semilla para reproducibilidad
+set.seed(123)
+```
+
+### Particionado de datos
+
+```{r}
+#| label: tidymodels-data-split
+
+
+# División 80% entrenamiento / 20% prueba
+data_split <- initial_split(ames_data, prop = 0.80, strata = Sale_Price)
+
+train_data <- training(data_split)
+test_data  <- testing(data_split)
+```
+
+### Preparación con `recipes`
+
+```{r}
+#| label: tidymodels-recipe
+
+ames_recipe <- recipe(Sale_Price ~ ., data = train_data) %>%
+  # Eliminar variables con varianza cercana a cero 
+  # (aportan poca información)
+  step_nzv(all_predictors()) %>%
+  # Agrupar categorías poco frecuentes en una categoría "Other" 
+  # (para evitar overfitting)
+  step_other(all_nominal_predictors(), threshold = 0.01) %>%
+  # Convertir variables categóricas a numéricas (One-Hot Encoding)
+  # Aunque ranger maneja factores, esto es buena práctica en tidymodels
+  step_dummy(all_nominal_predictors())
+```
+
+### Especificación del modelo
+
+```{r}
+#| label: tidymodels-rf-spec
+
+rf_spec <- rand_forest(
+  trees = 1000,       # Número de árboles
+  min_n = 5           # Mínimo de datos por nodo terminal
+) %>% 
+  set_engine("ranger", seed = 123) %>% # Motor computacional (backend)
+  set_mode("regression")               # Tipo de problema
+```
+
+### Configuración del *workflow*
+
+```{r}
+#| label: tidymodels-workflow-prep
+
+rf_workflow <- workflow() %>% 
+  add_recipe(ames_recipe) %>% 
+  add_model(rf_spec)
+```
+
+### Entrenamiento del modelo
+
+```{r}
+#| label: tidymodels-rf-fit
+
+rf_fit <- rf_workflow %>% 
+  fit(data = train_data)
+
+# (Opcional) Ver el objeto del modelo entrenado
+rf_fit
+```
+
+### Predicción y evaluación
+
+```{r}
+#| label: tidymodels-eval
+
+# Generar predicciones sobre datos de prueba
+results <- predict(rf_fit, new_data = test_data) %>%
+  bind_cols(test_data) # Unimos las predicciones con valores reales
+
+# Definir métricas de interés
+eval_metrics <- metric_set(rmse, mae)
+
+# Calcular métricas
+metrics_result <- results %>% 
+  eval_metrics(truth = Sale_Price, estimate = .pred)
+
+# Mostrar resultado
+print(metrics_result)
+```
+
+### Interpretación de los resultados
+
+- **RMSE**: Penaliza más los errores grandes. Un valor de $25.000 significa que, en promedio, el modelo se desvía esa cantidad (en dólares) del precio real, pero siendo sensible a propiedades donde falló por bastante margen.
+
+- **MAE**: Es el promedio directo de los errores absolutos, más fácil de interpretar: "En promedio, nuestro modelo se equivoca en el precio de la casa en $16.000 dólares".
