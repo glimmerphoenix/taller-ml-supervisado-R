@@ -1,5 +1,120 @@
 # MLR3
 
-This is a book created from markdown and executable code.
+## Ecosistema moderno de aprendizaje automático en R
 
-See @knuth84 for additional discussion of literate programming.
+`mlr3` es la reescritura moderna del popular paquete mlr. A diferencia de su predecesor, 
+está construido sobre el sistema de programación orientada a objetos R6, lo que le confiere 
+mayor velocidad, eficiencia en el manejo de memoria y una estructura modular extensible. Su 
+filosofía se basa en unificar la interfaz para cientos de algoritmos de aprendizaje automático, 
+permitiendo al usuario cambiar de modelo con una sintaxis estandarizada.
+
+## Arquitectura y componentes principales
+
+La figura @fig-mlr3-verse muestra las diferentes conexiones entre los paquetes que constituyen este
+*framework* de desarrollo.
+
+![Organización y dependencias del conjunto de paquetes MLR3. Fuente: Sitio web oficial de mlr3: <https://mlr3.mlr-org.com/>.](img/mlr3-verse.svg){#fig-mlr3-verse width="98%"}
+
+El flujo de trabajo en `mlr3` se basa en la interacción de objetos R6. Para construir un 
+modelo, debemos considerar varios tipos de "elementos de construcción".
+
+### Tarea
+
+Representada por el tipo `Task`. Es el punto de partida. Encapsula los datos (el `data.frame` o `tibble`) 
+y define el objetivo del aprendizaje.
+
+- **Backend**: los datos en sí (pueden ser locales o bases de datos SQL remotas).
+
+- **Target**: la variable que queremos predecir.
+
+- **Tipos**: marcan el objetivo, `TaskClassif` (clasificación) o `TaskRegr` (regresión).
+
+
+### Aprendiz (*learner*)
+
+Representado por el objeto de tipo `Learner`. Es el algoritmo que va a aprender de los datos. `mlr3` no implementa los algoritmos desde cero, sino que actúa como un *wrapper* (envoltorio) unificado alrededor de otros paquetes de R (como `ranger`, `xgboost` o `glmnet`).
+
+Se identifican mediante una cadena de texto, por ejemplo: `"classif.rpart"` o `"regr.lm"`.
+
+
+### Proceso de entrenamiento y predicción
+
+Elementos de tipo `Train` o `Predict`.
+
+- **Train**: el método `train()` recibe una `Task` y genera un modelo entrenado (almacenando los parámetros aprendidos).
+
+- **Predict**: el método `predict()` toma nuevos datos y devuelve un objeto `Prediction`, que alberga tanto los valores verdaderos como los predichos, facilitando la evaluación.
+
+
+### Validación mediante remustreo
+
+Objetos de tipo `Resampling`. Define cómo validar el modelo para asegurar que generaliza bien (evitar *overfitting*).
+
+- Estrategias comunes: validación Cruzada (`"cv"`), hold-out (`"holdout"`),bootstrap (`"bootstrap"`).
+
+- Se ejecuta mediante la función `resample()`.
+
+
+### Prueba o medida final
+
+Encapsulada en un objeto `Measure`. Es la métrica utilizada para cuantificar cómo de bueno es el modelo.
+
+- Ejemplos: Precisión (`"classif.acc"`), RMSE (`"regr.rmse"`), etc.
+
+
+## Modelos de aprendizaje supervisado soportados
+
+### Clasificación
+
+Identificadores de tipo `classif.*`.
+
+Utilizados cuando la variable objetivo es categórica (binaria o multiclase).
+
+- Árboles de Decisión: `classif.rpart` (paquete `rpart`). Ya hemos visto que son interpretables y sencillos.
+
+- Bosques Aleatorios (*Random Forests*): `classif.ranger` (paquete `ranger`). Robustos y de alto rendimiento.
+
+- Máquinas de Vector Soporte (SVM): `classif.svm` (paquete `e1071`). Efectivos en espacios de alta dimensionalidad.
+
+- Gradient Boosting: `classif.xgboost` (paquete `xgboost`) o `classif.lightgbm`. Se han convertido en una de
+las soluciones más populares en competiciones de aprendizaje automático.
+
+- Regresión Logística: `classif.log_reg` (paquete `stats`). El modelo base estadístico clásico.
+
+- K-Vecinos más Cercanos ($k-NN$): `classif.kknn`. Como hemos visto, basado en distancias.
+
+- Naive Bayes: `classif.naive_bayes`. Probabilístico y sencillo de ajustar.
+
+
+### Regresión
+
+- Regresión Lineal: `regr.lm` (paquete `stats`). Simple y explicativo.
+
+- Regresión Penalizada (Lasso/Ridge/ElasticNet): `regr.glmnet`. Ideal para selección de variables y evitar sobreajuste.
+
+- Árboles de Regresión: `regr.rpart`.
+
+- Bosques Aleatorios de Regresión: `regr.ranger`.
+
+- *Gradient Boosting* de Regresión: `regr.xgboost`.
+
+- Máquinas de Vector Soporte (SVR): `regr.svm`.
+
+- Kriging: `regr.km`. Para datos geoespaciales o interpolación.
+
+Respecto a los algoritmos de aprendizaje profundo, aunque `mlr3` se centra en datos estructurados, existe integración con `mlr3keras` o `mlr3torch` para redes neuronales profundas, aunque estos son ecosistemas más complejos de instalar y configurar adecuadamente.
+
+
+## Principales extensiones del ecosistema
+
+La @tbl-mlr3-extensions muestra algunas de las extensiones más interesantes de este ecosistema, para poder
+sacarle el máximo partido.
+
+| Paquete | Funcionalidad |
+| :--- | :--- |
+| **mlr3viz** | Genera visualizaciones rápidas y elegantes (curvas ROC, gráficos de predicción, análisis de residuos) basándose en el motor gráfico de `ggplot2`. |
+| **mlr3tuning** | Implementa estrategias de optimización de hiperparámetros (Tuning), incluyendo *Grid Search*, *Random Search* y optimización bayesiana. |
+| **mlr3pipelines** | Permite la creación de grafos de flujo de datos para pre-procesamiento (imputación, escalado, *one-hot encoding*) y ensamblado de modelos (*Stacking*). |
+| **mlr3benchmark** | Facilita la comparación rigurosa y sistemática del rendimiento de múltiples modelos sobre múltiples tareas simultáneamente. |
+
+: Extensiones clave del ecosistema mlr3 {#tbl-mlr3-extensions}
