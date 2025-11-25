@@ -55,7 +55,7 @@ máxima verosimilitud. Se suele emplear en modelos de clasificación y el objeti
 del MSE se calculan las diferencias entre los valores reales y predichos tomando su valor absoluto, lo que
 contiene la influencia de los errores con valores altos. EL objetivo es *minimizar* la función de pérdida.
 
-- **Error Medio Cuadrático Logarítmico** (*Root Mean Squared Logarithmic Error** o RMSLE): Es la raíz cuadrada
+- **Error Medio Cuadrático Logarítmico** (*Root Mean Squared Logarithmic Error* o RMSLE): Es la raíz cuadrada
 del error medio cuadrático logarítmico. Permite que los errores grandes cometidos sobre valores de salida de
 magnitud pequeña contribuyan de igual forma a la función de pérdida que los errores grandes cometidos sobre
 valores de salida de magnitud grande, ya que de otro modo los segundos prevalecerían sobre los primeros. Aquí
