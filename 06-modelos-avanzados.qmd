@@ -3,10 +3,61 @@
 
 ## Gradient Boosting
 
+El [Capítulo 12](https://bradleyboehmke.github.io/HOML/gbm.html) de [@boehmke2019] explica en detalle
+ejemplos prácticos de entrenamiento y evaluación de modelos de aprendizaje de tipo 
+*Gradient Boosting Machines* (GBM). La @fig-boosted-trees-proc muestra de forma esquemática el proceso
+de ajuste y obtención de predicciones, mediante una aproximación de construcción secuencial de mejora
+de los *weak learners* individuales.
+
+![Proceso secuencial de entrenamiento de un modelo de aprendizaje de tipo GBM. Fuente: Fig. 12.1 [@boehmke2019].](img/boosted-trees-process.png){#fig-boosted-trees-proc width="98%"}
+
+La @fig-boosting-action muestra un ejemplo de ajuste iterativo de un modelo GBM para un problema de
+regresión, en el que se observa como la secuencia de ajuste va aproximando de forma cada vez más precisa
+un modelo de predicción GBM (rojo) sobre la verdadera función curvilínea (azul) que se ha empleado para generar los datos sintéticos (al fondo, en negro).
+
+![Secuencia de etapas de ajuste de un modelo GBM para regresión (rojo) sobre la función real de generación de los datos simulados (azul). Fuente: Fig. 12.2 [@boehmke2019].](img/boosting-in-action.png){#fig-boosting-action width="98%"}
+
+Una de las variantes más potentes y empleadas hoy en día, debido a su flexibilidad y capacidad de
+computación distribuida, es XGBoost. Se explica en detalle en la [Sec. 12.5](https://bradleyboehmke.github.io/HOML/gbm.html#xgboost) de [@boehmke2019].
+
 
 ## Aprendizaje profundo
 
+El [Capítulo 13](https://bradleyboehmke.github.io/HOML/deep-learning.html) de [@boehmke2019] desarrolla
+varios ejemplos de redes neuronales multicapa (*deep learning* o aprendizaje profundo). Este tipo de
+modelos enfocan el problema del aprendizaje mapeando las características de entrada a los valores de
+una o varias variables de salida a través de estas capas, basándose en transformaciones de datos
+simples y en señales de *retroalimentación*.
 
-## Mixturas Gaussianas
+### Dependencias software
 
+Se necesita una infraestructura hardware y software de cierta complejidad para poder entrenar y resolver
+este tipo de modelos. Normalmente, el primer paso en el diseño de nuestro sistema es seleccionar un
+entorno de trabajo o *framework* que nos ofrezca soporte para su creación, entrenamiento y validación.
+Hay muchas opciones disponibles en la actualidad, aunque todas ellas utilizan primordialmente el
+lenguaje de programación Python.
 
+- **TensorFlow**: Es una [librería software](https://github.com/tensorflow/tensorflow) 
+desarrollada por Google Brain, que permite implementar muchas tareas de IA y aprendizaje automático,
+pero que está centrada especialmente en entreamiento e inferencia de redes neuronales. Su
+API de programación usa el lenguaje Python, aunque internamente está escrita en C++ y también
+emplea bibliotecas de programación CUDA para utilizar nucleos tensores y otros recursos hardware de
+GPUs, para acelerar el cómputo.
+
+- **PyTorch**: Es otra [librería software](https://github.com/pytorch/pytorch) muy habitual en desarrollo
+de redes neuronales multicapa para aprendizaje profundo. Incialmente desarrollada por Meta, cuenta
+en la actualidad con el respaldo de la Linux Foundation. Al igual que la anterior, ofrece una
+interfaz de programación en Python, aunque internamente está escrita en C++ y también aprovecha a bajo
+nivel las bibliotecas de programación CUDA para aceleración de cómputo con GPUs. 
+
+- **Keras**: Es otra [herramienta software](https://github.com/keras-team/keras) muy popular para
+desarrollo de este tipo de modelos de aprendizaje automático. Aunque durante bastante tiempo estuvo
+estrechamente ligada al proyecto TensorFlow, su versión 3.0 levanta esa restricción, ya que está 
+reescrita para poder utilizar varios "motores" de bajo nivel, como PyTorch, JAX o TensorFlow, usando
+la misma base de código.
+
+Es recomendable leer con detenimiento y preparar las instrucciones de instalación de todo
+el *stack* software necesario con antelación. Además, si tienes pensado utilizar CUDA y una GPU para
+acelerar el cómputo de estos modelos, es muy recomendable estudiar con atención las recomendaciones
+sobre cómo instalar las dependencias necesarias en cada proyecto. Por ejemplo,
+Keras 3 incluye instrucciones específicas sobre [el entorno GPU](https://keras.io/getting_started/#gpu-dependencies) y cómo instalar las dependencias software necesarias en cada caso.
